@@ -77,30 +77,35 @@ As well, assume our demand is to capture weather forecasts for the next 7 days,
 here let's take this example to illustrate the usage:
 
 
-#### *Step-1: Download Application Framework*
-1、Download the PHPCreeper-Application framework:
+#### *Step-1：Download PHPCreeper-Application Framework*
 ```php
 git clone https://github.com/blogdaren/PHPCreeper-Application
 ```
+
+#### *Step-2：Load the PHPCreeper Core Engine*
+
+1、Switch to the PHPCreeper-Application base directory:
+```php
+cd /path/to/PHPCreeper-Application
+```
+
 2、Load the PHPCreeper core engine:
 ```php
 composer require blogdaren/PHPCreeper
 ```
 
-#### *Step-2: Run PHPCreeper-Application Assistant*
-1、Switch to the PHPCreeper-Application base directory:
-```php
-cd /path/to/PHPCreeper-Application
-```
-2、Run PHPCreeper-Application assistant:
+#### *Step-3：Run PHPCreeper-Application Assistant*
+
+3、Run PHPCreeper-Application assistant:
 ```php
 php  Application/Sbin/Creeper
+
 ```
-3、The terminal output will look like this:    
+4、The terminal output will look like this:    
 
 ![AppAssistant](./Image/AppAssistantEnglish.png)
 
- #### *Step-3: Create One Application*
+ #### *Step-4：Create One Application*
 1、Create one spider application named **weather**:
 ```
 php Application/Sbin/Creeper make weather --en
@@ -109,7 +114,12 @@ php Application/Sbin/Creeper make weather --en
 
 ![AppAssistant](./Image/AppWeatherEnglish.png)
 
-#### *Step-4: Business Configuration*
+As matter of fact, we have accomplished all the jobs at this point,
+you just need to run `php weather.php start` to see what has happened, 
+but you still need to finish the rest step of the work if you wanna
+do some elaborate work or jobs.
+
+#### *Step-5：Business Configuration*
 1、Switch to the application config direcory:
 ```
 cd Application/Spider/Weather/Config/
@@ -216,7 +226,7 @@ return array(
     ),
 );
 ```
-#### *Step-5: Set Business Rule*
+#### *Step-6：Set Business Rule*
 1、Switch to the PHPCreeper-Application base directory again:
 ```
 cd Application/Spider/Weather/Config/
@@ -239,7 +249,7 @@ return array(
    ),
 );
 ```
-#### *Step-6: Write Business Callback*
+#### *Step-7：Write Business Callback*
 1、Write business callback for AppProducer:
 ```
 public function onProducerStart($producer)
@@ -251,8 +261,7 @@ public function onProducerStart($producer)
          ),
          'rule' => array(
              'r1' => array(
-                 '飞机场' => ['dl.basicInfo-right dd.basicInfo-item.value:eq(5)', 'text'],
-                 '火车站' => ['dl.basicInfo-right dd.basicInfo-item.value:eq(6)', 'text'],
+                 'airport' => ['dl.basicInfo-right dd.basicInfo-item.value:eq(5)', 'text'],
              ),
          ),
     );
@@ -340,7 +349,7 @@ public function onParserExtractField($parser, $download_data, $fields)
     //DB::save($fields);
 }
 ```
-#### *Step-7: Start Application Instance*
+#### *Step-8：Start Application Instance*
 There are two ways to start an application instance, one is `Global Startup`, 
 and the other is `Single Startup`, we just need to choose one of them.
 `Global Startup` means that all workers run in the same group of processes under the same application,
