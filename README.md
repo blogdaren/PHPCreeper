@@ -73,7 +73,7 @@ application framework which is also published simultaneously for your developmen
 although this framework is not necessary, we strongly recommend that you use it for 
 business development, thus it's no doubt that it will greatly improve your job efficiency .
 
-As well, assume our demand is to capture weather forecasts for the next 7 days,
+Assume our demand is to capture the weather forecasts for the next 7 days,
 here let's take this example to illustrate the usage:
 
 
@@ -96,12 +96,12 @@ composer require blogdaren/PHPCreeper
 
 #### *Step-3：Run PHPCreeper-Application Assistant*
 
-3、Run PHPCreeper-Application assistant:
+1、Run PHPCreeper-Application assistant:
 ```php
 php  Application/Sbin/Creeper
 
 ```
-4、The terminal output will look like this:    
+2、The terminal output will look like this:    
 
 ![AppAssistant](./Image/AppAssistantEnglish.png)
 
