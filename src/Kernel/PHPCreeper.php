@@ -40,7 +40,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const  CURRENT_VERSION = '1.1.0';
+    const  CURRENT_VERSION = '1.1.1';
 
     /**
      * http client

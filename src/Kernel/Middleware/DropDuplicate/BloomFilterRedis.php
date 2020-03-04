@@ -209,7 +209,7 @@ class BloomFilterRedis implements DropDuplicateInterface
      */
     public function removeBucket()
     {
-        $this->_redis->delete($this->getBucket());
+        $this->_redis->del($this->getBucket());
     }
 
 }

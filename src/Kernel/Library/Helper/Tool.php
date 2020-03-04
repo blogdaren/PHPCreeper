@@ -1121,9 +1121,9 @@ class Tool
 
                 //check digit-by-digit, if they have a difference, return 1 or -1 (greater/lower than)
                 for ($i = 0; $i < strlen($numOne); ++$i) {
-                    if ((int)$numOne{$i} > (int)$numTwo{$i}) {
+                    if ((int)$numOne[$i] > (int)$numTwo[$i]) {
                         return 1;
-                    } elseif ((int)$numOne{$i} < (int)$numTwo{$i}) {
+                    } elseif ((int)$numOne[$i] < (int)$numTwo[$i]) {
                         return -1;
                     }
                 }
