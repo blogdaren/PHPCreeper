@@ -9,6 +9,9 @@
 
 namespace PHPCreeper\Kernel;
 
+//load common functions
+require_once __DIR__ . '/Library/Common/Functions.php';
+        
 use PHPCreeper\Kernel\Service\Service;
 use PHPCreeper\Kernel\Service\Provider\SystemServiceProvider;
 use PHPCreeper\Kernel\Service\Provider\HttpServiceProvider;
@@ -217,9 +220,6 @@ class PHPCreeper extends Worker
      */
     public function __construct()
     {
-        //load common functions
-        require_once __DIR__ . '/Library/Common/Functions.php';
-        
         //check environment
         self::checkEnvironment();
 
@@ -231,7 +231,7 @@ class PHPCreeper extends Worker
     }
 
     /**
-     * @brief    attention!! boot() must be called once app worker init done
+     * @brief    attention!! boot() must be called after app worker initialized
      *
      * @param    array  $config
      *
@@ -853,12 +853,12 @@ class PHPCreeper extends Worker
         {
             self::$isRunAsMultiWorker = false;
             $this->_config['main']['start'] = [];
-            $this->_config['main']['start']['downloader'] = true;
+            $this->_config['main']['start']['AppDownloader'] = true;
             Configurator::reset('globalConfig', $this->_config);
 
-            if('downloader' <> $worker)
+            if('AppDownloader' <> $worker)
             {   
-                self::showHelpByeBye("you are only allowed to run `Downloader` when run as single worker mode");
+                self::showHelpByeBye("only allowed to run `AppDownloader.php` when run as single worker mode");
             }   
         }
 
@@ -866,7 +866,7 @@ class PHPCreeper extends Worker
         if(isset($this->_config['main']['start'][$worker]) && false === $this->_config['main']['start'][$worker])
         {   
             $_worker = ucfirst($worker);
-            self::showHelpByeBye("you are not allowed to run {$_worker}, plz check the app `{$worker}` worker config.");
+            self::showHelpByeBye("not allowed to run {$_worker}, plz check the app `{$worker}` worker config.");
         }   
 
         //check redis extension when run as multi worker mode

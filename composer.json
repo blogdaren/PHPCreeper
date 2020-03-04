@@ -1,7 +1,7 @@
 {
     "name": "blogdaren/phpcreeper",
     "type": "library",
-    "keywords": ["spider", "crawler"],
+    "keywords": ["spider", "crawler", "multi-process", "event-loop", "asynchronous"],
     "homepage": "http://www.phpcreeper.com",
     "description": "A new generation of multi-process asynchronous event-driven spider engine based on Workerman",
     "license": "MIT", 

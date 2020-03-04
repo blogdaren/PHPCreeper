@@ -64,7 +64,7 @@ So the final goals of PHPCreeper are:
 ## Installation
 The recommended way to install PHPCreeper is through [Composer](https://getcomposer.org/).
 ```
-composer require blogdaren/PHPCreeper
+composer require blogdaren/phpcreeper
 ```
 
 ## Usage
@@ -91,7 +91,7 @@ cd /path/to/PHPCreeper-Application
 
 2、Load the PHPCreeper core engine:
 ```php
-composer require blogdaren/PHPCreeper
+composer require blogdaren/phpcreeper
 ```
 
 #### *Step-3：Run PHPCreeper-Application Assistant*
