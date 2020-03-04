@@ -1016,6 +1016,128 @@ class Tool
         return  true;
     }
 
+    /**
+     * 支持正数和负数的比较
+     *
+     * @param   float   $numOne
+     * @param   float   $numTwo
+     * @param   int     $scale
+     *
+     * @return  int|string
+     */
+    static public function bcCompareNumber($numOne, $numTwo, $scale = null)
+    {
+        //先判断是传过来的两个变量是否合法,不合法都返回'0'
+        if (!preg_match("/^([+-]?)\d+(\.\d+)?$/", $numOne, $numOneSign) ||
+            !preg_match("/^([+-]?)\d+(\.\d+)?$/", $numTwo, $numTwoSign)
+        ) {
+            return '0';
+        }
+
+        $signOne = $numOneSign[1] === '-' ? '-' : '+';
+        $signTwo = $numTwoSign[1] === '-' ? '-' : '+';
+
+        if ($signOne !== $signTwo) 
+        {    
+            //异号
+            if ($signOne === '-' && $signTwo === '+') {
+                return -1;
+            } else if ($signOne === '+' && $signTwo === '-') {
+                return 1;
+            } else {
+                return '0';
+            }
+        } 
+        else 
+        {  
+            //同号:两个负数比较
+            if ($signOne === "-" && $signTwo === '-') {
+                $numOne = abs($numOne);
+                $numTwo = abs($numTwo);
+                $flag = self::bcComparePositiveNumber($numOne, $numTwo, $scale);
+                if ($flag === 0) {
+                    return 0;
+                } else if ($flag === 1) {
+                    return -1;
+                } else if ($flag === -1) {
+                    return 1;
+                } else {
+                    return '0';
+                }
+            } else {    
+                //两正数比较
+                return self::bcComparePositiveNumber($numOne, $numTwo, $scale);
+            }
+        }
+    }
+
+    /**
+     * 比较两个正数的大小
+     *
+     * @param   float   $numOne
+     * @param   float   $numTwo
+     * @param   int     $scale
+     *
+     * @return  int|string
+     */
+    static public function bcComparePositiveNumber($numOne, $numTwo, $scale = null)
+    {
+        //check if they're valid positive numbers, extract the whole numbers and decimals
+        if (!preg_match("/^\+?(\d+)(\.\d+)?$/", $numOne, $tmpOne) ||
+            !preg_match("/^\+?(\d+)(\.\d+)?$/", $numTwo, $tmpTwo)
+        ) {
+            return '0';
+        }
+
+        //remove leading zeroes from whole numbers
+        $numOne = ltrim($tmpOne[1], '0');
+        $numTwo = ltrim($tmpTwo[1], '0');
+
+        //first, we can just check the lengths of the numbers, this can help save processing time
+        //if $numOne is longer than $numTwo, return 1.. vice versa with the next step.
+        if (strlen($numOne) > strlen($numTwo)) {
+            return 1;
+        } else {
+            if (strlen($numOne) < strlen($numTwo)) {
+                return -1;
+            } //if the two numbers are of equal length, we check digit-by-digit
+            else {
+                //remove ending zeroes from decimals and remove point
+                $Dec1 = isset($tmpOne[2]) ? rtrim(substr($tmpOne[2], 1), '0') : '';
+                $Dec2 = isset($tmpTwo[2]) ? rtrim(substr($tmpTwo[2], 1), '0') : '';
+
+                //if the user defined $scale, then make sure we use that only
+                if ($scale != null) {
+                    $Dec1 = substr($Dec1, 0, $scale);
+                    $Dec2 = substr($Dec2, 0, $scale);
+                }
+
+                //calculate the longest length of decimals
+                $DLen = max(strlen($Dec1), strlen($Dec2));
+
+                //append the padded decimals onto the end of the whole numbers
+                $numOne .= str_pad($Dec1, $DLen, '0');
+                $numTwo .= str_pad($Dec2, $DLen, '0');
+
+                //check digit-by-digit, if they have a difference, return 1 or -1 (greater/lower than)
+                for ($i = 0; $i < strlen($numOne); ++$i) {
+                    if ((int)$numOne{$i} > (int)$numTwo{$i}) {
+                        return 1;
+                    } elseif ((int)$numOne{$i} < (int)$numTwo{$i}) {
+                        return -1;
+                    }
+                }
+
+                //if the two numbers have no difference (they're the same).. return 0
+                return 0;
+            }
+        }
+    }
+
+
+
+
+
 }
 
 

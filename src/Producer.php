@@ -186,7 +186,7 @@ class Producer extends PHPCreeper
      */
     public function setInterval($interval = 1)
     {
-        if(!$interval || bccomp($interval, '0.001', 3) < 0) 
+        if(!$interval || Tool::bcCompareNumber($interval, '0.001', 3) < 0) 
         {
             $interval = 1;
         }
@@ -205,12 +205,12 @@ class Producer extends PHPCreeper
     {
         $interval = $this->interval;
 
-        if(bccomp($interval, '0.001', 3) < 0) 
+        if(Tool::bcCompareNumber($interval, '0.001', 3) < 0) 
         {
             $interval = $this->getAppWorkerConfig()['interval'] ?? 1;
         }
 
-        if(!$interval || bccomp($interval, '0.001', 3) < 0) 
+        if(!$interval || Tool::bcCompareNumber($interval, '0.001', 3) < 0) 
         {
             $interval = 1;
         }

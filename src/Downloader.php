@@ -320,7 +320,7 @@ class Downloader extends PHPCreeper
      */
     public function setTaskCrawlInterval($interval = 1)
     {
-        if(!$interval || bccomp($interval, '0.001', 3) < 0) 
+        if(!$interval || Tool::bcCompareNumber($interval, '0.001', 3) < 0) 
         {
             $interval = 1;
         }
@@ -339,12 +339,12 @@ class Downloader extends PHPCreeper
     {
         $interval = $this->taskCrawlInterval;
 
-        if(bccomp($interval, '0.001', 3) < 0) 
+        if(Tool::bcCompareNumber($interval, '0.001', 3) < 0) 
         {
             $interval = Configurator::get('globalConfig/main/task/crawl_interval');
         }
 
-        if(!$interval || bccomp($interval, '0.001', 3) < 0) 
+        if(!$interval || Tool::bcCompareNumber($interval, '0.001', 3) < 0) 
         {
             $interval = 1;
         }
