@@ -906,6 +906,8 @@ class PHPCreeper extends Worker
      */
     static public function clearScreen()
     {    
+        if(!Tool::checkWhetherSystemPlatformIsLinuxLikeSystem()) return; 
+
         $input = array(27, 91, 72, 27, 91, 50, 74); 
 
         array_map(function($v){

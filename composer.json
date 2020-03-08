@@ -9,7 +9,7 @@
         "php": ">=7.0.0",
         "workerman/workerman": "^3.5",
         "blogdaren/configurator": "^1.0",
-        "blogdaren/logger": "v1.1.1",
+        "blogdaren/logger": "^1.1.2",
         "ramsey/uuid": "^3.8",
         "guzzlehttp/guzzle": "^6.4"
     },
