@@ -15,8 +15,9 @@ PHPCreeper is a new generation of multi-process asynchronous event-driven spider
 ## Documentation
 The document of chinese version is relatively complete, and the full english version will be published as soon as possile.
 
-* 中文开发文档主站：[http://www.phpcreeper.com/docs/](http://www.phpcreeper.com/docs/)
-* 中文开发文档备站：[http://www.blogdaren.com/docs/](http://www.blogadren.com/docs/)
+* 爬山虎中文官方网站：[http://www.phpcreeper.com](http://www.phpcreeper.com)
+* 中文开发文档主节点：[http://www.phpcreeper.com/docs/](http://www.phpcreeper.com/docs/)
+* 中文开发文档备节点：[http://www.blogdaren.com/docs/](http://www.blogadren.com/docs/)
 
 
 ## Motivation
