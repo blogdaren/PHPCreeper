@@ -12,6 +12,7 @@ namespace PHPCreeper\Kernel\Service\Provider;
 use PHPCreeper\Kernel\Service\Service;
 use PHPCreeper\Kernel\Service\Wrapper\QueueFactoryService;
 use PHPCreeper\Kernel\Task;
+use PHPCreeper\Kernel\Middleware\Database\Database;
 
 class SystemServiceProvider
 {
@@ -36,6 +37,14 @@ class SystemServiceProvider
 
         $service->inject('newTaskMan', function($task_options = []){
             return Task::newInstance($this, $task_options);
+        });
+
+        $service->inject('getDbo', function($options = []){
+            return Database::getInstance($options);
+        });
+
+        $service->inject('newDbo', function($options = []){
+            return Database::newInstance($options);
         });
     }
 }
