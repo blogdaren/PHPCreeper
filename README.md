@@ -19,6 +19,11 @@ The document of chinese version is relatively complete, and the full english ver
 * 中文开发文档主节点：[http://www.phpcreeper.com/docs/](http://www.phpcreeper.com/docs/)
 * 中文开发文档备节点：[http://www.blogdaren.com/docs/](http://www.blogadren.com/docs/)
 
+## Todo List
+- [x] 轻量级关系型数据库：Lightweight relational database like Medoo style
+- [ ] 反爬策略之IP代理池： IP ecological agent pool of Anti-Spider strategy
+- [ ] 图片验证码识别技术：Image verification code recognition technology
+- [ ] 爬虫项目管理可视化：The crawler application management visualization
 
 ## Motivation
 So far, it has already existed in all kinds of language version of the spider framework, such as: 
@@ -414,6 +419,39 @@ php AppWorker.php status
 php AppWorker.php connections
 ```
 
+## Use Database
+PHPCreeper wrappers a lightweight database like Medoo style, 
+please visit the [Medoo official site](https://medoo.lvtao.net/) 
+if you wanna know more usage. now we just need to find out 
+how to get the DBO, as a matter of fact, it is very simple:   
+
+First configure the `database.php` then add the code belowed:
+```
+<?php
+return array(
+    'dbo' => array(
+        'test' => array(
+            'database_type' => 'mysql',
+            'database_name' => 'test',
+            'server'        => '127.0.0.1',
+            'username'      => 'root',
+            'password'      => 'root',
+            'charset'       => 'utf8'
+        ),
+    ),
+);
+```
+
+Now we can get DBO and start the query or the other operation as you like: 
+```
+$downloader->onAfterDownloader = function($downloader){}
+    //dbo single instance
+    $downloader->getDbo('test')->select('user', '*');
+    
+    //dbo new instance
+    $downloader->newDbo('test')->select('user', '*');
+;
+```
 
 ## Screenshot
 ![EnglishVersion1](./Image/EnglishVersion1.png)
