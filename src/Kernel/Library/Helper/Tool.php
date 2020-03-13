@@ -956,13 +956,18 @@ class Tool
     {
         if(empty($data) || is_resource($data)) return '';
 
-        $limit_method = ['json', 'xml'];
-        if(empty($method) || !in_array($method, $limit_method)) $method = 'json';
+        empty($method) && $method = 'json';
 
         switch($method)
         {
             case 'json':
                 $content = json_encode($data, $option);
+                break;
+            case 'serialize':
+                $content = serialize($data);
+                break;
+            case 'msgpack':
+                $content = msgpack_pack($data);
                 break;
             default:
                 $content = json_encode($data, $option);
@@ -985,13 +990,18 @@ class Tool
     {
         if(!is_string($data)) return '';
 
-        $limit_method = ['json', 'xml'];
-        if(empty($method) || !in_array($method, $limit_method)) $method = 'json';
+        empty($method) && $method = 'json';
 
         switch($method)
         {
             case 'json':
                 $content = json_decode($data, $option);
+                break;
+            case 'serialize':
+                $content = unserialize($data);
+                break;
+            case 'msgpack':
+                $content = msgpack_unpack($data);
                 break;
             default:
                 $content = json_encode($data, $option);

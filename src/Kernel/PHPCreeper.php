@@ -40,7 +40,14 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const  CURRENT_VERSION = '1.1.1';
+    const  CURRENT_VERSION = '1.1.3';
+
+    /**
+     * valid assemble package methods
+     *
+     * @var array
+     */
+    const  ALLOWED_ASSEMBLE_PACKAGE_METHODS = ['json', 'serialize', 'msgpack'];
 
     /**
      * http client
@@ -740,7 +747,7 @@ class PHPCreeper extends Worker
     }
 
     /**
-     * @brief    assemble data
+     * @brief    assemble package 
      *
      * @param    mixed  $data
      * @param    int    $level
@@ -752,7 +759,7 @@ class PHPCreeper extends Worker
         if(empty($data)) return '';
 
         //encode
-        $content = Tool::encodeData($data, 'json');
+        $content = Tool::encodeData($data, self::getAssemblePackageMethod());
 
         //compress
         if(true === self::checkWhetherDataCompressIsEnabled()) 
@@ -770,7 +777,7 @@ class PHPCreeper extends Worker
     }
 
     /**
-     * @brief    disassemble data    
+     * @brief    disassemble package
      *
      * @param    minxed  $data
      * @param    int     $length
@@ -792,9 +799,37 @@ class PHPCreeper extends Worker
         }
 
         //decode
-        $content = Tool::decodeData($data, 'json');
+        $content = Tool::decodeData($data, self::getAssemblePackageMethod());
 
         return $content;
+    }
+
+    /**
+     * @brief    get assemble package method   
+     *
+     * @return   string
+     */
+    public function getAssemblePackageMethod()
+    {
+        $assemble_method = Configurator::get('globalConfig/main/task/assemble_method');
+
+        if(!in_array($assemble_method, self::ALLOWED_ASSEMBLE_PACKAGE_METHODS)) 
+        {
+            $assemble_method = 'json';
+        }
+
+        //necessary to check ext-msgpack
+        if('msgpack' === $assemble_method && !Tool::checkWhetherPHPExtensionIsLoaded('msgpack', false)) 
+        {
+            Logger::error(Tool::replacePlaceHolder($this->langConfig['ext_msgpack_not_install']));
+            $assemble_method = 'json';
+        }
+
+        Logger::debug(Tool::replacePlaceHolder($this->langConfig['http_assemble_method'],[
+            'assemble_method' => $assemble_method,
+        ]));
+
+        return $assemble_method;
     }
 
     /**

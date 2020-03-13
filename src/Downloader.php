@@ -850,7 +850,7 @@ class Downloader extends PHPCreeper
 
         if(false !== $enabled && is_file($cache_path) && file_exists($cache_path))
         {
-            Logger::debug($this->langConfig['downloader_read_from_cache']);
+            Logger::error($this->langConfig['downloader_read_from_cache']);
             $download_data = file_get_contents($cache_path);
             if(!empty($download_data)) return $download_data;
         }
