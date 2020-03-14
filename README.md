@@ -22,8 +22,9 @@ The document of chinese version is relatively complete, and the full english ver
 
 ## Todo List
 - [x] 轻量级关系型数据库：Lightweight relational database like Medoo style
-- [ ] 反爬策略之IP代理池： IP ecological agent pool of Anti-Spider strategy
+- [ ] 反爬之IP生态代理池： IP ecological agent pool of Anti-Spider strategy
 - [ ] 图片验证码识别技术：Image verification code recognition technology
+- [ ] 智能化识别网页数据：Intelligent recognition of the web page content
 - [ ] 爬虫项目管理可视化：The crawler application management visualization
 
 ## Motivation
