@@ -451,14 +451,14 @@ $downloader->onAfterDownloader = function($downloader){
     $downloader->getDbo('test')->select('user', '*');
     
     //dbo single instance and we can pass the configuration array
-    $config = Configurator::new('globalConfig/database/dbo/test')
+    $config = Configurator::get('globalConfig/database/dbo/test')
     $downloader->getDbo($config)->select('user', '*');
 
     //dbo new instance and we can pass the DSN string `test`
     $downloader->newDbo('test')->select('user', '*');
 
     //dbo new instance and we can pass the configuration array
-    $config = Configurator::new('globalConfig/database/dbo/test')
+    $config = Configurator::get('globalConfig/database/dbo/test')
     $downloader->newDbo($config)->select('user', '*');
 };
 ```
