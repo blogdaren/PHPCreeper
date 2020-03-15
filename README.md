@@ -446,13 +446,21 @@ return array(
 
 Now we can get DBO and start the query or the other operation as you like: 
 ```
-$downloader->onAfterDownloader = function($downloader){}
-    //dbo single instance
+$downloader->onAfterDownloader = function($downloader){
+    //dbo single instance and we can pass the DSN string `test`
     $downloader->getDbo('test')->select('user', '*');
     
-    //dbo new instance
+    //dbo single instance and we can pass the configuration array
+    $config = Configurator::new('globalConfig/database/dbo/test')
+    $downloader->getDbo($config)->select('user', '*');
+
+    //dbo new instance and we can pass the DSN string `test`
     $downloader->newDbo('test')->select('user', '*');
-;
+
+    //dbo new instance and we can pass the configuration array
+    $config = Configurator::new('globalConfig/database/dbo/test')
+    $downloader->newDbo($config)->select('user', '*');
+};
 ```
 
 ## Screenshot
