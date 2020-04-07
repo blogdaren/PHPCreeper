@@ -14,7 +14,8 @@
 asynchronous event-driven spider engine based on [Workerman](https://www.workerman.net)
 
 ## Documentation
-The document of chinese version is relatively complete, and the full english version will be published as soon as possile.
+The document of chinese version is relatively complete, and the full english version will be published as soon as possile.   
+**注意：** 爬山虎中文开发文档相对比较完善，中国朋友直接点击下方链接阅读即可，另详版英文文档也会尽可能快的释放.
 
 * 爬山虎中文官方网站：[http://www.phpcreeper.com](http://www.phpcreeper.com)
 * 中文开发文档主节点：[http://www.phpcreeper.com/docs/](http://www.phpcreeper.com/docs/)
@@ -28,22 +29,22 @@ The document of chinese version is relatively complete, and the full english ver
 - [ ] 爬虫项目管理可视化：The crawler application management visualization
 
 ## Motivation
-So far, it has already existed in all kinds of language version of the spider framework, such as: 
-`Spiderman based on Java`、`Scrapy based on Python`、`go-colly based on Go` etc., 
-but what i want to say is: when facing business scenarios where any language is good at,
+Nowdays, it has already existed in all kinds of language version of the spider framework, such as: 
+`Spiderman based on Java`、`Scrapy based on Python`、`go-colly based on Go` etc. 
+However, we also need to realize that：when faced with business scenarios where any language is appropriate,
 no matter whether you are a novice or the PHP preconceived driver who is not so familiar 
-with other programming languages, if there is a need to develop a crawler business 
-at this time, we strongly recommend that you should give priority to an excellent spider 
-framework written in PHP. So why? Because PHP is absolutely optimal for agility, because 
-you can play with PHP with ease, because it could be more expensive to use other languages, 
-because it can reduce development costs for you or your company in a straight line.
+with other programming languages, if you want to develop a crawler business 
+at this point, we strongly recommend that you should give priority to an excellent spider 
+engine written in PHP. So why? Because PHP is absolutely optimal for agility, because 
+you can play PHP with ease, because it could be much more expensive to use some other languages, 
+because it can reduce the development costs for you or your company in a straight line and so on.
 
 Besides, almost all of the PHP spider frameworks work as either single-process or synchronous mode, 
 neither distributed nor separate deployment is supported, so crawler performance couldn't be maximized. 
-Nowadays, `PHPCreeper` written based on `Workerman` makes everything possible.
+Today `PHPCreeper` makes everything possible.
 
 
-So the final goals of PHPCreeper are:     
+So the final goals of `PHPCreeper` are:     
 
 * Focus on efficient agile development, and make the crawling job becomes so easy.   
 * Solve the performance and extension problems of traditional PHP crawler frameworks.    
@@ -64,7 +65,7 @@ So the final goals of PHPCreeper are:
 
 
 ## Prerequisites
-* PHP_VERSION \>= 7.0.0
+* PHP_VERSION \>= 7.0.0     
 * A POSIX compatible operating system (Linux, OSX, BSD)  
 * POSIX extension for PHP (**required**)
 * PCNTL extension for PHP (**required**)
@@ -367,12 +368,12 @@ it can be deployed in a distributed way, but it cannot be deployed separately,
 `Single Startup` means that different workers run in different groups of processes under the same application,
 it can be distributed or deployed separately.
 
-1、Global Startup:
+1、Or Global Startup:
 ```
 php weather.php start
 ```
 
-2、Single Startup:
+2、Or Single Startup:
 ```
 php Application/Spider/Weather/AppProducer.php start
 php Application/Spider/Weather/AppDownloader.php start
