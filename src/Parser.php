@@ -192,11 +192,11 @@ class Parser extends PHPCreeper
             if(false === $returning) continue;
             if(!empty($returning) && is_string($returning)) $sub_url = $returning;
 
-            //check task depth
-            $check_result = $this->checkTaskDepth($sub_url);
-            if(true !== $check_result) continue;
+            //if task depth > max_depth then discard the current task
+            $check_result = $this->checkWhetherTaskDepthExceedMaxDepth($sub_url);
+            if(true === $check_result) continue;
 
-            //add sub task
+            //contine to add sub task
             $sub_task_id = $this->addSubTask($sub_url);
             if(!empty($sub_task_id))
             {
@@ -304,10 +304,10 @@ class Parser extends PHPCreeper
      *
      * @return   boolean
      */
-    public function checkTaskDepth($sub_url)
+    public function checkWhetherTaskDepthExceedMaxDepth($sub_url)
     {
         $max_depth = Configurator::get('globalConfig/main/task/max_depth');
-        $max_depth <= 0 && $max_depth = 0;
+        !Tool::checkIsIntOrZero($max_depth) && $max_depth = 1;
         empty($this->task['depth']) && $this->task['depth'] = 0;
 
         if($max_depth > 0 && $this->task['depth'] >= $max_depth) 
@@ -319,10 +319,10 @@ class Parser extends PHPCreeper
              *]));
              */
 
-            return false; 
+            return true; 
         }
 
-        return true;
+        return false;
     }
 
     /**
