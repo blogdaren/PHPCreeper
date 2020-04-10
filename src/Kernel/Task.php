@@ -347,7 +347,7 @@ class Task
     public function checkTaskNumber()
     {
         $max_number = Configurator::get('globalConfig/main/task/max_number');
-        $max_number <= 0 && $max_number = 0;
+        !Tool::checkIsInt($max_number) && $max_number = 0;
         $task_number = $this->getTaskNumber();
 
         if($max_number > 0 && $task_number >= $max_number)
