@@ -40,7 +40,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const  CURRENT_VERSION = '1.1.4';
+    const  CURRENT_VERSION = '1.1.5';
 
     /**
      * valid assemble package methods
@@ -197,6 +197,13 @@ class PHPCreeper extends Worker
     public $workerId = '';
 
     /**
+     * phpcreeper instances
+     *
+     * @var string
+     */
+    static private $_phpcreeperInstances = [];
+
+    /**
      * user callbacks
      *
      * @var array
@@ -233,24 +240,22 @@ class PHPCreeper extends Worker
         //set service
         self::setService();
 
-        //important: reset 0 to keep setCount() have high priority
+        //important: reset 0 to keep setCount() have higher priority
         $this->count = 0;
+
+        //save phpcreeper instances
+        self::$_phpcreeperInstances[] = $this;
     }
 
     /**
      * @brief    attention!! boot() must be called after app worker initialized
      *
-     * @param    array  $config
-     *
      * @return   void
      */
-    public function boot($config = [])
+    public function boot()
     {
-        //set config
-        $this->setConfig($config);
-
         //check app worker
-        self::checkAppWorker();
+        defined('USE_PHPCREEPER_APPLICATION_FRAMEWORK') && self::checkAppWorker();
 
         //init socket
         $socket_address = $this->getServerSocketAddress();
@@ -1228,6 +1233,21 @@ EOT;
         }
 
         parent::initWorkers();
+    }
+
+    /**
+     * @brief    rewrite method runAll
+     *
+     * @return   void
+     */
+    static public function runAll()
+    {
+        foreach(self::$_phpcreeperInstances as $k => $w)
+        {
+            $w->boot();
+        }
+
+        Worker::runAll();
     }
 
 }
