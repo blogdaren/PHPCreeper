@@ -78,14 +78,65 @@ The recommended way to install PHPCreeper is through [Composer](https://getcompo
 composer require blogdaren/phpcreeper
 ```
 
-## Usage
-First of all, we should know that there is another official matched `PHPCreeper-Application`
-application framework which is also published simultaneously for your development convenience,
+## Usage: not depend on the application framework
+First of all, we should know that there is another official matched application framework 
+named `PHPCreeper-Application` which is also published simultaneously for your development convenience,
 although this framework is not necessary, we strongly recommend that you use it for 
-business development, thus it's no doubt that it will greatly improve your job efficiency .
+business development, thus it's no doubt that it will greatly improve your job efficiency.
+however, somebody still wish to write the code which not depends on the framework, it is 
+also easy to play.   
+Assume our demand is to capture the weather forecasts for the next 7 days, here let's take an example to illustrate the usage:
+```
+<?php 
+require "./vendor/autoload.php";
 
-Assume our demand is to capture the weather forecasts for the next 7 days,
-here let's take this example to illustrate the usage:
+use PHPCreeper\Kernel\PHPCreeper;
+use PHPCreeper\Producer;
+use PHPCreeper\Downloader;
+use PHPCreeper\Parser;
+
+//producer instance
+$producer = new Producer;
+$producer->setName('AppProducer')->setCount(1);
+$producer->onProducerStart = function($producer){
+    $task = array(
+        'url' => array(
+            "r1" => "http://www.weather.com.cn/weather/101010100.shtml",
+        ),
+        'rule' => array(
+            "r1" => array(
+                'time' => ['div#7d ul.t.clearfix h1',      'text'],
+                'wea'  => ['div#7d ul.t.clearfix p.wea',   'text'],
+                'tem'  => ['div#7d ul.t.clearfix p.tem',   'text'],
+                'wind' => ['div#7d ul.t.clearfix p.win i', 'text'],
+            ), 
+        ),
+    );
+    $context = [
+        //'cache_enabled'   => true,                              
+        //'cache_directory' => '/tmp/task/download/' . date('Ymd'), 
+    ];
+    $producer->newTaskMan()->setContext($context)->createMultiTask($task);
+};
+
+//downloader instance
+$downloader = new Downloader();
+$downloader->setName('AppDownloader')->setCount(2)->setClientSocketAddress([
+    'ws://127.0.0.1:8888',
+]);
+
+//parser instance
+$parser = new Parser();
+$parser->setName('AppParser')->setCount(1)->setServerSocketAddress('websocket://0.0.0.0:8888');
+$parser->onParserExtractField = function($parser, $download_data, $fields){
+    pprint($fields);
+};
+
+PHPCreeper::runAll();
+```
+
+## Usage: depend on the application framework
+Next, let's use the official application framework to complete the same task above efficiently:    
 
 
 #### *Step-1：Download PHPCreeper-Application Framework*
