@@ -816,7 +816,7 @@ class Downloader extends PHPCreeper
     }
 
     /**
-     * @brief    read download data and mabybe from cache  
+     * @brief    read download data which maybe from cache  
      *
      * @param    array|string   $task
      * @param    boolean|null   $from_cache
@@ -834,23 +834,48 @@ class Downloader extends PHPCreeper
             return false;
         }
 
+        //$from_cache have the highest priority, then task setting, then global config
         if(is_bool($from_cache)){
             $enabled = $from_cache;
         } else {
-            $enabled = $this->getAppWorkerConfig()['cache']['enabled'] ?? false;
+            if(isset($task['context']['cache_enabled'])){
+                $enabled = true === $task['context']['cache_enabled'] ? true : false;
+            } else {
+                $enabled = Configurator::get('globalConfig/main/task/context/cache_enabled') ?? false;
+            }
         }
 
-        if(false === $enabled) Logger::warn($this->langConfig['downloader_cache_disabled']);
+        if(true === $enabled){
+            Logger::error(Tool::replacePlaceHolder($this->langConfig['downloader_cache_enabled'], [
+                'task_id' => $task['id'],
+            ]));
+        }else{
+            Logger::error(Tool::replacePlaceHolder($this->langConfig['downloader_cache_disabled'], [
+                'task_id' => $task['id'],
+            ]));
+        } 
 
         $download_data = '';
-        $cache_dir = $this->getAppWorkerConfig()['cache']['directory'] ?? sys_get_temp_dir();
+
+        //cache directory
+        if(!empty($task['context']['cache_directory']) && is_string($task['context']['cache_directory'])){
+            $cache_dir = $task['context']['cache_directory'];
+        }else{
+            $cache_dir = Configurator::get('globalConfig/main/task/context/cache_directory') ?? sys_get_temp_dir();
+        }
+
+        //cache filename
         $cache_file = md5($task['url']);
+
+        //full cache path
         $cache_path = $cache_dir . DIRECTORY_SEPARATOR . $cache_file;
         $cache_path = preg_replace("/\/*\//is", DIRECTORY_SEPARATOR, $cache_path);
 
         if(false !== $enabled && is_file($cache_path) && file_exists($cache_path))
         {
-            Logger::error($this->langConfig['downloader_read_from_cache']);
+            Logger::error(Tool::replacePlaceHolder($this->langConfig['downloader_read_from_cache'], [
+                'task_id' => $task['id'],
+            ]));
             $download_data = file_get_contents($cache_path);
             if(!empty($download_data)) return $download_data;
         }
