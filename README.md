@@ -6,7 +6,7 @@
 [![pcntl](https://img.shields.io/badge/ext_pcntl-required-red.svg)]()
 [![event](https://img.shields.io/badge/ext_event-suggest-green.svg)]()
 [![redis](https://img.shields.io/badge/ext_redis-suggest-green.svg)]()
-[![license](https://img.shields.io/badge/license-MIT-000000.svg)]()
+[![license](http://img.shields.io/badge/license-Apache%202.0-000000.svg)]()
 
 ## What is it
 
@@ -538,6 +538,6 @@ Thanks a lot.
 ![wechat](./Image/wechat.png)
 
 ## LICENSE
-PHPCreeper is released under the [MIT](https://github.com/blogdaren/PHPCreeper/blob/master/LICENSE.txt) license.
+PHPCreeper is released under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).
 
 
