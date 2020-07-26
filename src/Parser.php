@@ -336,14 +336,14 @@ class Parser extends PHPCreeper
      */
     public function extractField($source_data = '', $rule = [], $rule_name = '')
     {
-        if(empty($source_data)) return [];
+        if(empty($source_data) || !is_string($source_data)) return [];
 
-        if(empty($rule))
+        if(empty($rule) || !is_array($rule))
         {
             $rule = !empty($this->task['rule']) ? $this->task['rule'] : [];
         }
 
-        if(empty($rule_name))
+        if(empty($rule_name) || !is_string($rule_name))
         {
             $rule_name = !empty($this->task['rule_name']) ? $this->task['rule_name'] : 'default';
         }

@@ -211,7 +211,10 @@ class ExtractorService
      */
     public function setRange($selector)
     {
-        $this->document = $this->find($selector);
+        if(!empty($selector))
+        {
+            $this->document = $this->find($selector);
+        }
 
         return $this;
     }
@@ -230,8 +233,9 @@ class ExtractorService
             $i = 0;
             $selector = $rule[0] ?? '';
             $action   = $rule[1] ?? 'text';
-            $callback = $rule[2] ?? '';
-            $nodes = $this->find($selector);
+            $range    = $rule[2] ?? '';
+            $callback = $rule[3] ?? '';
+            $nodes = $this->setRange($range)->find($selector);
 
             foreach($nodes as $node) 
             {
@@ -243,7 +247,7 @@ class ExtractorService
                     $data = pq($node, $this->document)->attr($action);
                 }
 
-                is_callable($callback) && $data = call_user_func($rule[2], $name, $data);
+                is_callable($callback) && $data = call_user_func($callback, $name, $data);
                 $result[$i][$name] = !is_string($data) ? $data : trim($data);
                 $i++;
             }

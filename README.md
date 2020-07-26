@@ -14,8 +14,8 @@
 asynchronous event-driven spider engine based on [Workerman](https://www.workerman.net)
 
 ## Documentation
-The document of chinese version is relatively complete, and the full english version will be published as soon as possile.   
-**注意：** 爬山虎中文开发文档相对比较完善，中国朋友直接点击下方链接阅读即可，另详版英文文档也会尽可能快的释放.
+The chinese docs is relatively complete, and the full english version will be published as soon as possile.   
+**注意：** 爬山虎中文开发文档相对比较完善，中国朋友直接点击下方链接阅读即可.
 
 * 爬山虎中文官方网站：[http://www.phpcreeper.com](http://www.phpcreeper.com)
 * 中文开发文档主节点：[http://www.phpcreeper.com/docs/](http://www.phpcreeper.com/docs/)
@@ -29,7 +29,7 @@ The document of chinese version is relatively complete, and the full english ver
 - [ ] 爬虫项目管理可视化：The crawler application management visualization
 
 ## Motivation
-Nowdays, it has already existed in all kinds of language version of the spider framework, such as: 
+Nowdays, there are all kinds of language version of the spider frameworks which have been born, such as: 
 `Spiderman based on Java`、`Scrapy based on Python`、`go-colly based on Go` etc. 
 However, we also need to realize that：when faced with business scenarios where any language is appropriate,
 no matter whether you are a novice or the PHP preconceived driver who is not so familiar 
@@ -44,9 +44,9 @@ neither distributed nor separate deployment is supported, so crawler performance
 Today `PHPCreeper` makes everything possible.
 
 
-So the final goals of `PHPCreeper` are:     
+So `PHPCreeper` is mainly designed to:     
 
-* Focus on efficient agile development, and make the crawling job becomes so easy.   
+* Focus on efficient agile development, and make the crawling job becomes more easy.   
 * Solve the performance and extension problems of traditional PHP crawler frameworks.    
 
 
@@ -432,7 +432,7 @@ php Application/Spider/Weather/AppParser.php start
 ```
 
 ## Available commands:  
-We have to remind you again that all the commands in PHPCreeper run at the command line, 
+We have to remind you again that all the commands in PHPCreeper run on the command line, 
 and whatever the application is, you must write an entry startup script whose name
 assumed to be `AppWorker.php` before you start PHPCreeper, but if you use the 
 PHPCreeper-Application framework for development, the framework will automatically 
@@ -458,17 +458,22 @@ php AppWorker.php stop
 php AppWorker.php restart
 ```
 
-5、Reload gracefully:
+5、Reload one by one:
 ```
 php AppWorker.php reload
 ```
 
-6、Show runtime status:
+6、Reload gracefully:
+```
+php AppWorker.php reload -g
+```
+
+7、Show runtime status:
 ```
 php AppWorker.php status
 ```
 
-7、Show connections status:
+8、Show connections status:
 ```
 php AppWorker.php connections
 ```
