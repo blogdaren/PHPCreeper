@@ -25,6 +25,15 @@ class Task
     public $id = 0;
 
     /**
+     * task type 
+     *
+     * maybe: text|image|audio|video|...
+     *
+     * @var string
+     */
+    public $type = 'text';
+
+    /**
      * task url 
      *
      * @var string
@@ -194,6 +203,7 @@ class Task
             $this->phpcreeper->dropDuplicateFilter->add($input['url']);
         }
 
+        $type       = $input['type']      ?? $this->getType();
         $url        = $input['url'];
         $method     = $input['method']    ?? $this->getMethod();
         $referer    = $input['referer']   ?? $this->getReferer();
@@ -205,6 +215,7 @@ class Task
 
         $task_data = [
             'id'          => $task_id,
+            'type'        => $type,
             'url'         => $url,
             'method'      => $method,
             'referer'     => $referer,
@@ -240,6 +251,8 @@ class Task
 
         empty($task['url']) && $task['url'] = $this->getUrl();
         $urls = !is_array($task['url']) ? array($task['url']) : $task['url'];
+        $type = (empty($task['type']) || !is_string($task['type'])) ? $this->getType() : $task['type'];
+
         foreach($urls as $rule_name => $url) 
         {
             if(empty(Tool::checkUrl($url))) 
@@ -252,6 +265,7 @@ class Task
             $rule = $task['rule'][$rule_name] ?? [];
             //$taskObject = self::newInstance($this->phpcreeper, $task);
             $task_id = $this->setUrl($url)
+                            ->setType($type)
                             ->setMethod($this->getMethod())
                             ->setReferer($this->getReferer())
                             ->setRuleName($rule_name)
@@ -392,6 +406,21 @@ class Task
     }
 
     /**
+     * @brief    set task type
+     *
+     * @param    string  $type
+     *
+     * @return   object
+     */
+    public function setType($type = '')
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+
+    /**
      * @brief    set task rule name
      *
      * @param    string  $name
@@ -460,6 +489,16 @@ class Task
         $this->context = $context;
 
         return $this;
+    }
+
+    /**
+     * @brief    get task type
+     *
+     * @return   string
+     */
+    public function getType()
+    {
+        return !empty($this->type) ? $this->type : 'text';
     }
 
     /**

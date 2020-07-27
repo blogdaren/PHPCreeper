@@ -1,6 +1,5 @@
 # PHPCreeper
 [![language](https://img.shields.io/badge/language-php-ff69b4.svg)]()
-[![base](https://img.shields.io/badge/base-workerman-519dd9.svg)]()
 [![php](https://img.shields.io/badge/php->=7.0.0-519dd9.svg)]()
 [![posix](https://img.shields.io/badge/ext_posix-required-red.svg)]()
 [![pcntl](https://img.shields.io/badge/ext_pcntl-required-red.svg)]()
@@ -29,17 +28,17 @@ The chinese docs is relatively complete, and the full english version will be pu
 - [ ] 爬虫项目管理可视化：The crawler application management visualization
 
 ## Motivation
-Nowdays, there are all kinds of language version of the spider frameworks which have been born, such as: 
+Nowadays, there are all kinds of language version of the spider frameworks which have been born, such as: 
 `Spiderman based on Java`、`Scrapy based on Python`、`go-colly based on Go` etc. 
-However, we also need to realize that：when faced with business scenarios where any language is appropriate,
-no matter whether you are a novice or the PHP preconceived driver who is not so familiar 
-with other programming languages, if you want to develop a crawler business 
-at this point, we strongly recommend that you should give priority to an excellent spider 
-engine written in PHP. So why? Because PHP is absolutely optimal for agility, because 
-you can play PHP with ease, because it could be much more expensive to use some other languages, 
-because it can reduce the development costs for you or your company in a straight line and so on.
+However, we also need to realize that：when we are faced with business scenarios like crawler jobs 
+where any language is appropriate, no matter whether you are a novice or PHP preconceived master 
+who is not so familiar with other programming languages, 
+we strongly recommend that you should give priority to an excellent spider 
+engine written in PHP. So why? Because PHP is absolutely optimal for agility, and 
+you can play PHP with ease, and it could be much more expensive to use some other languages, 
+and it can reduce the development costs for you or your company in a straight line and so on.
 
-Besides, almost all of the PHP spider frameworks work as either single-process or synchronous mode, 
+Besides, as far as I know, almost all of the PHP spider frameworks work as either single-process or synchronous mode, 
 neither distributed nor separate deployment is supported, so crawler performance couldn't be maximized. 
 Today `PHPCreeper` makes everything possible.
 

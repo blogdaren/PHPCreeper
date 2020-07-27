@@ -167,6 +167,12 @@ class Parser extends PHPCreeper
         //check task_id + download_data
         if(empty($task_id) || empty($download_data)) return false;
 
+        //if type of $download_data is resource, then base64_decode it
+        if('text' <> $message['task']['type'])
+        {
+            $download_data = base64_decode($download_data);
+        }
+
         //set task + increase task depth
         $this->setTask($message['task'])->increaseTaskDepth();
 

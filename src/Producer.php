@@ -107,6 +107,7 @@ class Producer extends PHPCreeper
      */
     public function initTask()
     {
+        $type       = Configurator::get('globalConfig/main/task/type');
         $method     = Configurator::get('globalConfig/main/task/method');
         $context    = Configurator::get('globalConfig/main/task/context');
         $start_urls = Configurator::get('globalConfig/main/task/url');
@@ -125,6 +126,7 @@ class Producer extends PHPCreeper
             $rule = self::getInitTaskRule($rule_name);
 
             $task_id = $this->newTaskMan()
+                ->setType($type)
                 ->setUrl($start_url)
                 ->setMethod($method)
                 ->setContext($context)
