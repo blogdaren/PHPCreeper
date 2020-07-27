@@ -29,14 +29,14 @@ The chinese docs is relatively complete, and the full english version will be pu
 
 ## Motivation
 Nowadays, there are all kinds of language version of the spider frameworks which have been born, such as: 
-`Spiderman based on Java`、`Scrapy based on Python`、`go-colly based on Go` etc. 
-However, we also need to realize that：when we are faced with business scenarios like crawler jobs 
-where any language is appropriate, no matter whether you are a novice or PHP preconceived master 
-who is not so familiar with other programming languages, 
-we strongly recommend that you should give priority to an excellent spider 
-engine written in PHP. So why? Because PHP is absolutely optimal for agility, and 
-you can play PHP with ease, and it could be much more expensive to use some other languages, 
-and it can reduce the development costs for you or your company in a straight line and so on.
+`Spiderman based on Java`、`Scrapy based on Python`、`go-colly based on Go` etc. However, we also need to realize that：    
+
+As we are faced with business scenarios like crawler jobs where any language is appropriate, 
+no matter whether you are a novice or a PHP preconceived master who is not so familiar with 
+other programming languages, we strongly recommend that you should give priority to an excellent spider 
+engine written in PHP. So why? Because PHP is absolutely optimal for agility, and you can play PHP with ease, 
+and it could be much more expensive to use some other languages, and it can reduce the development costs for you 
+or your company in a straight line and so on.
 
 Besides, as far as I know, almost all of the PHP spider frameworks work as either single-process or synchronous mode, 
 neither distributed nor separate deployment is supported, so crawler performance couldn't be maximized. 
