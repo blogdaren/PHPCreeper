@@ -82,8 +82,8 @@ First of all, we should know that there is another official matched application 
 named `PHPCreeper-Application` which is also published simultaneously for your development convenience,
 although this framework is not necessary, we strongly recommend that you use it for 
 business development, thus it's no doubt that it will greatly improve your job efficiency.
-however, somebody still wish to write the code which not depends on the framework, it is 
-also easy to play.   
+However, somebody still wish to write the code which not depends on the framework, it is 
+also easy to make it.   
 Assume our demand is to capture the weather forecasts for the next 7 days, here let's take an example to illustrate the usage:
 ```
 <?php 
@@ -393,6 +393,8 @@ public function onParerReload($parser)
 
 public function onParerMessage($parser, $connection, $download_data)
 {
+    //we can still view the current task object
+    //pprint($parser->task);
 }
 
 public function onParserFindUrl($parser, $url)
@@ -431,10 +433,10 @@ php Application/Spider/Weather/AppParser.php start
 ```
 
 ## Available commands:  
-We have to remind you again that all the commands in PHPCreeper run on the command line, 
+We have to remind you again that all the commands in `PHPCreeper` can only run on the command line, 
 and whatever the application is, you must write an entry startup script whose name
 assumed to be `AppWorker.php` before you start PHPCreeper, but if you use the 
-PHPCreeper-Application framework for development, the framework will automatically 
+`PHPCreeper-Application` framework for development, the framework will automatically 
 generate the application entry startup script.
 
 1、Start as debug mode:   
@@ -480,7 +482,7 @@ php AppWorker.php connections
 ## Use Database
 PHPCreeper wrappers a lightweight database like Medoo style, 
 please visit the [Medoo official site](https://medoo.lvtao.net/) 
-if you wanna know more usage. now we just need to find out 
+if you wanna know more about its usage. now we just need to find out 
 how to get the DBO, as a matter of fact, it is very simple:   
 
 First configure the `database.php` then add the code belowed:
@@ -530,8 +532,8 @@ $downloader->onAfterDownloader = function($downloader){
 * [https://www.workerman.net](https://www.workerman.net)
 
 ## Donate
-If you agree with the author's work and benefit from PHPCreeper, 
-i'm willing to accept donations from all sides. 
+If you you have found PHPCreeper valuable and benefit from it, 
+I'm willing to accept donations from all sides. 
 The donation will continue to be used for the follow-up research, 
 development and maintenance of PHPCreeper as well as the maintenance of the server.
 Thanks a lot.
@@ -542,6 +544,11 @@ Thanks a lot.
 ![wechat](./Image/wechat.png)
 
 ## LICENSE
-PHPCreeper is released under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).
+PHPCreeper is released under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).   
+
+## 关于协议变更
+由于国内个别人令人咋舌的卑鄙龌龊行为致使作者不得不将MIT暂改为Apache 2.0，究竟发生了什么：    
+【1】[http://www.blogdaren.com/post-2601.html](http://www.blogdaren.com/post-2601.html)   
+【2】[https://www.v2ex.com/t/689365](https://www.v2ex.com/t/689365)
 
 
