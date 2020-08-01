@@ -31,6 +31,13 @@ class ExtractorService
     public $document = null;
 
     /**
+     * origin document object
+     *
+     * @var object
+     */
+    public $originDocument = null;
+
+    /**
      * rule
      *
      * @var array
@@ -115,6 +122,10 @@ class ExtractorService
                 $this->document = phpQuery::newDocumentHTML($this->getHtml() . $input, $option);
                 break;
         }
+
+        //save origin document
+        $this->originDocument = $this->document;
+        //save origin document
 
         return $this;
     }
@@ -214,6 +225,10 @@ class ExtractorService
         if(!empty($selector))
         {
             $this->document = $this->find($selector);
+        }
+        else
+        {
+            $this->document = $this->originDocument;
         }
 
         return $this;

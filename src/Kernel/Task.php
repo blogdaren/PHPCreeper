@@ -252,6 +252,9 @@ class Task
         empty($task['url']) && $task['url'] = $this->getUrl();
         $urls = !is_array($task['url']) ? array($task['url']) : $task['url'];
         $type = (empty($task['type']) || !is_string($task['type'])) ? $this->getType() : $task['type'];
+        $method  = $task['method']  ?? $this->getMethod();
+        $referer = $task['referer'] ?? $this->getReferer();
+        $context = $task['context'] ?? $this->getContext();
 
         foreach($urls as $rule_name => $url) 
         {
@@ -266,11 +269,11 @@ class Task
             //$taskObject = self::newInstance($this->phpcreeper, $task);
             $task_id = $this->setUrl($url)
                             ->setType($type)
-                            ->setMethod($this->getMethod())
-                            ->setReferer($this->getReferer())
+                            ->setMethod($method)
+                            ->setReferer($referer)
                             ->setRuleName($rule_name)
                             ->setRule($rule)
-                            ->setContext($this->getContext())
+                            ->setContext($context)
                             ->createTask();
 
             if(!empty($task_id))
