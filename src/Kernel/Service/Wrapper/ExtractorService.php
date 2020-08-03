@@ -250,20 +250,28 @@ class ExtractorService
             $action   = $rule[1] ?? 'text';
             $range    = $rule[2] ?? '';
             $callback = $rule[3] ?? '';
+            in_array($action, ['preg', 'pregs']) && $selector = '';
             $nodes = $this->setRange($range)->find($selector);
 
             foreach($nodes as $node) 
             {
+                $data = '';
                 if('text' == $action) {
                     $data = pq($node, $this->document)->text();
                 }elseif('html' == $action) {
                     $data = pq($node, $this->document)->html();
+                }elseif('preg' == $action) {
+                    $source = pq($node, $this->document)->html();
+                    !empty($rule[0]) && preg_match($rule[0], $source, $data);
+                }elseif('pregs' == $action) {
+                    $source = pq($node, $this->document)->html();
+                    !empty($rule[0]) && preg_match_all($rule[0], $source, $data);
                 }else{
                     $data = pq($node, $this->document)->attr($action);
                 }
 
                 is_callable($callback) && $data = call_user_func($callback, $name, $data);
-                $result[$i][$name] = !is_string($data) ? $data : trim($data);
+                $result[$i][$name] = is_string($data) ? trim($data) : $data;
                 $i++;
             }
         }

@@ -847,11 +847,11 @@ class Downloader extends PHPCreeper
         }
 
         if(true === $enabled){
-            Logger::error(Tool::replacePlaceHolder($this->langConfig['downloader_cache_enabled'], [
+            Logger::warn(Tool::replacePlaceHolder($this->langConfig['downloader_cache_enabled'], [
                 'task_id' => $task['id'],
             ]));
         }else{
-            Logger::error(Tool::replacePlaceHolder($this->langConfig['downloader_cache_disabled'], [
+            Logger::warn(Tool::replacePlaceHolder($this->langConfig['downloader_cache_disabled'], [
                 'task_id' => $task['id'],
             ]));
         } 
@@ -874,7 +874,7 @@ class Downloader extends PHPCreeper
 
         if(false !== $enabled && is_file($cache_path) && file_exists($cache_path))
         {
-            Logger::error(Tool::replacePlaceHolder($this->langConfig['downloader_read_from_cache'], [
+            Logger::warn(Tool::replacePlaceHolder($this->langConfig['downloader_read_from_cache'], [
                 'task_id' => $task['id'],
             ]));
             $download_data = file_get_contents($cache_path);
