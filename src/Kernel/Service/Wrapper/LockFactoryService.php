@@ -25,8 +25,8 @@ class LockFactoryService
     /**
      * @brief    create lock helper
      *
-     * @param    string  $type
-     * @param    mixed   $args
+     * @param    string|callback    $type
+     * @param    mixed              $args
      *
      * @return   object
      */

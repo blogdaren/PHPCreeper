@@ -40,7 +40,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const  CURRENT_VERSION = '1.1.6';
+    const  CURRENT_VERSION = '1.1.7';
 
     /**
      * valid assemble package methods
@@ -1242,7 +1242,7 @@ EOT;
      */
     static public function runAll()
     {
-        foreach(self::$_phpcreeperInstances as $k => $w)
+        foreach(self::$_phpcreeperInstances as $w)
         {
             $w->boot();
         }

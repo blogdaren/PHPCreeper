@@ -203,11 +203,14 @@ class Task
             $this->phpcreeper->dropDuplicateFilter->add($input['url']);
         }
 
+        (empty($input['rule_name']) || !is_string($input['rule_name'])) && $input['rule_name'] = md5($input['url']);
+        $this->setRuleName($input['rule_name']);
+
         $type       = $input['type']      ?? $this->getType();
         $url        = $input['url'];
         $method     = $input['method']    ?? $this->getMethod();
         $referer    = $input['referer']   ?? $this->getReferer();
-        $rule_name  = $input['rule_name'] ?? $this->getRuleName();
+        $rule_name  = $this->getRuleName();
         $rule       = $input['rule']      ?? $this->getRule();
         $depth      = $input['depth'];
         $context    = $input['context']   ?? $this->getContext();
@@ -264,14 +267,14 @@ class Task
                 continue;
             }
 
-            !is_string($rule_name) && $rule_name = 'new' . $rule_name;
+            $_rule_name = !is_string($rule_name) ? md5($url) : $rule_name;
             $rule = $task['rule'][$rule_name] ?? [];
             //$taskObject = self::newInstance($this->phpcreeper, $task);
             $task_id = $this->setUrl($url)
                             ->setType($type)
                             ->setMethod($method)
                             ->setReferer($referer)
-                            ->setRuleName($rule_name)
+                            ->setRuleName($_rule_name)
                             ->setRule($rule)
                             ->setContext($context)
                             ->createTask();

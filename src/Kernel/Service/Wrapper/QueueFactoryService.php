@@ -26,8 +26,8 @@ class QueueFactoryService
     /**
      * @brief    create queue client   
      *
-     * @param    string  $type
-     * @param    mixed   $args
+     * @param    string|callback    $type
+     * @param    mixed              $args
      *
      * @return   object
      */

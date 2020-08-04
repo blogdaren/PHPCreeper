@@ -25,8 +25,8 @@ class DropDuplicateService
     /**
      * @brief    create one instance     
      *
-     * @param    string  $type
-     * @param    mixed   $args
+     * @param    string|callback    $type
+     * @param    mixed              $args
      *
      * @return   object
      */

@@ -122,7 +122,7 @@ class Producer extends PHPCreeper
                 continue;
             }
 
-            !is_string($rule_name) && $rule_name = 'init' . $rule_name;
+            $_rule_name = !is_string($rule_name) ? md5($start_url) : $rule_name;
             $rule = self::getInitTaskRule($rule_name);
 
             $task_id = $this->newTaskMan()
@@ -130,7 +130,7 @@ class Producer extends PHPCreeper
                 ->setUrl($start_url)
                 ->setMethod($method)
                 ->setContext($context)
-                ->setRuleName($rule_name)
+                ->setRuleName($_rule_name)
                 ->setRule($rule)
                 ->createTask();
 
@@ -152,7 +152,7 @@ class Producer extends PHPCreeper
     }
 
     /**
-     * @brief    get task rule set by user
+     * @brief    get task rule 
      *
      * @param    string  $rule_name
      *
@@ -160,23 +160,19 @@ class Producer extends PHPCreeper
      */
     static public function getInitTaskRule($rule_name)
     {
-        if(empty($rule_name) || !is_string($rule_name)) return [];
+        if(!is_string($rule_name) && !is_numeric($rule_name)) return [];
 
         $rules = Configurator::get("globalConfig/main/task/rule");
         if(empty($rules)) return [];
 
-        $rule = Configurator::get("globalConfig/main/task/rule/{$rule_name}");
-        if(empty($rule)) return [];
-
-        if(is_array($rule)) return $rule;
-
-        if(is_string($rule) && array_key_exists($rule, $rules) && is_array($rules[$rule]))
+        $rule = [];
+        if(array_key_exists($rule_name, $rules) && is_array($rules[$rule_name]))
         {
-            $rule = $rules[$rule];
-            return $rule;
+            $rule = $rules[$rule_name];
+            $rule = is_array($rule) ? $rule : [];
         }
 
-        return [];
+        return $rule;
     }
 
     /**
