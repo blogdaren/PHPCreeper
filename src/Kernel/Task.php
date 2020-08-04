@@ -203,15 +203,18 @@ class Task
             $this->phpcreeper->dropDuplicateFilter->add($input['url']);
         }
 
-        (empty($input['rule_name']) || !is_string($input['rule_name'])) && $input['rule_name'] = md5($input['url']);
-        $this->setRuleName($input['rule_name']);
+        if(isset($input['rule_name'])) $this->setRuleName($input['rule_name']);
+        $rule_name = $this->getRuleName();
+        if(empty($rule_name) || !is_string($rule_name)) $rule_name = md5($input['url']);
 
         $type       = $input['type']      ?? $this->getType();
         $url        = $input['url'];
         $method     = $input['method']    ?? $this->getMethod();
         $referer    = $input['referer']   ?? $this->getReferer();
-        $rule_name  = $this->getRuleName();
+        $rule_name  = $rule_name;
         $rule       = $input['rule']      ?? $this->getRule();
+        $rule_depth = Tool::getArrayDepth($rule);
+        2 <> $rule_depth && $rule = [];
         $depth      = $input['depth'];
         $context    = $input['context']   ?? $this->getContext();
         $task_id    = $this->createTaskId();
@@ -258,6 +261,9 @@ class Task
         $method  = $task['method']  ?? $this->getMethod();
         $referer = $task['referer'] ?? $this->getReferer();
         $context = $task['context'] ?? $this->getContext();
+        $rules   = $task['rule']    ?? $this->getRule();
+        $rule_depth = Tool::getArrayDepth($rules);
+        3 <> $rule_depth && $rules = [];
 
         foreach($urls as $rule_name => $url) 
         {
@@ -268,9 +274,9 @@ class Task
             }
 
             $_rule_name = !is_string($rule_name) ? md5($url) : $rule_name;
-            $rule = $task['rule'][$rule_name] ?? [];
-            //$taskObject = self::newInstance($this->phpcreeper, $task);
-            $task_id = $this->setUrl($url)
+            $rule = $rules[$rule_name] ?? [];
+            $taskObject = self::newInstance($this->phpcreeper);
+            $task_id = $taskObject->setUrl($url)
                             ->setType($type)
                             ->setMethod($method)
                             ->setReferer($referer)
