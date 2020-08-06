@@ -78,13 +78,14 @@ composer require blogdaren/phpcreeper
 ```
 
 ## Usage: not depend on the application framework
-First of all, we should know that there is another official matched application framework 
-named `PHPCreeper-Application` which is also published simultaneously for your development convenience,
+Firstly, we should know there is another official matched application framework 
+named [PHPCreeper-Application](https://github.com/blogdaren/PHPCreeper-Application) 
+which is published simultaneously for your development convenience,
 although this framework is not necessary, we strongly recommend that you use it for 
 business development, thus it's no doubt that it will greatly improve your job efficiency.
 However, somebody still wish to write the code which not depends on the framework, it is 
 also easy to make it.   
-Assume our demand is to capture the weather forecasts for the next 7 days, here let's take an example to illustrate the usage:
+Assume we wanna capture the weather forecasts for the next 7 days, here let's take an example to illustrate the usage:
 ```
 <?php 
 require "./vendor/autoload.php";
@@ -98,6 +99,7 @@ use PHPCreeper\Parser;
 $producer = new Producer;
 $producer->setName('AppProducer')->setCount(1);
 $producer->onProducerStart = function($producer){
+    //task can be configured like this, here the rule name like `r1` should be given:
     $task = array(
         'url' => array(
             "r1" => "http://www.weather.com.cn/weather/101010100.shtml",
@@ -111,11 +113,32 @@ $producer->onProducerStart = function($producer){
             ), 
         ),
     );
-    $context = [
+
+    //task can also be configured like this, here `md5($url)` will be the rule name:
+    $task = array(
+        'url' => array(
+            "http://www.weather.com.cn/weather/101010100.shtml",
+        ),
+        'rule' => array(
+            array(
+                'time' => ['div#7d ul.t.clearfix h1',      'text'],
+                'wea'  => ['div#7d ul.t.clearfix p.wea',   'text'],
+                'tem'  => ['div#7d ul.t.clearfix p.tem',   'text'],
+                'wind' => ['div#7d ul.t.clearfix p.win i', 'text'],
+            ), 
+        ),
+    );
+
+    $context = array(
         //'cache_enabled'   => true,                              
         //'cache_directory' => '/tmp/task/download/' . date('Ymd'), 
-    ];
+    );
+
+    //we can call `createMultiTask()` for multi tasks: 
     $producer->newTaskMan()->setContext($context)->createMultiTask($task);
+
+    //we can also call `createTask()` for single task: 
+    $producer->newTaskMan()->setUrl($task['url'])->setRule($task['rule'])->createTask();
 };
 
 //downloader instance
@@ -131,6 +154,7 @@ $parser->onParserExtractField = function($parser, $download_data, $fields){
     pprint($fields);
 };
 
+//start phpcreeper
 PHPCreeper::runAll();
 ```
 
@@ -187,7 +211,7 @@ cd Application/Spider/Weather/Config/
 ```
 2、Edit the global config file named **global.php**:   
 ```
-attention: this file don't need to be changed unless you want to introduce a new global sub-config file
+warning: this file don't need to be changed unless you want to introduce a new global sub-config file
 ```
 3、Edit the global sub-config file named **database.php** like this:
 ```
@@ -315,7 +339,7 @@ return array(
 ```
 public function onProducerStart($producer)
 {
-    //here you can add one new task here
+    //here we can add another new task 
     /*$task = array(
          'url' => array(
              'r1' => 'https://baike.baidu.com/item/%E5%8C%97%E4%BA%AC/128981?fr=aladdin',
@@ -357,11 +381,11 @@ public function onDownloaderMessage($downloader, $parser_reply)
 
 public function onBeforeDownload($downloader, $task)
 {
-    //here you can reset the $task array here and be sure to return it
+    //here we can reset the $task array here and be sure to return it
     //$task = [...];
     //return $task;
 
-    //here you can change the context parameters when making a http request
+    //here we can change the context parameters when making a http request
     //$downloader->httpClient->setConnectTimeout(3);
     //$downloader->httpClient->setTransferTimeout(10);
     //$downloader->httpClient->setProxy('http://180.153.144.138:8800');
@@ -373,7 +397,7 @@ public function onStartDownload($downloader, $task)
 
 public function onAfterDownload($downloader, $download_data, $task)
 {
-    //here you can save the downloaded source data to a file
+    //here we can save the downloaded source data to a file
     //file_put_contents("/path/to/downloadData.txt", $download_data);
 }
 ```
@@ -393,22 +417,22 @@ public function onParerReload($parser)
 
 public function onParerMessage($parser, $connection, $download_data)
 {
-    //we can still view the current task object
+    //we can still view the current task entity 
     //pprint($parser->task);
 }
 
 public function onParserFindUrl($parser, $url)
 {
-    //here you can check whether the sub url is valid or not
+    //here we can check whether the sub url is valid or not
     //if(!Tool::checkUrl($url)) return false;
 }
 
 public function onParserExtractField($parser, $download_data, $fields)
 {
-    //here you can print out the business data extracted by rule
+    //here we can print out the business data extracted by rule
     //!empty($fields) && var_dump($fields, __METHOD__);
 
-    //here you can save the business data into database like mysql、redis and so on
+    //here we can save the business data into database like mysql、redis and so on
     //DB::save($fields);
 }
 ```
