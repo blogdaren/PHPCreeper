@@ -78,7 +78,7 @@ composer require blogdaren/phpcreeper
 ```
 
 ## Usage: not depend on the application framework
-Firstly, we should know that there is another official matched application framework 
+Firstly, we should know there is another official matched application framework 
 named [PHPCreeper-Application](https://github.com/blogdaren/PHPCreeper-Application) 
 which is published simultaneously for your development convenience,
 although this framework is not necessary, we strongly recommend that you use it for 
