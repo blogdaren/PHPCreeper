@@ -13,7 +13,7 @@
 asynchronous event-driven spider engine based on [Workerman](https://www.workerman.net)
 
 ## Documentation
-The chinese docs is relatively complete, and the full english version will be published as soon as possile.   
+The chinese document is relatively complete, and the full english version will be published as soon as possile.   
 **注意：** 爬山虎中文开发文档相对比较完善，中国朋友直接点击下方链接阅读即可.
 
 * 爬山虎中文官方网站：[http://www.phpcreeper.com](http://www.phpcreeper.com)
@@ -78,7 +78,7 @@ composer require blogdaren/phpcreeper
 ```
 
 ## Usage: not depend on the application framework
-Firstly, we should know there is another official matched application framework 
+Firstly, we should know that there is another official matched application framework 
 named [PHPCreeper-Application](https://github.com/blogdaren/PHPCreeper-Application) 
 which is published simultaneously for your development convenience,
 although this framework is not necessary, we strongly recommend that you use it for 
@@ -456,7 +456,47 @@ php Application/Spider/Weather/AppDownloader.php start
 php Application/Spider/Weather/AppParser.php start
 ```
 
-## Available commands:  
+## How to set extractor rule
+```
+$rules = array( 
+    'rule_name1' => array(
+        'field1' => ['selector', 'flag', 'range', 'callback'],
+        .....................................................,
+        'fieldN' => ['selector', 'flag', 'range', 'callback'],
+    );
+    .........................................................,
+    'rule_nameN' => array(
+        'field1' => ['selector', 'flag', 'range', 'callback'],
+        .....................................................,
+        'fieldN' => ['selector', 'flag', 'range', 'callback'],
+    );
+);
+```
+
++ **rule_name**  
+you should give an unique rule name for each task, so that we can easily 
+extract the index data that we want, if you keep it empty, then `md5($task_url)` 
+will be the unique rule name.
+
++ **selector**  
+just like jQuery selector, it can be like `#idName` or `.className` or `Html Element` 
+and so on, besides, it also can be a regular expression depending on the value of ***flag***.
+
++ **flag**  
+`attr`： used to get the attrbute value of html element   
+`html`： used to get the html code snippets    
+`text`： used to get the text of html element    
+`preg`： just a wrapper for ***preg_match()***  
+`pregs`：just a wrapper for ***preg_match_all()***   
+
++ **range**  
+used to narrow down the entries to only those that match, just like jQuery selector, 
+the value can be like `#idName` or `.className` or `Html Element` and so on.
+
++ **callback**  
+you can trigger a callback here, but remember to return the data expected.
+
+## Available commands
 We have to remind you again that all the commands in `PHPCreeper` can only run on the command line, 
 and whatever the application is, you must write an entry startup script whose name
 assumed to be `AppWorker.php` before you start PHPCreeper, but if you use the 
