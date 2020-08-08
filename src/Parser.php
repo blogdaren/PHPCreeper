@@ -351,7 +351,13 @@ class Parser extends PHPCreeper
 
         if(empty($rule_name) || !is_string($rule_name))
         {
-            $rule_name = !empty($this->task['rule_name']) ? $this->task['rule_name'] : 'default';
+            if(!empty($this->task['rule_name'])){
+                $rule_name = $this->task['rule_name'];
+            }elseif(!empty($this->task['url'])){
+                $rule_name = md5($this->task['url']);
+            }else{
+                $rule_name = 'default';
+            }
         }
 
         $fields = $this->extractor->setHtml($source_data)->setRule($rule)->extract();

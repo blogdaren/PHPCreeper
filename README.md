@@ -457,8 +457,18 @@ php Application/Spider/Weather/AppParser.php start
 ```
 
 ## How to set extractor rule
+* Every task URL configuration match a unique rule configuration, and the rule name must be one-to-one correspondence
+* The type of rule value must be ***Array***
+* For a single task, the depth of the corresponding rule item, that is, the depth of the array, can only be 2
+* For multi tasks, the depth of the corresponding rule item, that is, the depth of the array, can only be 3
 ```
-$rules = array( 
+$task = array(
+    'rule_name1' => 'http://www..blogdaren.com';
+    .......................;
+    'rule_nameN' => 'http://www.phpcreeper.com';
+);
+
+$rule = array( 
     'rule_name1' => array(
         'field1' => ['selector', 'flag', 'range', 'callback'],
         .....................................................,
@@ -479,11 +489,12 @@ extract the index data that we want, if you keep it empty, then `md5($task_url)`
 will be the unique rule name.
 
 + **selector**  
-just like jQuery selector, it can be like `#idName` or `.className` or `Html Element` 
+just like jQuery selector, its value can be like `#idName` or `.className` or `Html Element` 
 and so on, besides, it also can be a regular expression depending on the value of ***flag***.
 
 + **flag**  
-`attr`： used to get the attrbute value of html element   
+`attr`： used to get the attrbute value of html element     
+　　　　【**Attention: the real value shoud be the attribute like `src`、`href` etc, NOT `attr` itself**】   
 `html`： used to get the html code snippets    
 `text`： used to get the text of html element    
 `preg`： just a wrapper for ***preg_match()***  
@@ -495,6 +506,33 @@ the value can be like `#idName` or `.className` or `Html Element` and so on.
 
 + **callback**  
 you can trigger a callback here, but remember to return the data expected.
+
+```
+//extractor rule code example
+$html = "<div><a href='http://www.phpcreeper.com' id='site' class="site">PHPCreeper</a></div>";
+$rule = array(
+    'link_element'  => ['div',      'html'],
+    'link_text '    => ['#site',    'text'],
+    'link_address'  => ['div.site', 'href'],
+    'callback_data' => ['/<a .*?>(.*)<\/a>/is', 'preg', [], function($field_name, $data){
+        return 'Hello ' . $data[1];
+    }], 
+);  
+$data = $parser->extractField($html, $rule, 'rule1');
+pprint($data['rule1']);
+
+//output
+Array
+(
+    [0] => Array
+        (
+            ['link_element']  => <a href="http://www.phpcreeper.com" id="site">PHPCreeper</a>
+            ['link_text']     => PHPCreeper
+            ['link_address']  => http://www.phpcreeper.com
+            ['callback_data'] => Hello PHPCreeper
+        )
+)
+```
 
 ## Available commands
 We have to remind you again that all the commands in `PHPCreeper` can only run on the command line, 
