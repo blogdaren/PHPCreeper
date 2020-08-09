@@ -457,7 +457,7 @@ php Application/Spider/Weather/AppParser.php start
 ```
 
 ## How to set extractor rule
-* Every URL configuration item match a unique rule configuration item, and the rule name must be one-to-one correspondence
+* Per URL config item match a unique rule config item, and the ***rule_name*** must be one-to-one correspondence
 * The type of rule value must be ***Array***
 * For a single task, the depth of the corresponding rule item, that is, the depth of the array, can only be 2
 * For multi tasks, the depth of the corresponding rule item, that is, the depth of the array, can only be 3
