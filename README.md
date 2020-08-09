@@ -462,9 +462,9 @@ php Application/Spider/Weather/AppParser.php start
 * For a single task, the depth of the corresponding rule item, that is, the depth of the array, can only be 2
 * For multi tasks, the depth of the corresponding rule item, that is, the depth of the array, can only be 3
 ```
-$task = array(
+$urls = array(
     'rule_name1' => 'http://www..blogdaren.com';
-    .......................;
+    ...........................................;
     'rule_nameN' => 'http://www.phpcreeper.com';
 );
 
