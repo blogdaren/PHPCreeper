@@ -86,7 +86,7 @@ business development, thus it's no doubt that it will greatly improve your job e
 However, somebody still wish to write the code which not depends on the framework, it is 
 also easy to make it.   
 Assume we wanna capture the weather forecasts for the next 7 days, here let's take an example to illustrate the usage:
-```
+```php
 <?php 
 require "./vendor/autoload.php";
 
@@ -214,7 +214,7 @@ cd Application/Spider/Weather/Config/
 warning: this file don't need to be changed unless you want to introduce a new global sub-config file
 ```
 3、Edit the global sub-config file named **database.php** like this:
-```
+```php
 <?php
 return array(
     'redis' => array(
@@ -226,7 +226,7 @@ return array(
 );
 ```
 4、Edit the global sub-config file named **main.php** like this:
-```
+```php
 return array(
     'language' => 'en',
     'multi_worker'  => true,
@@ -276,7 +276,7 @@ return array(
 );
 ```
 6、Edit the business worker config file named **AppDownloader.php** like this：
-```
+```php
 <?php
 return array(
     'name' => 'downloader1',
@@ -297,7 +297,7 @@ return array(
 );
 ```
 7、Edit the business worker config file named **AppParser.php** like this：
-```
+```php
 <?php
 return array(
     'name'  => 'parser1',
@@ -317,7 +317,7 @@ return array(
 cd Application/Spider/Weather/Config/
 ```
 2、Go back to Edit **main.php** again:
-```
+```php
 return array(
     'task' => array(
         'url' => array(
@@ -336,7 +336,7 @@ return array(
 ```
 #### *Step-7：Write Business Callback*
 1、Write business callback for AppProducer:
-```
+```php
 public function onProducerStart($producer)
 {
     //here we can add another new task 
@@ -362,7 +362,7 @@ public function onProducerReload($producer)
 }
 ``` 
 2、Write business callback for AppDownloader:
-```
+```php
 public function onDownloaderStart($downloader)
 {
 }
@@ -461,7 +461,7 @@ php Application/Spider/Weather/AppParser.php start
 * The type of rule value must be ***Array***
 * For a single task, the depth of the corresponding rule item, that is, the depth of the array, can only be 2
 * For multi tasks, the depth of the corresponding rule item, that is, the depth of the array, can only be 3
-```
+```php
 $urls = array(
     'rule_name1' => 'http://www.blogdaren.com';
     ...........................................;
@@ -507,7 +507,7 @@ the value can be like `#idName` or `.className` or `Html Element` and so on.
 + **callback**  
 you can trigger a callback here, but remember to return the data expected.
 
-```
+```php
 //extractor rule code example
 $html = "<div><a href='http://www.phpcreeper.com' id='site' class="site">PHPCreeper</a></div>";
 $rule = array(
@@ -588,7 +588,7 @@ if you wanna know more about its usage. now we just need to find out
 how to get the DBO, as a matter of fact, it is very simple:   
 
 First configure the `database.php` then add the code belowed:
-```
+```php
 <?php
 return array(
     'dbo' => array(
@@ -605,7 +605,7 @@ return array(
 ```
 
 Now we can get DBO and start the query or the other operation as you like: 
-```
+```php
 $downloader->onAfterDownloader = function($downloader){
     //dbo single instance and we can pass the DSN string `test`
     $downloader->getDbo('test')->select('user', '*');
