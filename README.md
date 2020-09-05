@@ -155,7 +155,7 @@ $parser->onParserExtractField = function($parser, $download_data, $fields){
 };
 
 //start phpcreeper
-PHPCreeper::runAll();
+PHPCreeper::start();
 ```
 
 ## Usage: depend on the application framework

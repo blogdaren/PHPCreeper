@@ -1144,7 +1144,26 @@ class Tool
         }
     }
 
+    /**
+     * @brief    count cpu cores
+     *
+     * @return   int
+     */
+    static public function getCpuCoreCount() 
+    {
+        if('darwin' === strtolower(PHP_OS)) 
+        {
+            $count = shell_exec('sysctl -n machdep.cpu.core_count');
+        } 
+        else 
+        {
+            $count = shell_exec('nproc');
+        }   
 
+        $count = (int)$count > 0 ? (int)$count : 1;
+
+        return $count;
+    }
 
 
 

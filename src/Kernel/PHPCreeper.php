@@ -302,13 +302,19 @@ class PHPCreeper extends Worker
     /**
      * @brief    set app worker count
      *
-     * @param    int $count
+     * @param    int        $count
+     * @param    boolean    $prefer_by_cpu_cores
      *
      * @return   object
      */
-    public function setCount($count = 1)
+    public function setCount($count = 1, $prefer_by_cpu_cores = false)
     {
         $this->count = ($count <= 0 || !is_int($count)) ? 1 : $count;
+
+        if(true === $prefer_by_cpu_cores)
+        {
+            $this->count = Tool::getCpuCoreCount() * 2;
+        }
 
         return $this;
     }
@@ -1248,6 +1254,16 @@ EOT;
         }
 
         Worker::runAll();
+    }
+
+    /**
+     * @brief    alias runAll()
+     *
+     * @return   void
+     */
+    static public function start()
+    {
+        self::runAll();
     }
 
 }
