@@ -648,8 +648,12 @@ Thanks a lot.
 ## LICENSE
 PHPCreeper is released under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).   
 
-## 关于协议变更
-由于国内个别人令人咋舌的卑鄙龌龊行为致使作者不得不将MIT暂改为Apache 2.0，究竟发生了什么：    
+## DISCLAIMER
+Please **DON'T** use PHPCreeper for businesses which are **NOT PERMITTED** by law in your country.
+If you break the law, I have nothing to do with it.
+
+## 协议变更
+为什么协议由MIT暂变更为Apache 2.0：    
 【1】[http://www.blogdaren.com/post-2601.html](http://www.blogdaren.com/post-2601.html)   
 【2】[https://www.v2ex.com/t/689365](https://www.v2ex.com/t/689365)
 
