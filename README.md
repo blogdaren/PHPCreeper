@@ -13,7 +13,7 @@
 asynchronous event-driven spider engine based on [Workerman](https://www.workerman.net)
 
 ## Documentation
-The chinese document is relatively complete, and the english version will be kept up-to-date constantly.   
+The chinese document is relatively complete, and the english document will be kept up-to-date constantly.   
 **注意：** 爬山虎中文开发文档相对比较完善，中国朋友直接点击下方链接阅读即可.
 
 * 爬山虎中文官方网站：[http://www.phpcreeper.com](http://www.phpcreeper.com)
@@ -22,7 +22,7 @@ The chinese document is relatively complete, and the english version will be kep
 
 ## Todo List
 - [x] 轻量级关系型数据库：Lightweight relational database like Medoo style
-- [ ] 反爬之IP生态代理池：IP ecological agent pool of Anti-Spider strategy
+- [ ] 反爬之IP生态代理池：&nbsp;IP ecological agent pool of Anti-Spider strategy
 - [ ] 图片验证码识别技术：Image verification code recognition technology
 - [ ] 智能化识别网页数据：Intelligent recognition of the web page content
 - [ ] 爬虫项目管理可视化：The crawler application management visualization
@@ -702,8 +702,8 @@ Thanks a lot.
 PHPCreeper is released under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).   
 
 ## DISCLAIMER
-Please **DON'T** use PHPCreeper for businesses which are **NOT PERMITTED BY LAW** in your country.
-If you break the law, I have nothing to do with it.
+Please **DON'T** use PHPCreeper for businesses which are **NOT PERMITTED BY LAW** in your country. 
+If you break the law, you need to take responsibility for that.
 
 ## 协议变更
 为什么协议由MIT暂变更为Apache 2.0：    
