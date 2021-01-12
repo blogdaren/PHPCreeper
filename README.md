@@ -13,7 +13,7 @@
 asynchronous event-driven spider engine based on [Workerman](https://www.workerman.net)
 
 ## Documentation
-The chinese document is relatively complete, and the full english version will be published as soon as possile.   
+The chinese document is relatively complete, and the english version will be kept up-to-date constantly.   
 **注意：** 爬山虎中文开发文档相对比较完善，中国朋友直接点击下方链接阅读即可.
 
 * 爬山虎中文官方网站：[http://www.phpcreeper.com](http://www.phpcreeper.com)
@@ -22,7 +22,7 @@ The chinese document is relatively complete, and the full english version will b
 
 ## Todo List
 - [x] 轻量级关系型数据库：Lightweight relational database like Medoo style
-- [ ] 反爬之IP生态代理池： IP ecological agent pool of Anti-Spider strategy
+- [ ] 反爬之IP生态代理池：IP ecological agent pool of Anti-Spider strategy
 - [ ] 图片验证码识别技术：Image verification code recognition technology
 - [ ] 智能化识别网页数据：Intelligent recognition of the web page content
 - [ ] 爬虫项目管理可视化：The crawler application management visualization
@@ -43,32 +43,32 @@ neither distributed nor separate deployment is supported, so crawler performance
 Today `PHPCreeper` makes everything possible.
 
 
-So `PHPCreeper` is mainly designed to:     
+So `PHPCreeper` is mainly designed to：     
 
-* Focus on efficient agile development, and make the crawling job becomes more easy.   
-* Solve the performance and extension problems of traditional PHP crawler frameworks.    
+* Focus on efficient agile development, and make the crawling job become more easy   
+* Solve the performance and extension problems of traditional PHP crawler frameworks    
 
 
 ## Features
-* Inherit all features from workerman.
-* Free to customize various plugins and callback.
-* Free to customize the third-party middleware.
-* Support for netflow traffic limitaion.
-* Support for distributed deployment.
-* Support for separated deployment.
-* Support for socket programming.
-* Support multi-language environment.
-* Use PHPQuery as the elegant content extractor.
+* Inherit all features from workerman
+* Free to customize various plugins and callback
+* Free to customize the third-party middleware
+* Support for netflow traffic limitaion
+* Support for distributed deployment
+* Support for separated deployment
+* Support for socket programming
+* Support multi-language environment
+* Use PHPQuery as the elegant content extractor
 * Support for agile development with PHPCreeper-Application
-* With high performance and strong scalability.
+* With high performance and strong scalability
 
 
 ## Prerequisites
 * PHP_VERSION \>= 7.0.0     
 * A POSIX compatible operating system (Linux, OSX, BSD)  
-* POSIX extension for PHP (**required**)
+* POSIX &nbsp;extension for PHP (**required**)
 * PCNTL extension for PHP (**required**)
-* REDIS extension for PHP (optional, better to install)
+* REDIS &nbsp;extension for PHP (optional, strongly recommend to install)
 * EVENT extension for PHP (optional, better to install)
 
 ## Installation
@@ -85,6 +85,7 @@ although this framework is not necessary, we strongly recommend that you use it 
 business development, thus it's no doubt that it will greatly improve your job efficiency.
 However, somebody still wish to write the code which not depends on the framework, it is 
 also easy to make it.   
+
 Assume we wanna capture the weather forecasts for the next 7 days, here let's take an example to illustrate the usage:
 ```php
 <?php 
@@ -94,6 +95,9 @@ use PHPCreeper\Kernel\PHPCreeper;
 use PHPCreeper\Producer;
 use PHPCreeper\Downloader;
 use PHPCreeper\Parser;
+
+//uncomment line below to enable the single worker mode if you want to run without redis
+//PHPCreeper::$isRunAsMultiWorker = false;
 
 //producer instance
 $producer = new Producer;
@@ -228,29 +232,78 @@ return array(
 4、Edit the global sub-config file named **main.php** like this:
 ```php
 return array(
+    //set the locale, currently support Chinese and English (optional, default `zh`)
     'language' => 'en',
+
+    //phpcreeper has two modes to work: single worker mode and multi workers mode
+    //the former is seldomly to use, only applys to some simple jobs, now you have 
+    //the chance to use the built-in php queue service without redis; the latter 
+    //is frequently to use to handle many more complex jobs, especially distributed,
+    //in this way, you must enable the redis server (optional, default `true`)
     'multi_worker'  => true,
+
+    //whether to boot any worker instance you want (optional, default `true`)
     'start' => array(
         'WeatherProducer'      => true,
         'WeatherDownloader'    => true,
         'WeatherParser'        => true,
     ),
+
     'task' => array(
-        'method'          => 'get',
+        //set http request method (optional, default `get`)
+        'method'          => 'get', 
+
+        //set the task crawl interval, the minimum 0.001 second (optional, default `1`)
         'crawl_interval'  => 1,
+
+        //set the max crawl depth, 0 indicates no limit (optional, default `1`)
         'max_depth'       => 1,
+
+        //set the max number of the task queue, 0 indicates no limit (optional, default `0`)
         'max_number'      => 1000,
+
+        //set the max number of the request for each socket connection,  
+        //if the cumulative number of socket requests exceeds the max number of requests,
+        //the parser will close the connection and try to reconect automatically.
+        //0 indicates no limit (optional, default `0`)
         'max_request'     => 1000,
+
         'compress'  => array(
+            //whether to enable the data compress method (optional, default `true`)
             'enabled'   =>  true,
+
+            //compress algorithm, support `gzip` and `deflate` (optional, default `gzip`)
             'algorithm' => 'gzip',
         ),
+
+        //limit domains which are allowed to crawl, no limit if leave empty
         'limit_domains' => array(
         ),
+
+        //set the initialized task url to crawl,  the value can be `string` or `array`, 
+        //if configured to array, the `key` indicates the name of the rule, which is
+        //corresponding to the key of the filed of `rule`, mainly used to quickly 
+        //index the target data set, and we can omit the key, then phpcreeper will use
+        //the `mdt($task_url)` as the default rule name
         'url' => array(
             "r1" => "http://www.weather.com.cn/weather/101010100.shtml",
         ),
+
+        //please refer to the "How to set extractor rule" section for details
+        'rule' => array(
+            //"r1"    => [set the business rule here], 
+            //"r2"    => [set the business rule here], 
+            //[set the business rule here], 
+        ),
+
+        //set the context params which is compatible to guzzle for http request, cuz `guzzle`
+        //is the default http client, so reference to the guzzle manual if any trouble
         'context' => array(
+            //whether to enable the downlod cache (optional, default `false`)
+            'cache_enabled'   => false,                               
+
+            //set the download cache directory (optional, default is the system tmp directory)
+            'cache_directory' => '/tmp/task/download/' . date('Ymd'), 
         ),
    ),
 );
@@ -534,6 +587,48 @@ Array
 )
 ```
 
+## Use Database
+PHPCreeper wrappers a lightweight database like Medoo style, 
+please visit the [Medoo official site](https://medoo.lvtao.net/) 
+if you wanna know more about its usage. now we just need to find out 
+how to get the DBO, as a matter of fact, it is very simple:   
+
+First configure the `database.php` then add the code belowed:
+```php
+<?php
+return array(
+    'dbo' => array(
+        'test' => array(
+            'database_type' => 'mysql',
+            'database_name' => 'test',
+            'server'        => '127.0.0.1',
+            'username'      => 'root',
+            'password'      => 'root',
+            'charset'       => 'utf8'
+        ),
+    ),
+);
+```
+
+Now we can get DBO and start the query or the other operation as you like: 
+```php
+$downloader->onAfterDownloader = function($downloader){
+    //dbo single instance and we can pass the DSN string `test`
+    $downloader->getDbo('test')->select('user', '*');
+    
+    //dbo single instance and we can pass the configuration array
+    $config = Configurator::get('globalConfig/database/dbo/test')
+    $downloader->getDbo($config)->select('user', '*');
+
+    //dbo new instance and we can pass the DSN string `test`
+    $downloader->newDbo('test')->select('user', '*');
+
+    //dbo new instance and we can pass the configuration array
+    $config = Configurator::get('globalConfig/database/dbo/test')
+    $downloader->newDbo($config)->select('user', '*');
+};
+```
+
 ## Available commands
 We have to remind you again that all the commands in `PHPCreeper` can only run on the command line, 
 and whatever the application is, you must write an entry startup script whose name
@@ -581,48 +676,6 @@ php AppWorker.php status
 php AppWorker.php connections
 ```
 
-## Use Database
-PHPCreeper wrappers a lightweight database like Medoo style, 
-please visit the [Medoo official site](https://medoo.lvtao.net/) 
-if you wanna know more about its usage. now we just need to find out 
-how to get the DBO, as a matter of fact, it is very simple:   
-
-First configure the `database.php` then add the code belowed:
-```php
-<?php
-return array(
-    'dbo' => array(
-        'test' => array(
-            'database_type' => 'mysql',
-            'database_name' => 'test',
-            'server'        => '127.0.0.1',
-            'username'      => 'root',
-            'password'      => 'root',
-            'charset'       => 'utf8'
-        ),
-    ),
-);
-```
-
-Now we can get DBO and start the query or the other operation as you like: 
-```php
-$downloader->onAfterDownloader = function($downloader){
-    //dbo single instance and we can pass the DSN string `test`
-    $downloader->getDbo('test')->select('user', '*');
-    
-    //dbo single instance and we can pass the configuration array
-    $config = Configurator::get('globalConfig/database/dbo/test')
-    $downloader->getDbo($config)->select('user', '*');
-
-    //dbo new instance and we can pass the DSN string `test`
-    $downloader->newDbo('test')->select('user', '*');
-
-    //dbo new instance and we can pass the configuration array
-    $config = Configurator::get('globalConfig/database/dbo/test')
-    $downloader->newDbo($config)->select('user', '*');
-};
-```
-
 ## Screenshot
 ![EnglishVersion1](./Image/EnglishVersion1.png)
 ![EnglishVersion2](./Image/EnglishVersion2.png)
@@ -649,7 +702,7 @@ Thanks a lot.
 PHPCreeper is released under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).   
 
 ## DISCLAIMER
-Please **DON'T** use PHPCreeper for businesses which are **NOT PERMITTED** by law in your country.
+Please **DON'T** use PHPCreeper for businesses which are **NOT PERMITTED BY LAW** in your country.
 If you break the law, I have nothing to do with it.
 
 ## 协议变更
