@@ -13,12 +13,16 @@
 asynchronous event-driven spider engine based on [Workerman](https://www.workerman.net)
 
 ## Documentation
-The chinese document is relatively complete, and the english document will be kept up-to-date constantly.   
+The chinese document is relatively complete, and the english document will be kept up-to-date constantly here.   
 **注意：** 爬山虎中文开发文档相对比较完善，中国朋友直接点击下方链接阅读即可.
 
 * 爬山虎中文官方网站：[http://www.phpcreeper.com](http://www.phpcreeper.com)
 * 中文开发文档主节点：[http://www.phpcreeper.com/docs/](http://www.phpcreeper.com/docs/)
 * 中文开发文档备节点：[http://www.blogdaren.com/docs/](http://www.blogadren.com/docs/)
+
+## Screenshot
+![EnglishVersion1](./Image/EnglishVersion1.png)
+![EnglishVersion2](./Image/EnglishVersion2.png)
 
 ## Todo List
 - [x] 轻量级关系型数据库：Lightweight relational database like Medoo style
@@ -61,11 +65,12 @@ So `PHPCreeper` is mainly designed to：
 * Use PHPQuery as the elegant content extractor
 * Support for agile development with PHPCreeper-Application
 * With high performance and strong scalability
+* With rich and human-readable development documents 
 
 
 ## Prerequisites
 * PHP_VERSION \>= 7.0.0     
-* A POSIX compatible operating system (Linux, OSX, BSD)  
+* A POSIX compatible operating system (Linux、OSX、BSD)  
 * POSIX &nbsp;extension for PHP (**required**)
 * PCNTL extension for PHP (**required**)
 * REDIS &nbsp;extension for PHP (optional, strongly recommend to install)
@@ -86,7 +91,7 @@ business development, thus it's no doubt that it will greatly improve your job e
 However, somebody still wish to write the code which not depends on the framework, it is 
 also easy to make it.   
 
-Assume we wanna capture the weather forecasts for the next 7 days, here let's take an example to illustrate the usage:
+Assume we wanna capture the weather forecasts for the next 7 days, now let's take an example to illustrate the usage:
 ```php
 <?php 
 require "./vendor/autoload.php";
@@ -96,7 +101,7 @@ use PHPCreeper\Producer;
 use PHPCreeper\Downloader;
 use PHPCreeper\Parser;
 
-//uncomment line below to enable the single worker mode if you want to run without redis
+//uncomment the line below to enable the single worker mode if you want to run without redis
 //PHPCreeper::$isRunAsMultiWorker = false;
 
 //producer instance
@@ -133,9 +138,11 @@ $producer->onProducerStart = function($producer){
         ),
     );
 
+    //various context settings
     $context = array(
         //'cache_enabled'   => true,                              
         //'cache_directory' => '/tmp/task/download/' . date('Ymd'), 
+        //..........................
     );
 
     //we can call `createMultiTask()` for multi tasks: 
@@ -215,7 +222,7 @@ cd Application/Spider/Weather/Config/
 ```
 2、Edit the global config file named **global.php**:   
 ```
-warning: this file don't need to be changed unless you want to introduce a new global sub-config file
+ATTENTION: don't change this file unless you want to introduce a new global sub-config file
 ```
 3、Edit the global sub-config file named **database.php** like this:
 ```php
@@ -675,10 +682,6 @@ php AppWorker.php status
 ```
 php AppWorker.php connections
 ```
-
-## Screenshot
-![EnglishVersion1](./Image/EnglishVersion1.png)
-![EnglishVersion2](./Image/EnglishVersion2.png)
 
 ## Related links and thanks
 
