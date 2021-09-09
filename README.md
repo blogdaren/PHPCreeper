@@ -17,8 +17,8 @@ The chinese document is relatively complete, and the english document will be ke
 **注意：** 爬山虎中文开发文档相对比较完善，中国朋友直接点击下方链接阅读即可.
 
 * 爬山虎中文官方网站：[http://www.phpcreeper.com](http://www.phpcreeper.com)
-* 中文开发文档主节点：[http://www.phpcreeper.com/docs/](http://www.phpcreeper.com/docs/)
-* 中文开发文档备节点：[http://www.blogdaren.com/docs/](http://www.blogadren.com/docs/)
+* 中文开发文档主节点：[http://www.blogdaren.com/docs/](http://www.blogadren.com/docs/)
+* 中文开发文档备节点：[http://www.phpcreeper.com/docs/](http://www.phpcreeper.com/docs/)
 
 ## Screenshot
 ![EnglishVersion1](./Image/EnglishVersion1.png)
