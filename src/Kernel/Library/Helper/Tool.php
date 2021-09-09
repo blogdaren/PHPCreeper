@@ -961,6 +961,7 @@ class Tool
         switch($method)
         {
             case 'json':
+                $data = self::convertEncoding($data, '', 'UTF-8', true);
                 $content = json_encode($data, $option);
                 break;
             case 'serialize':
@@ -996,6 +997,8 @@ class Tool
         {
             case 'json':
                 $content = json_decode($data, $option);
+                //$content = self::convertEncoding($content, 'UTF-8', 'GBK');
+
                 break;
             case 'serialize':
                 $content = unserialize($data);
@@ -1165,6 +1168,80 @@ class Tool
         return $count;
     }
 
+	/**
+     * 字符编码转换: 
+     *
+     * 1. 支持数组转换
+	 * 2. 需要 iconv 或者 mb_string 模块支持
+	 *
+	 * @param   string|array    $content        待转换的字符串或数组
+     * @param   string          $from           原始编码
+     * @param   string          $to             目标编码
+     * @param   string          $ignore_utf8    true => 表示尝试检测是否为UTF8编码, 是则放弃转换
+	 *
+	 * @return  string 
+	 */
+	static function convertEncoding($content, $from = '', $to = '', $ignore_utf8 = false)
+	{
+        //如果编码相同或者非字符串标量则不转换
+		if(strtoupper($from) === strtoupper($to) || empty($content) || (is_scalar($content) && !is_string($content)) )
+		{
+			return $content;
+		}
+
+		if(is_string($content) )
+		{
+            $encoding = mb_detect_encoding($content, array("ASCII","UTF-8","GB2312","GBK","BIG5"));
+            empty($from) && $from = $encoding;
+
+            if($ignore_utf8 && 'UTF-8' == $encoding)
+            {
+                return $content;
+            }
+
+			if(function_exists('mb_convert_encoding'))
+			{
+				return mb_convert_encoding($content, $to, $from);
+			}
+			elseif(function_exists('iconv'))
+			{
+				return iconv($from, $to, $content);
+			}
+			else
+			{
+				return $content;
+			}
+		}
+		elseif(is_array($content))
+		{
+			foreach($content as $key => $val)
+			{
+				$_key = self::convertEncoding($key, $from, $to, $ignore_utf8);
+				$content[$_key] = self::convertEncoding($val, $from, $to, $ignore_utf8);
+
+				if($key != $_key )
+				{
+					unset($content[$key]);
+				}
+			}
+
+			return $content;
+		}
+		elseif(is_object($content))
+		{
+			$vars = get_object_vars($content);
+			foreach($vars as $key => $val)
+			{
+				$content->$key = self::convertEncoding($val,$from,$to, $ignore_utf8);
+			}
+
+			return $content;
+		}
+		else
+		{
+			return $content;
+		}
+	}
 
 
 }

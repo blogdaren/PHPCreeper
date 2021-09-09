@@ -21,7 +21,7 @@ return [
     'downloader_cache_disabled'     => "Cache  Check: detect that the task cache id disabled, task_id: %task_id%", 
     'downloader_cache_enabled'      => "Cache  Check: detect that the task cache id enabled, task_id: %task_id%", 
     'downloader_create_cache_failed'=> "Access Check: detect that the cache direcory couldn't be written, please verify write permissions are granted.", 
-    'downloader_read_from_cache'    => "Task Download: the downloader hit the task cache successfully, task_id: %task_id%", 
+    'downloader_read_from_cache'    => "Task Download: the downloader hit the task cache successfully, task_id: %task_id%【cache_path: %cache_path%】", 
     'downloader_rebuild_task_null'  => "Params Check: detect that the task params is empty when download data, it's likely you forget to give valid task_url.", 
     'downloader_get_one_task'       => "Task Consume: the downloader successfully get one task: %task_url%.", 
     'downloader_download_task_yes'  => "Task Download: detect that the task is successfully downloaded.", 

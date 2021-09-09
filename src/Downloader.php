@@ -876,6 +876,7 @@ class Downloader extends PHPCreeper
         {
             Logger::warn(Tool::replacePlaceHolder($this->langConfig['downloader_read_from_cache'], [
                 'task_id' => $task['id'],
+                'cache_path' => $cache_path,
             ]));
             $download_data = file_get_contents($cache_path);
             if(!empty($download_data)) return $download_data;

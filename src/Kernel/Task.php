@@ -289,7 +289,7 @@ class Task
             {
                 Logger::info(Tool::replacePlaceHolder($this->phpcreeper->langConfig['queue_push_task'], [
                     'task_id'   => $task_id,
-                    'task_url'  => $this->getUrl(),
+                    'task_url'  => $url,
                 ]));
             }
         }

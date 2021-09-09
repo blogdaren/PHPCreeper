@@ -157,7 +157,7 @@ class ExtractorService
         {
             !is_array($option['html']) && $option['html'] = [$option['html']];
             $html = $option['html'][0] ?? null;
-            $charset = $option['html'][1] ?? null;
+            $charset = $option['html'][1] ?? 'UTF8';
             $this->setHtml($html, $charset);
         }
 
@@ -179,7 +179,7 @@ class ExtractorService
      *
      * @return   object
      */
-    public function setHtml($html = null, $charset = null)
+    public function setHtml($html = null, $charset = 'UTF8')
     {
         $this->html = $html;
         $this->createDocument($this->html, $charset, 'html');
