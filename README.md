@@ -14,7 +14,7 @@ asynchronous event-driven spider engine based on [Workerman](https://www.workerm
 
 ## Documentation
 The chinese document is relatively complete, and the english document will be kept up-to-date constantly here.   
-**注意：** 爬山虎中文开发文档相对比较完善，中国朋友直接点击下方链接阅读即可.
+**注意：** 爬山虎中文开发文档相对比较完善，各位小伙伴直接点击下方链接阅读即可.
 
 * 爬山虎中文官方网站：[http://www.phpcreeper.com](http://www.phpcreeper.com)
 * 中文开发文档主节点：[http://www.blogdaren.com/docs/](http://www.blogadren.com/docs/)
