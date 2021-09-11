@@ -186,7 +186,13 @@ class Task
             return false;
         };
 
-        if(PHPCreeper::$isRunAsMultiWorker)
+        $allow_url_repeat = false;
+        if(!empty($input['context']['allow_url_repeat']) && true === $input['context']['allow_url_repeat'])
+        {
+            $allow_url_repeat = true;
+        }
+
+        if(PHPCreeper::$isRunAsMultiWorker && !$allow_url_repeat)
         {
             if(true === $this->hasUrl($input['url'])) 
             {
