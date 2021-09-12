@@ -384,15 +384,15 @@ abstract class phpQuery {
 			while (preg_match($regex, $content))
 				$content = preg_replace_callback(
 					$regex,
-					create_function('$m',
-						'return $m[1].$m[2].$m[3]."<?php "
-							.str_replace(
-								array("%20", "%3E", "%09", "&#10;", "&#9;", "%7B", "%24", "%7D", "%22", "%5B", "%5D"),
-								array(" ", ">", "	", "\n", "	", "{", "$", "}", \'"\', "[", "]"),
-								htmlspecialchars_decode($m[4])
-							)
-							." ?>".$m[5].$m[2];'
-					),
+                    function($m){
+                        return $m[1].$m[2].$m[3]."<?php "
+                            .str_replace(
+                                array("%20", "%3E", "%09", "&#10;", "&#9;", "%7B", "%24", "%7D", "%22", "%5B", "%5D"),
+                                array(" ", ">", "   ", "\n", "  ", "{", "$", "}", '"', "[", "]"),
+                                htmlspecialchars_decode($m[4])
+                            )
+                            ." ?>".$m[5].$m[2];
+                    },
 					$content
 				);
 		return $content;

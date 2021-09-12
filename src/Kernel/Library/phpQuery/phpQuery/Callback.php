@@ -23,7 +23,6 @@ interface ICallbackNamed {
  * @link http://code.google.com/p/phpquery/wiki/Callbacks#Param_Structures
  * @author Tobiasz Cudnik <tobiasz.cudnik/gmail.com>
  * 
- * @TODO??? return fake forwarding function created via create_function
  * @TODO honor paramStructure
  */
 class Callback
@@ -59,7 +58,6 @@ class Callback
 //	}
 }
 /**
- * Shorthand for new Callback(create_function(...), ...);
  * 
  * @author Tobiasz Cudnik <tobiasz.cudnik/gmail.com>
  */
@@ -68,7 +66,9 @@ class CallbackBody extends Callback {
 			$param3 = null) {
 		$params = func_get_args();
 		$params = array_slice($params, 2);
-		$this->callback = create_function($paramList, $code);
+        $this->callback = function($paramList){
+            return $code;
+        };
 		$this->params = $params;
 	}
 }
