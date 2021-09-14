@@ -942,6 +942,13 @@ class PHPCreeper extends Worker
         {
             $this->count = $this->_config[$worker]['count'];
         }
+
+        //force to set count = 1 when run as single worker mode
+        if('AppDownloader' == $worker && empty(self::$isRunAsMultiWorker)) 
+        {
+            $this->count = 1;
+        }
+
         $this->count <= 0 && $this->count = 1;
     }
 
@@ -1219,26 +1226,6 @@ EOT;
 
         //remember to change the flag bit
         self::$hasShownGui = true;
-    }
-
-    /**
-     * @brief    rewrite method initWorkers
-     *
-     * @return   void
-     */
-    static protected function initWorkers()
-    {
-        foreach(self::$_workers as $k => $worker)
-        {
-            if(get_class($worker) == 'PHPCreeper\Downloader' && empty(self::$isRunAsMultiWorker)) 
-            {
-                $worker->count = 1;
-            }
-
-            self::$_workers[$k] = $worker;
-        }
-
-        parent::initWorkers();
     }
 
     /**
