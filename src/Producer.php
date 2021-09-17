@@ -83,6 +83,10 @@ class Producer extends PHPCreeper
      */
     public function onWorkerStop()
     {
+        //trigger user callback
+        $returning = $this->triggerUserCallback('onProducerStop', $this);
+        if(false === $returning) return false;
+
         $this->removeTimer()->removeBucket();
     }
 

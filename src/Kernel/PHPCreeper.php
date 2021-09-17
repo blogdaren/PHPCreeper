@@ -352,6 +352,7 @@ class PHPCreeper extends Worker
         get_class($this) == 'PHPCreeper\Producer'   &&  $worker = 'producer';
         get_class($this) == 'PHPCreeper\Downloader' &&  $worker = 'downloader';
         get_class($this) == 'PHPCreeper\Parser'     &&  $worker = 'parser';
+        get_class($this) == 'PHPCreeper\Server'     &&  $worker = 'server';
 
         if(empty($worker)) return $this;
 
@@ -892,7 +893,9 @@ class PHPCreeper extends Worker
     {
         //app worker
         $worker = $this->_config['main']['appworker'] ?? '';
-        empty($worker) && self::showHelpByeBye("the app worker seems not set, plz read the manual if feel puzzled");
+        $class = get_class($this);
+        $_appworker = substr($class, strpos($class, "\\") + 1); 
+        empty($worker) && self::showHelpByeBye("it seems that you forget to call method setConfig() for the `$_appworker` app worker");
 
         //when configure phpcreeper run as single worker
         if(isset($this->_config['main']['multi_worker']) && false === $this->_config['main']['multi_worker'])
