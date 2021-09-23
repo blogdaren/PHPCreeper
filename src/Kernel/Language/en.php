@@ -51,6 +51,7 @@ return [
     'logger_prefix_producer'        => "Producer   | %worker_name% | Process %worker_id%",
     'logger_prefix_downloader'      => "Downloader | %worker_name% | Process %worker_id%",
     'logger_prefix_parser'          => "Parser     | %worker_name% | Process %worker_id%",
+    'logger_prefix_server'          => "Server     | %worker_name% | Process %worker_id%",
 
     //more fields to be configured......
 ];

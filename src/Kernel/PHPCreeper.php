@@ -225,6 +225,15 @@ class PHPCreeper extends Worker
         'onParserMessage'      => null,
         'onParserFindUrl'      => null,
         'onParserExtractField' => null,
+        'onServerStart'        => null,
+        'onServerStop'         => null,
+        'onServerReload'       => null,
+        'onServerConnect'      => null,
+        'onServerClose'        => null,
+        'onServerMessage'      => null,
+        'onServerBufferFull'   => null,
+        'onServerBufferDrain'  => null,
+        'onServerError'        => null,
     );
 
     /**
@@ -894,8 +903,8 @@ class PHPCreeper extends Worker
         //app worker
         $worker = $this->_config['main']['appworker'] ?? '';
         $class = get_class($this);
-        $_appworker = substr($class, strpos($class, "\\") + 1); 
-        empty($worker) && self::showHelpByeBye("it seems that you forget to call method setConfig() for the `$_appworker` app worker");
+        $_appworker = strtolower(substr($class, strpos($class, "\\") + 1)); 
+        empty($worker) && self::showHelpByeBye("it seems that you forget to call `\${$_appworker}->setConfig()` for the app worker");
 
         //when configure phpcreeper run as single worker
         if(isset($this->_config['main']['multi_worker']) && false === $this->_config['main']['multi_worker'])
@@ -937,7 +946,7 @@ class PHPCreeper extends Worker
         if(false === self::checkSpiderName($this->name))
         {
             self::clearScreen();
-            self::showHelpByeBye('worker name `' . $this->name . '` invalid, only alpha or number combined, and 15 characters at most.');
+            self::showHelpByeBye('worker name `' . $this->name . '` invalid, only alpha or number combined, and 30 characters at most.');
         }
 
         //set worker count 
@@ -980,7 +989,7 @@ class PHPCreeper extends Worker
      */
     static public function checkSpiderName($name = '')
     {
-        if(!preg_match("/^[a-zA-Z0-9]{1,15}$/is", $name)) return false;
+        if(!preg_match("/^[a-zA-Z0-9]{1,30}$/is", $name)) return false;
 
         return true;
     }

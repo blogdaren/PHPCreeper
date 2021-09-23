@@ -52,6 +52,7 @@ return [
     'logger_prefix_producer'        => "Producer   | %worker_name% | %worker_id%号进程",
     'logger_prefix_downloader'      => "Downloader | %worker_name% | %worker_id%号进程",
     'logger_prefix_parser'          => "Parser     | %worker_name% | %worker_id%号进程",
+    'logger_prefix_server'          => "Server     | %worker_name% | %worker_id%号进程",
 
     //若干待配字段......
 ];

@@ -559,6 +559,11 @@ class Downloader extends PHPCreeper
         return $connections[$key1][$key2];
     }
 
+    /**
+     * @brief    get all available async task connections
+     *
+     * @return   array
+     */
     public function getAsyncTaskConnection()
     {
         static $connections = [];
