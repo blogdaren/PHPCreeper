@@ -44,7 +44,7 @@ or your company in a straight line and so on.
 
 Besides, as far as I know, almost all of the PHP spider frameworks work as either single-process or synchronous mode, 
 neither distributed nor separate deployment is supported, so crawler performance couldn't be maximized. 
-Today `PHPCreeper` makes everything possible.
+Nowadays `PHPCreeper` makes everything possible.
 
 
 So `PHPCreeper` is mainly designed to：     
@@ -690,11 +690,8 @@ php AppWorker.php connections
 * [https://www.workerman.net](https://www.workerman.net)
 
 ## Donate
-If you you have found PHPCreeper valuable and benefit from it, 
-I'm willing to accept donations from all sides. 
-The donation will continue to be used for the follow-up research, 
-development and maintenance of PHPCreeper as well as the maintenance of the server.
-Thanks a lot.
+As a free worker, if you think [PHPCreeper](http://www.phpcreeper.com) is valuable to you and benefit from it, 
+I'm willing to accept donations from all sides. Thanks a lot.
 
 * By PayPal.me：[PHPCcreeper.paypal.me](https://paypal.me/phpcreeper)
 * By Alipay or Wechat：    
@@ -702,7 +699,7 @@ Thanks a lot.
 ![wechat](./Image/wechat.png)
 
 ## LICENSE
-PHPCreeper is released under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).   
+[PHPCreeper](http://www.phpcreeper.com) is released under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).   
 
 ## DISCLAIMER
 Please **DON'T** use PHPCreeper for businesses which are **NOT PERMITTED BY LAW** in your country. 
