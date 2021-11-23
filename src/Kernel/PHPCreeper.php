@@ -1189,7 +1189,8 @@ EOT;
      */
     static public function getPHPConfiguration()
     {
-        @exec('php --ini', $buffer, $status);
+        $cmd = !empty($_SERVER['_']) ? $_SERVER['_'] : "php";
+        @exec("$cmd --ini", $buffer, $status);
 
         if(empty($buffer) || $status <> 0) 
         {
