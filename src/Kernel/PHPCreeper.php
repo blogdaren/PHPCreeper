@@ -241,13 +241,16 @@ class PHPCreeper extends Worker
      *
      * @return   void
      */
-    public function __construct()
+    public function __construct($config = [])
     {
         //check environment
         self::checkEnvironment();
 
         //set service
         self::setService();
+
+        //set config
+        !empty($config) && $this->setConfig($config);
 
         //important: reset 0 to keep setCount() have higher priority
         $this->count = 0;
@@ -904,7 +907,7 @@ class PHPCreeper extends Worker
         $worker = $this->_config['main']['appworker'] ?? '';
         $class = get_class($this);
         $_appworker = strtolower(substr($class, strpos($class, "\\") + 1)); 
-        empty($worker) && self::showHelpByeBye("it seems that you forget to call `\${$_appworker}->setConfig()` for the app worker");
+        empty($worker) && self::showHelpByeBye("you must pass the `\$config` param to the entity of `new {$class}(\$config)`");
 
         //when configure phpcreeper run as single worker
         if(isset($this->_config['main']['multi_worker']) && false === $this->_config['main']['multi_worker'])
@@ -1029,7 +1032,7 @@ EOT;
             self::showBanner();
             !is_string($msg) && $msg = json_encode($msg);
             self::showSplitLine('Error Report');
-            $error_msg = PHP_EOL . "Runtime Error Report: ";
+            $error_msg = PHP_EOL . "Runtime Error: ";
             //$error_msg = PHP_EOL;
             $error_msg .= wordwrap($msg, 110, "\n        ") . PHP_EOL . PHP_EOL;
             Color::showError($error_msg);

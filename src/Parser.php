@@ -52,9 +52,9 @@ class Parser extends PHPCreeper
      *
      * @return   void
      */
-    public function __construct()
+    public function __construct($config = [])
     {
-        parent::__construct();
+        parent::__construct($config);
     }
 
     /**
