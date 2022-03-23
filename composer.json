@@ -5,6 +5,16 @@
     "homepage": "http://www.phpcreeper.com",
     "description": "A new generation of multi-process asynchronous event-driven spider engine based on Workerman",
     "license": "MIT", 
+    "authors": [
+        {   
+            "name": "blogdaren",
+            "email": "blogdaren@163.com"
+        }   
+    ],
+    "support": {
+        "wiki": "http://www.phpcreeper.com/docs/",
+        "source": "https://github.com/blogdaren/PHPCreeper"
+    },
     "require": {
         "php": ">=7.0.0",
         "workerman/workerman": "^3.5",
