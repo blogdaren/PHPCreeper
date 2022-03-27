@@ -29,8 +29,8 @@ The chinese document is relatively complete, and the english document will be ke
 * **全靠兴趣和热爱支撑，没有任何资源，文档访问速度慢没办法，尽力了.**
 
 ## 有问必答
-* 左侧绿色二维码为VX交流群：&nbsp;phpcreeper 【想要进微信群的请先加此专属微信】  
-* 右侧灰色二维码为QQ交流群：1062098893【群主热心、有问必答、欢迎入群】 
+* 左侧绿色二维码为VX交流群：&nbsp;phpcreeper 【想要进微信群的请先加此专属微信、请备注入群】  
+* 右侧灰色二维码为QQ交流群：1062098893【群主热心、有问必答、入群口令：phpcreeper】 
 * 上述两个群均围绕 [爬山虎引擎](http://www.phpcreeper.com) 和 [深入PHP内核源码](https://www.bilibili.com/video/BV1pP4y1G7ae) 交流，
 观看视频请移步[B站](https://www.bilibili.com/video/BV1pP4y1G7ae)
 
