@@ -10,8 +10,14 @@
 ## What is it
 
 [PHPCreeper](http://www.phpcreeper.com) is a new generation of multi-process 
-asynchronous event-driven spider engine based on [Workerman](https://www.workerman.net)    
-爬山虎是基于workerman开发的全新一代多进程异步事件驱动型PHP爬虫引擎
+asynchronous event-driven spider engine based on [Workerman](https://www.workerman.net).    
+
+* Focus on efficient agile development, and make the crawler job become more easy   
+* Solve the performance and scalability bottlenecks of traditional crawler frameworks
+
+爬山虎是基于workerman开发的全新一代多进程异步事件驱动型PHP爬虫引擎, 它能够帮助我们：
+* 专注于高效敏捷开发，让爬取工作变得更加简单.
+* 致力于解决传统PHP爬虫框架的性能和扩展瓶颈.
 
 ## Documentation
 The chinese document is relatively complete, and the english document will be kept up-to-date constantly here.   
@@ -35,37 +41,8 @@ The chinese document is relatively complete, and the english document will be ke
 ![EnglishVersion1](./Image/EnglishVersion1.png)
 ![EnglishVersion2](./Image/EnglishVersion2.png)
 
-## Todo List
-- [x] 轻量级关系型数据库：Lightweight relational database like Medoo style
-- [ ] 反爬之IP生态代理池：&nbsp;IP ecological agent pool of Anti-Spider strategy
-- [ ] 图片验证码识别技术：Image verification code recognition technology
-- [ ] 智能化识别网页数据：Intelligent recognition of the web page content
-- [ ] 爬虫项目管理可视化：The crawler application management visualization
-
-## Motivation
-Nowadays, there are all kinds of language version of the spider frameworks which have been born, such as: 
-`Spiderman based on Java`、`Scrapy based on Python`、`go-colly based on Go` etc. However, we also need to realize that：    
-
-As we are faced with business scenarios like crawler jobs where any language is appropriate, 
-no matter whether you are a novice or a PHP preconceived master who is not so familiar with 
-other programming languages, we strongly recommend that you should give priority to an excellent spider 
-engine written in PHP. So why? Because PHP is absolutely optimal for agility, and you can play PHP with ease, 
-and it could be much more expensive to use some other languages, and it can reduce the development costs for you 
-or your company in a straight line and so on.
-
-Besides, as far as I know, almost all of the PHP spider frameworks work as either single-process or synchronous mode, 
-neither distributed nor separate deployment is supported, so crawler performance couldn't be maximized. 
-Nowadays `PHPCreeper` makes everything possible.
-
-
-So `PHPCreeper` is mainly designed to：     
-
-* Focus on efficient agile development, and make the crawling job become more easy   
-* Solve the performance and extension problems of traditional PHP crawler frameworks    
-
-
 ## Features
-* Inherit all features from workerman
+* Inherit all features from [Workerman](https://www.workerman.net)
 * Free to customize various plugins and callback
 * Free to customize the third-party middleware
 * Support for netflow traffic limitaion
@@ -73,8 +50,8 @@ So `PHPCreeper` is mainly designed to：
 * Support for separated deployment
 * Support for socket programming
 * Support multi-language environment
+* Support for agile development with [PHPCreeper-Application](https://github.com/blogdaren/PHPCreeper-Application)
 * Use PHPQuery as the elegant content extractor
-* Support for agile development with PHPCreeper-Application
 * With high performance and strong scalability
 * With rich and human-readable development documents 
 
@@ -93,13 +70,13 @@ The recommended way to install PHPCreeper is through [Composer](https://getcompo
 composer require blogdaren/phpcreeper
 ```
 
-## Usage: not depend on the application framework
+## Usage: NOT Depend On The PHPCreeper Application Framework
 Firstly, we should know there is another official matched application framework 
 named [PHPCreeper-Application](https://github.com/blogdaren/PHPCreeper-Application) 
 which is published simultaneously for your development convenience,
 although this framework is not necessary, we strongly recommend that you use it for 
 business development, thus it's no doubt that it will greatly improve your job efficiency.
-However, somebody still wish to write the code which not depends on the framework, it is 
+However, somebody still wanna write the code which **NOT** depends on the framework, it is 
 also easy to make it.   
 
 Assume we wanna capture the weather forecasts for the next 7 days, now let's take an example to illustrate the usage:
@@ -180,20 +157,20 @@ $parser->onParserExtractField = function($parser, $download_data, $fields){
 PHPCreeper::start();
 ```
 
-## Usage: depend on the application framework
+## Usage: Depend On The PHPCreeper Application Framework
 Next, let's use the official application framework to complete the same task above efficiently:    
 
 
 #### *Step-1：Download PHPCreeper-Application Framework*
 ```php
-git clone https://github.com/blogdaren/PHPCreeper-Application
+git clone https://github.com/blogdaren/PHPCreeper-Application /path/to/myproject
 ```
 
 #### *Step-2：Load the PHPCreeper Core Engine*
 
-1、Switch to the PHPCreeper-Application base directory:
+1、Switch to the application base directory:
 ```php
-cd /path/to/PHPCreeper-Application
+cd /path/to/myproject
 ```
 
 2、Load the PHPCreeper core engine:
@@ -326,8 +303,8 @@ return array(
    ),
 );
 ```
-In fact, most of the configuration parameters are not used frequently, it will automatically read 
-the default value from engine, so the configuration can be simplified like this:
+In fact, most of the configuration parameters are not used frequently, it will read the 
+default value from engine automatically, so the configuration can be simplified like this:
 ```
 return array(
     'task' => array(
