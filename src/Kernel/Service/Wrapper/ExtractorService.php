@@ -276,6 +276,10 @@ class ExtractorService
             }
         }
 
+        //fix OOM bug caused by the static array with phpQuery::$documents
+        $this->document->unloadDocument();
+        //fix OOM bug caused by the static array with phpQuery::$documents
+
         return $result;
     }
 
