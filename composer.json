@@ -4,7 +4,7 @@
     "keywords": ["spider", "crawler", "multi-process", "event-loop", "asynchronous"],
     "homepage": "http://www.phpcreeper.com",
     "description": "A new generation of multi-process asynchronous event-driven spider engine based on Workerman",
-    "license": "Apache 2.0", 
+    "license": "Apache-2.0", 
     "authors": [
         {   
             "name": "blogdaren",
