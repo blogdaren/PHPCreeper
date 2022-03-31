@@ -15,7 +15,7 @@ asynchronous event-driven spider engine based on [Workerman](https://www.workerm
 * Focus on efficient agile development, and make the crawler job become more easy   
 * Solve the performance and scalability bottlenecks of traditional crawler frameworks
 
-爬山虎是基于workerman开发的全新一代多进程异步事件驱动型PHP爬虫引擎, 它能够帮助我们：
+爬山虎是基于workerman开发的全新一代多进程异步事件驱动型PHP爬虫引擎, 它有助于我们：
 * 专注于高效敏捷开发，让爬取工作变得更加简单.
 * 解决传统型PHP爬虫框架的性能和扩展瓶颈问题.
 
@@ -28,8 +28,8 @@ The chinese document is relatively complete, and the english document will be ke
 * 中文开发文档备节点：[http://www.phpcreeper.com/docs/](http://www.phpcreeper.com/docs/)
 * **全靠兴趣和热爱支撑，没有任何资源和平台，文档访问速度慢没办法，尽力了.**
 
-## 有问必答
-* 左侧绿色二维码为VX交流群：&nbsp;phpcreeper 【想要进微信群的请先加此专属微信、请备注入群】  
+## 技术交流
+* 左侧绿色二维码为VX交流群：&nbsp;phpcreeper 【想进微信群的请先加此专属微信并备注：入群】  
 * 右侧灰色二维码为QQ交流群：1062098893【群主热心、有问必答、入群口令：phpcreeper】 
 * 上述两个群均围绕 [爬山虎引擎](http://www.phpcreeper.com) 和 [深入PHP内核源码](https://www.bilibili.com/video/BV1pP4y1G7ae) 
 技术交流，观看PHP内核视频请移步[B站](https://www.bilibili.com/video/BV1pP4y1G7ae)

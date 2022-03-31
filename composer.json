@@ -30,6 +30,5 @@
         "psr-4": {
             "PHPCreeper\\" : "src/"
         }   
-    },  
-    "minimum-stability": "dev"
+    } 
 }
