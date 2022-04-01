@@ -40,14 +40,26 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const  CURRENT_VERSION = '1.3.0';
+    const CURRENT_VERSION = '1.3.1';
 
     /**
      * valid assemble package methods
      *
      * @var array
      */
-    const  ALLOWED_ASSEMBLE_PACKAGE_METHODS = ['json', 'serialize', 'msgpack'];
+    const ALLOWED_ASSEMBLE_PACKAGE_METHODS = ['json', 'serialize', 'msgpack'];
+
+    /**
+     * buit-in middle classes 
+     *
+     * @var array
+     */
+    const PHPCreeper_BUILTIN_MIDDLE_CLASSES = [
+        'producer'   => 'PHPCreeper\Producer',
+        'downloader' => 'PHPCreeper\Downloader',
+        'parser'     => 'PHPCreeper\Parser',
+        'server'     => 'PHPCreeper\Server',
+    ];
 
     /**
      * http client
@@ -361,10 +373,14 @@ class PHPCreeper extends Worker
      */
     public function initLogger()
     {
-        get_class($this) == 'PHPCreeper\Producer'   &&  $worker = 'producer';
-        get_class($this) == 'PHPCreeper\Downloader' &&  $worker = 'downloader';
-        get_class($this) == 'PHPCreeper\Parser'     &&  $worker = 'parser';
-        get_class($this) == 'PHPCreeper\Server'     &&  $worker = 'server';
+        foreach(SELF::PHPCreeper_BUILTIN_MIDDLE_CLASSES as $k => $class_name)
+        {
+            if(get_class($this) == $class_name || is_subclass_of($this, $class_name))
+            {
+                $worker = $k;
+                break;
+            }
+        }
 
         if(empty($worker)) return $this;
 
