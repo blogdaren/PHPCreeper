@@ -40,7 +40,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const CURRENT_VERSION = '1.3.1';
+    const CURRENT_VERSION = '1.3.2';
 
     /**
      * valid assemble package methods
@@ -50,11 +50,11 @@ class PHPCreeper extends Worker
     const ALLOWED_ASSEMBLE_PACKAGE_METHODS = ['json', 'serialize', 'msgpack'];
 
     /**
-     * buit-in middle classes 
+     * built-in middle classes 
      *
      * @var array
      */
-    const PHPCreeper_BUILTIN_MIDDLE_CLASSES = [
+    const PHPCREEPER_BUILTIN_MIDDLE_CLASSES = [
         'producer'   => 'PHPCreeper\Producer',
         'downloader' => 'PHPCreeper\Downloader',
         'parser'     => 'PHPCreeper\Parser',
@@ -281,6 +281,16 @@ class PHPCreeper extends Worker
         //check app worker
         defined('USE_PHPCREEPER_APPLICATION_FRAMEWORK') && self::checkAppWorker();
 
+        //only allow to run downloader worker in single worker mode
+        if(false === self::$isRunAsMultiWorker) 
+        {
+            $downloader_class = self::PHPCREEPER_BUILTIN_MIDDLE_CLASSES['downloader'];
+            if(!$this instanceof $downloader_class) return;
+
+            //keep [count === 1] for the unique downloader worker in single worker mode
+            $this->count = 1;
+        }
+
         //init socket
         $socket_address = $this->getServerSocketAddress();
         $socket_context = $this->getServerSocketContext();
@@ -344,6 +354,30 @@ class PHPCreeper extends Worker
     }
 
     /**
+     * @brief    enable or disable multi worker mode
+     *
+     * @param    boolean $mode
+     *
+     * @return   null
+     */
+    static public function enableMultiWorkerMode($mode = true)
+    {
+        !is_bool($mode) && $mode = true;
+
+        self::$isRunAsMultiWorker = (true !== $mode) ? false : true;
+    }
+
+    /**
+     * @brief    get worker run mode
+     *
+     * @return   string
+     */
+    static public function getWorkerMode()
+    {
+        return true === self::$isRunAsMultiWorker ? 'Multi' : 'Single';
+    }
+
+    /**
      * @brief    init middleware     
      *
      * @return   object
@@ -373,9 +407,9 @@ class PHPCreeper extends Worker
      */
     public function initLogger()
     {
-        foreach(SELF::PHPCreeper_BUILTIN_MIDDLE_CLASSES as $k => $class_name)
+        foreach(SELF::PHPCREEPER_BUILTIN_MIDDLE_CLASSES as $k => $class_name)
         {
-            if(get_class($this) == $class_name || is_subclass_of($this, $class_name))
+            if($this instanceof $class_name)
             {
                 $worker = $k;
                 break;
@@ -913,7 +947,7 @@ class PHPCreeper extends Worker
     }
 
     /**
-     * @brief    check base worker    
+     * @brief    check app worker    
      *
      * @return   void | exit
      */
@@ -922,7 +956,6 @@ class PHPCreeper extends Worker
         //app worker
         $worker = $this->_config['main']['appworker'] ?? '';
         $class = get_class($this);
-        $_appworker = strtolower(substr($class, strpos($class, "\\") + 1)); 
         empty($worker) && self::showHelpByeBye("you must pass the `\$config` param to the entity of `new {$class}(\$config)`");
 
         //when configure phpcreeper run as single worker
@@ -930,28 +963,17 @@ class PHPCreeper extends Worker
         {
             self::$isRunAsMultiWorker = false;
             $this->_config['main']['start'] = [];
-            $this->_config['main']['start']['AppDownloader'] = true;
+            $downloader_class = self::PHPCREEPER_BUILTIN_MIDDLE_CLASSES['downloader'];
+            $this instanceof $downloader_class && $this->_config['main']['start'][$worker] = true;
             Configurator::reset('globalConfig', $this->_config);
-
-            if('AppDownloader' <> $worker)
-            {   
-                self::showHelpByeBye("only allowed to run `AppDownloader.php` when run as single worker mode");
-            }   
         }
 
-        //try to stop executing the given worker as u like
-        if(isset($this->_config['main']['start'][$worker]) && false === $this->_config['main']['start'][$worker])
-        {   
-            $_worker = ucfirst($worker);
-            self::showHelpByeBye("not allowed to run {$_worker}, plz check the app `{$worker}` worker config.");
-        }   
-
-        //check redis extension when run as multi worker mode
-        if(self::$isRunAsMultiWorker)
+        //check redis extension in multi worker mode
+        if(true === self::$isRunAsMultiWorker)
         {
             if(!Tool::checkWhetherPHPExtensionIsLoaded('redis', false)) 
             {
-                self::showHelpByeBye('plz make sure the REDIS extension is installed when run as multi worker mode');
+                self::showHelpByeBye('plz make sure the REDIS extension is installed in multi worker mode');
             }
         }
 
@@ -972,12 +994,6 @@ class PHPCreeper extends Worker
         if(0 == $this->count && !empty($this->_config[$worker]['count']) && $this->_config[$worker]['count'] > 0) 
         {
             $this->count = $this->_config[$worker]['count'];
-        }
-
-        //force to set count = 1 when run as single worker mode
-        if('AppDownloader' == $worker && empty(self::$isRunAsMultiWorker)) 
-        {
-            $this->count = 1;
         }
 
         $this->count <= 0 && $this->count = 1;
@@ -1267,9 +1283,9 @@ EOT;
      */
     static public function runAll()
     {
-        foreach(self::$_phpcreeperInstances as $w)
+        foreach(self::$_phpcreeperInstances as $creeper)
         {
-            $w->boot();
+            $creeper->boot();
         }
 
         Worker::runAll();
