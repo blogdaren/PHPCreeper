@@ -89,8 +89,10 @@ use PHPCreeper\Producer;
 use PHPCreeper\Downloader;
 use PHPCreeper\Parser;
 
-//uncomment the line below to enable the single worker mode if you want to run without redis
-//PHPCreeper::$isRunAsMultiWorker = false;
+//uncomment the line below to enable the single worker mode so that we can paly without redis,
+//however, you should note that you can only run all the downloader worker in this case.
+//PHPCreeper::$isRunAsMultiWorker = false;  
+//PHPCreeper::enableMultiWorkerMode(false); 【version >= 1.3.2】 
 
 //producer instance
 $producer = new Producer;
