@@ -71,7 +71,7 @@ composer require blogdaren/phpcreeper
 ```
 
 ## Usage: NOT Depend On The PHPCreeper Application Framework
-Firstly, there is another official matched Application Framework 
+Firstly, there is another matched Application Framework 
 named [PHPCreeper-Application](https://github.com/blogdaren/PHPCreeper-Application) 
 which is published simultaneously for your development convenience,
 although this framework is not necessary, we strongly recommend that you use it for 
@@ -79,7 +79,7 @@ business development, thus it's no doubt that it will greatly improve your job e
 However, somebody still wanna write the code which **NOT** depends on the framework, it is 
 also easy to make it.   
 
-Assume we wanna capture the weather forecasts for the next 7 days, now let's take an example to illustrate the usage:
+Assume we wanna capture the github top 10 repos ranked by stars, now let's take an example to illustrate the usage:
 ```php
 <?php 
 require "./vendor/autoload.php";
@@ -101,29 +101,25 @@ $producer->onProducerStart = function($producer){
     //task can be configured like this, here the rule name like `r1` should be given:
     $task = array(
         'url' => array(
-            "r1" => "http://www.weather.com.cn/weather/101010100.shtml",
+            "r1" => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
         ),
         'rule' => array(
             "r1" => array(
-                'time' => ['div#7d ul.t.clearfix h1',      'text'],
-                'wea'  => ['div#7d ul.t.clearfix p.wea',   'text'],
-                'tem'  => ['div#7d ul.t.clearfix p.tem',   'text'],
-                'wind' => ['div#7d ul.t.clearfix p.win i', 'text'],
-            ), 
+                'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
+                'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
+            ),  
         ),
     );
 
     //task can also be configured like this, here `md5($url)` will be the rule name:
     $task = array(
         'url' => array(
-            "http://www.weather.com.cn/weather/101010100.shtml",
+            "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
         ),
         'rule' => array(
             array(
-                'time' => ['div#7d ul.t.clearfix h1',      'text'],
-                'wea'  => ['div#7d ul.t.clearfix p.wea',   'text'],
-                'tem'  => ['div#7d ul.t.clearfix p.tem',   'text'],
-                'wind' => ['div#7d ul.t.clearfix p.win i', 'text'],
+                'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
+                'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
             ), 
         ),
     );
@@ -131,7 +127,7 @@ $producer->onProducerStart = function($producer){
     //various context settings
     $context = array(
         //'cache_enabled'   => true,                              
-        //'cache_directory' => '/tmp/task/download/' . date('Ymd'), 
+        //'cache_directory' => '/tmp/DownloadCache4PHPCreeper/',
         //..........................
     );
 
@@ -160,7 +156,7 @@ PHPCreeper::start();
 ```
 
 ## Usage: Depend On The PHPCreeper Application Framework
-Next, let's use the official application framework to complete the same task above efficiently:    
+Now, let's do the same job based on the Application Framework:    
 
 
 #### *Step-1：Download PHPCreeper-Application Framework*
@@ -192,58 +188,59 @@ php  Application/Sbin/Creeper
 ![AppAssistant](./Image/AppAssistantEnglish.png)
 
  #### *Step-4：Create One Application*
-1、Create one spider application named **weather**:
+1、Create one spider application named **github**:
 ```
-php Application/Sbin/Creeper make weather --en
+php Application/Sbin/Creeper make github --en
 ```
-2、The full process of building looks like this:   
+2、The complete execution process looks like this:   
 
-![AppAssistant](./Image/AppWeatherEnglish.png)
+![AppAssistant](./Image/AppGithubEnglish.png)
 
 As matter of fact, we have accomplished all the jobs at this point,
-you just need to run `php weather.php start` to see what has happened, 
+you just need to run `php github.php start` to see what has happened, 
 but you still need to finish the rest step of the work if you wanna
 do some elaborate work or jobs.
 
 #### *Step-5：Business Configuration*
 1、Switch to the application config direcory:
 ```
-cd Application/Spider/Weather/Config/
+cd Application/Spider/Github/Config/
 ```
 2、Edit the global config file named **global.php**:   
 ```
-ATTENTION: don't change this file unless you want to introduce a new global sub-config file
+Basically, there is no need to change this file unless you wanna create a new global sub-config file
 ```
-3、Edit the global sub-config file named **database.php** like this:
+3、Edit the global sub-config file named **database.php**:
 ```php
 <?php
 return array(
     'redis' => array(
-        'prefix' => 'Weather',
+        'prefix' => 'Github',
         'host'   => '127.0.0.1',
         'port'   => 6379,
         'database' => 0,
     ),
 );
 ```
-4、Edit the global sub-config file named **main.php** like this:
+4、Edit the global sub-config file named **main.php**:
 ```php
 return array(
     //set the locale, currently support Chinese and English (optional, default `zh`)
     'language' => 'en',
 
-    //phpcreeper has two modes to work: single worker mode and multi workers mode
-    //the former is seldomly to use, only applys to some simple jobs, now you have 
-    //the chance to use the built-in php queue service without redis; the latter 
-    //is frequently to use to handle many more complex jobs, especially distributed,
+    //PHPCreeper has two modes to work: single worker mode and multi workers mode,   
+    //the former is seldomly to use, the only advantage is that you can play it   
+    //without redis-server, because it uses the PHP built-in queue service, so it    
+    //only applys to some simple jobs ; the latter is frequently used to handle    
+    //many more complex jobs, especially for distributed or separated work or jobs,    
     //in this way, you must enable the redis server (optional, default `true`)
     'multi_worker'  => true,
 
-    //whether to boot any worker instance you want (optional, default `true`)
+    //whether to start the given worker(s) instance or not(optional, default `true`)
     'start' => array(
-        'WeatherProducer'      => true,
-        'WeatherDownloader'    => true,
-        'WeatherParser'        => true,
+        'GithubProducer'      => true,
+        'GithubDownloader'    => true,
+        'GithubParser'        => true,
     ),
 
     'task' => array(
@@ -283,40 +280,29 @@ return array(
         //index the target data set, and we can omit the key, then phpcreeper will use
         //the `mdt($task_url)` as the default rule name
         'url' => array(
-            "r1" => "http://www.weather.com.cn/weather/101010100.shtml",
+            "r1" => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
         ),
 
         //please refer to the "How to set extractor rule" section for details
         'rule' => array(
-            //"r1"    => [set the business rule here], 
-            //"r2"    => [set the business rule here], 
-            //[set the business rule here], 
+            //well, don't worry, just keep empty, we will append the rule after a while
+            //"r1" => [set the business rule here], 
         ),
 
-        //set the context params which is compatible to guzzle for http request, cuz `guzzle`
-        //is the default http client, so reference to the guzzle manual if any trouble
+        //set the context params which is compatible to guzzle for http request, because 
+        //`guzzle` is the default http client, so refer to the guzzle manual if any trouble
         'context' => array(
-            //whether to enable the downlod cache (optional, default `false`)
+            //whether to enable the downlod cache or not (optional, default `false`)
             'cache_enabled'   => false,                               
 
             //set the download cache directory (optional, default is the system tmp directory)
-            'cache_directory' => '/tmp/task/download/' . date('Ymd'), 
+            'cache_directory' => '/tmp/DownloadCache4PHPCreeper/', 
         ),
    ),
 );
+
 ```
-In fact, most of the configuration parameters are not used frequently, it will read the 
-default value from engine automatically, so the configuration can be simplified like this:
-```
-return array(
-    'task' => array(
-        'url' => array(
-            "r1" => "http://www.weather.com.cn/weather/101010100.shtml",
-        ),
-    ),
-);
-```
-5、Edit the business worker config file named **AppProducer.php** like this：
+5、Edit the business worker config file named **AppProducer.php**：
 ```
 <?php
 return array(
@@ -325,7 +311,8 @@ return array(
     'interval' => 1,
 );
 ```
-6、Edit the business worker config file named **AppDownloader.php** like this：
+
+6、Edit the business worker config file named **AppDownloader.php**：
 ```php
 <?php
 return array(
@@ -340,13 +327,9 @@ return array(
             ),
         ),
     ),
-    'cache' => array(
-        'enabled'   => false,
-        'directory' => '/tmp/logs/data/' . date('Ymd'),
-    ),
 );
 ```
-7、Edit the business worker config file named **AppParser.php** like this：
+7、Edit the business worker config file named **AppParser.php**：
 ```php
 <?php
 return array(
@@ -364,21 +347,19 @@ return array(
 #### *Step-6：Set Business Rule*
 1、Switch to the PHPCreeper-Application base directory again:
 ```
-cd Application/Spider/Weather/Config/
+cd Application/Spider/Github/Config/
 ```
-2、Go back to Edit **main.php** again:
+2、Edit **main.php** again and append the business rule:
 ```php
 return array(
     'task' => array(
         'url' => array(
-            "r1" => "http://www.weather.com.cn/weather/101010100.shtml",
+            "r1" => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
         ),
         'rule' => array(
             "r1" => array(
-                'time' => ['div#7d ul.t.clearfix h1',      'text'],
-                'wea'  => ['div#7d ul.t.clearfix p.wea',   'text'],
-                'tem'  => ['div#7d ul.t.clearfix p.tem',   'text'],
-                'wind' => ['div#7d ul.t.clearfix p.win i', 'text'],
+                'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
+                'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
             ), 
         ),
    ),
@@ -431,11 +412,11 @@ public function onDownloaderMessage($downloader, $parser_reply)
 
 public function onBeforeDownload($downloader, $task)
 {
-    //here we can reset the $task array here and be sure to return it
+    //here we can reset the $task and be sure to return it
     //$task = [...];
     //return $task;
 
-    //here we can change the context parameters when making a http request
+    //here we can change the context parameters when creating a http request
     //$downloader->httpClient->setConnectTimeout(3);
     //$downloader->httpClient->setTransferTimeout(10);
     //$downloader->httpClient->setProxy('http://180.153.144.138:8800');
@@ -448,7 +429,7 @@ public function onStartDownload($downloader, $task)
 public function onAfterDownload($downloader, $download_data, $task)
 {
     //here we can save the downloaded source data to a file
-    //file_put_contents("/path/to/downloadData.txt", $download_data);
+    //file_put_contents("/path/to/DownloadData.txt", $download_data);
 }
 ```
 3、Write business callback for AppParser:
@@ -467,7 +448,7 @@ public function onParerReload($parser)
 
 public function onParerMessage($parser, $connection, $download_data)
 {
-    //we can still view the current task entity 
+    //we can view the current task entity 
     //pprint($parser->task);
 }
 
@@ -479,8 +460,9 @@ public function onParserFindUrl($parser, $url)
 
 public function onParserExtractField($parser, $download_data, $fields)
 {
-    //here we can print out the business data extracted by rule
+    //here we got the expected data successfully extracted by rule
     //!empty($fields) && var_dump($fields, __METHOD__);
+    pprint($fields['r1']);
 
     //here we can save the business data into database like mysql、redis and so on
     //DB::save($fields);
@@ -496,14 +478,14 @@ it can be distributed or deployed separately.
 
 1、Or Global Startup:
 ```
-php weather.php start
+php github.php start
 ```
 
 2、Or Single Startup:
 ```
-php Application/Spider/Weather/AppProducer.php start
-php Application/Spider/Weather/AppDownloader.php start
-php Application/Spider/Weather/AppParser.php start
+php Application/Spider/Github/AppProducer.php start
+php Application/Spider/Github/AppDownloader.php start
+php Application/Spider/Github/AppParser.php start
 ```
 
 ## How to set extractor rule
@@ -611,18 +593,18 @@ Now we can get DBO and start the query or the other operation as you like:
 ```php
 $downloader->onAfterDownloader = function($downloader){
     //dbo single instance and we can pass the DSN string `test`
-    $downloader->getDbo('test')->select('user', '*');
+    $downloader->getDbo('test')->select('title', '*');
     
     //dbo single instance and we can pass the configuration array
     $config = Configurator::get('globalConfig/database/dbo/test')
-    $downloader->getDbo($config)->select('user', '*');
+    $downloader->getDbo($config)->select('title', '*');
 
     //dbo new instance and we can pass the DSN string `test`
-    $downloader->newDbo('test')->select('user', '*');
+    $downloader->newDbo('test')->select('title', '*');
 
     //dbo new instance and we can pass the configuration array
     $config = Configurator::get('globalConfig/database/dbo/test')
-    $downloader->newDbo($config)->select('user', '*');
+    $downloader->newDbo($config)->select('title', '*');
 };
 ```
 
@@ -686,6 +668,7 @@ I'm willing to accept donations from all sides. Thanks a lot.
 * By PayPal.me：[PHPCcreeper.paypal.me](https://paypal.me/phpcreeper)
 * By Alipay or Wechat：    
 ![alipay](./Image/alipay.png)
+&nbsp;&nbsp;&nbsp;&nbsp;
 ![wechat](./Image/wechat.png)
 
 ## LICENSE
