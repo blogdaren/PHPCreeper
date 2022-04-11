@@ -71,7 +71,7 @@ composer require blogdaren/phpcreeper
 ```
 
 ## Usage: NOT Depend On The PHPCreeper Application Framework
-Firstly, we should know there is another official matched application framework 
+Firstly, there is another official matched Application Framework 
 named [PHPCreeper-Application](https://github.com/blogdaren/PHPCreeper-Application) 
 which is published simultaneously for your development convenience,
 although this framework is not necessary, we strongly recommend that you use it for 
@@ -89,7 +89,7 @@ use PHPCreeper\Producer;
 use PHPCreeper\Downloader;
 use PHPCreeper\Parser;
 
-//uncomment the line below to enable the single worker mode so that we can paly without redis,
+//uncomment the line below to enable the single worker mode so that we can run without redis,
 //however, you should note that you can only run all the downloader worker in this case.
 //PHPCreeper::$isRunAsMultiWorker = false;  
 //PHPCreeper::enableMultiWorkerMode(false); 【version >= 1.3.2】 
