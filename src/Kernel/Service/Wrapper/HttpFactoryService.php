@@ -18,7 +18,7 @@ class HttpFactoryService
     /**
      * http client instance
      *
-     * @var object
+     * @var array
      */
     static private $_client = null;
 

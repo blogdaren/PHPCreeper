@@ -19,7 +19,7 @@ class QueueFactoryService
     /**
      * queue client instance
      *
-     * @var object
+     * @var array
      */
     static private $_client = null;
 

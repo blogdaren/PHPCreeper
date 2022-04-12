@@ -18,7 +18,7 @@ class DropDuplicateService
     /**
      * drop duplicate filter
      *
-     * @var object
+     * @var array
      */
     static private $_dropDuplicateFilter = null;
 
