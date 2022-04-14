@@ -160,40 +160,39 @@ Now, let's do the same job based on the Application Framework:
 
 
 #### *Step-1：Download PHPCreeper-Application Framework*
-```php
+```
 git clone https://github.com/blogdaren/PHPCreeper-Application /path/to/myproject
 ```
 
 #### *Step-2：Load the PHPCreeper Core Engine*
 
 1、Switch to the application base directory:
-```php
+```
 cd /path/to/myproject
 ```
 
 2、Load the PHPCreeper core engine:
-```php
+```
 composer require blogdaren/phpcreeper
 ```
 
 #### *Step-3：Run PHPCreeper-Application Assistant*
 
 1、Run PHPCreeper-Application assistant:
-```php
+```
 php  Application/Sbin/Creeper
-
 ```
 2、The terminal output will look like this:    
 
 ![AppAssistant](./Image/AppAssistantEnglish.png)
 
- #### *Step-4：Create One Application*
+#### *Step-4：Create One Application*
 1、Create one spider application named **github**:
 ```
 php Application/Sbin/Creeper make github --en
 ```
-2、The complete execution process looks like this:   
 
+2、The complete execution process looks like this:   
 ![AppAssistant](./Image/AppGithubEnglish.png)
 
 As matter of fact, we have accomplished all the jobs at this point,
@@ -303,7 +302,7 @@ return array(
 
 ```
 5、Edit the business worker config file named **AppProducer.php**：
-```
+```php
 <?php
 return array(
     'name' => 'producer1',
@@ -345,11 +344,11 @@ return array(
 );
 ```
 #### *Step-6：Set Business Rule*
-1、Switch to the PHPCreeper-Application base directory again:
+1、Switch to the application config directory again:
 ```
 cd Application/Spider/Github/Config/
 ```
-2、Edit **main.php** again and append the business rule:
+2、Edit **main.php** to append the business rules:
 ```php
 return array(
     'task' => array(
@@ -371,17 +370,8 @@ return array(
 public function onProducerStart($producer)
 {
     //here we can add another new task 
-    /*$task = array(
-         'url' => array(
-             'r1' => 'https://baike.baidu.com/item/%E5%8C%97%E4%BA%AC/128981?fr=aladdin',
-         ),
-         'rule' => array(
-             'r1' => array(
-                 'airport' => ['dl.basicInfo-right dd.basicInfo-item.value:eq(5)', 'text'],
-             ),
-         ),
-    );
-    $producer->newTaskMan()->createMultiTask($task);*/
+    //$producer->newTaskMan()->createTask($task);
+    //$producer->newTaskMan()->createMultiTask($tasks);
 }
 
 public function onProducerStop($producer)
@@ -433,7 +423,7 @@ public function onAfterDownload($downloader, $download_data, $task)
 }
 ```
 3、Write business callback for AppParser:
-```
+```php
 public function onParserStart($parser)
 {
 }
@@ -448,7 +438,7 @@ public function onParerReload($parser)
 
 public function onParerMessage($parser, $connection, $download_data)
 {
-    //we can view the current task
+    //here we can view the current task
     //pprint($parser->task);
 }
 
