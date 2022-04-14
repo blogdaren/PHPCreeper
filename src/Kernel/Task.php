@@ -31,7 +31,7 @@ class Task
      *
      * @var string
      */
-    public $type = 'text';
+    public $type = '';
 
     /**
      * task url 
@@ -45,7 +45,7 @@ class Task
      *
      * @var string
      */
-    public $method = 'get';
+    public $method = '';
 
     /**
      * request referer
@@ -94,6 +94,14 @@ class Task
      *
      * @param    object  $phpcreeper
      * @param    array   $options
+     *
+     * 
+     * >> pay attention to the runtime priority of global task option:   
+     * setXXX() -> __construct() --> default_global_config
+     *
+     * >> the priority only applies to the options listed below:
+     * type | method | context
+     *
      *
      * @return   void
      */
@@ -213,16 +221,16 @@ class Task
         $rule_name = $this->getRuleName();
         if(empty($rule_name) || !is_string($rule_name)) $rule_name = md5($input['url']);
 
-        $type       = $input['type']      ?? $this->getType();
-        $url        = $input['url'];
-        $method     = $input['method']    ?? $this->getMethod();
-        $referer    = $input['referer']   ?? $this->getReferer();
-        $rule_name  = $rule_name;
-        $rule       = $input['rule']      ?? $this->getRule();
+
+        $url     = $input['url'];
+        $type    = (empty($input['type']) || !is_string($input['type'])) ? $this->getType() : $input['type'];
+        $method  = (empty($input['method']) || !is_string($input['method'])) ? $this->getMethod() : $input['method'];
+        $referer = (empty($input['referer']) || !is_string($input['referer'])) ? $this->getReferer() : $input['referer'];
+        $rule    = (empty($input['rule']) || !is_array($input['rule'])) ? $this->getRule() : $input['rule'];
         $rule_depth = Tool::getArrayDepth($rule);
         2 <> $rule_depth && $rule = [];
         $depth      = $input['depth'];
-        $context    = $input['context']   ?? $this->getContext();
+        $context    = $this->getContext($input['context'] ?? []);
         $task_id    = $this->createTaskId();
 
         $task_data = [
@@ -262,12 +270,12 @@ class Task
         }
 
         empty($task['url']) && $task['url'] = $this->getUrl();
-        $urls = !is_array($task['url']) ? array($task['url']) : $task['url'];
-        $type = (empty($task['type']) || !is_string($task['type'])) ? $this->getType() : $task['type'];
-        $method  = $task['method']  ?? $this->getMethod();
-        $referer = $task['referer'] ?? $this->getReferer();
-        $context = $task['context'] ?? $this->getContext();
-        $rules   = $task['rule']    ?? $this->getRule();
+        $urls    = !is_array($task['url']) ? array($task['url']) : $task['url'];
+        $type    = (empty($task['type']) || !is_string($task['type'])) ? $this->getType() : $task['type'];
+        $method  = (empty($task['method']) || !is_string($task['method'])) ? $this->getMethod() : $task['method'];
+        $referer = (empty($task['referer']) || !is_string($task['referer'])) ? $this->getReferer() : $task['referer'];
+        $context = $this->getContext($task['context'] ?? []);
+        $rules   = (empty($task['rule']) || !is_array($task['rule'])) ? $this->getRule() : $task['rule'];
         $rule_depth = Tool::getArrayDepth($rules);
         3 <> $rule_depth && $rules = [];
 
@@ -467,13 +475,13 @@ class Task
     }
 
     /**
-     * @brief    set request method for task
+     * @brief    set request method 
      *
      * @param    string  $method
      *
      * @return   object
      */
-    public function setMethod($method = 'get')
+    public function setMethod($method = '')
     {
         $this->method = $method;
 
@@ -481,7 +489,7 @@ class Task
     }
 
     /**
-     * @brief    set request referer for task 
+     * @brief    set request referer  
      *
      * @param    string  $referer
      *
@@ -504,7 +512,8 @@ class Task
      */
     public function setContext($context = [])
     {
-        $this->context = $context;
+        !is_array($context) && $context = [];
+        $this->context = array_merge($this->context, $context);
 
         return $this;
     }
@@ -516,7 +525,12 @@ class Task
      */
     public function getType()
     {
-        return !empty($this->type) ? $this->type : 'text';
+        if(!empty($this->type)) return $this->type;
+
+        $this->type = Configurator::get('globalConfig/main/task/type');
+        empty($this->type) && $this->type = 'text';
+
+        return $this->type;
     }
 
     /**
@@ -550,17 +564,22 @@ class Task
     }
 
     /**
-     * @brief    get request method for task
+     * @brief   get request method 
      *
-     * @return   string
+     * @return  string
      */
     public function getMethod()
     {
-        return !empty($this->method) ? $this->method : 'get';
+        if(!empty($this->method)) return $this->method;
+
+        $this->method = Configurator::get('globalConfig/main/task/method');
+        empty($this->method) && $this->method = 'get';
+
+        return $this->method;
     }
 
     /**
-     * @brief    get request referer for task
+     * @brief    get request referer 
      *
      * @return   string
      */
@@ -574,8 +593,15 @@ class Task
      *
      * @return   array
      */
-    public function getContext()
+    public function getContext($context = [])
     {
+        $global_context = Configurator::get('globalConfig/main/task/context');
+        !is_array($global_context) && $global_context = [];
+        !is_array($context) && $context = [];
+        !is_array($this->context) && $this->context = [];
+
+        $this->context = array_merge($global_context, $context, $this->context);
+
         return $this->context;
     }
 
