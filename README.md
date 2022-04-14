@@ -26,7 +26,7 @@ The chinese document is relatively complete, and the english document will be ke
 * 爬山虎中文官方网站：[http://www.phpcreeper.com](http://www.phpcreeper.com)
 * 中文开发文档主节点：[http://www.blogdaren.com/docs/](http://www.blogadren.com/docs/)
 * 中文开发文档备节点：[http://www.phpcreeper.com/docs/](http://www.phpcreeper.com/docs/)
-* **作者未涉足任何商业性资源和平台，全靠兴趣和热爱支撑，文档访问速度慢没办法，尽力了。**
+* **作者未涉足任何商业性资源和平台，全靠兴趣和热爱支撑，支持请留下你的小星星Star。**
 
 ## 技术交流
 * 左侧绿色二维码为VX交流群：&nbsp;phpcreeper 【想进微信群的请先加此专属微信并备注：入群】  
@@ -448,7 +448,7 @@ public function onParerReload($parser)
 
 public function onParerMessage($parser, $connection, $download_data)
 {
-    //we can view the current task entity 
+    //we can view the current task
     //pprint($parser->task);
 }
 
@@ -461,7 +461,7 @@ public function onParserFindUrl($parser, $url)
 public function onParserExtractField($parser, $download_data, $fields)
 {
     //here we got the expected data successfully extracted by rule
-    //!empty($fields) && var_dump($fields, __METHOD__);
+    //!empty($fields) && pprint($fields, __METHOD__);
     pprint($fields['r1']);
 
     //here we can save the business data into database like mysql、redis and so on
@@ -572,7 +572,7 @@ please visit the [Medoo official site](https://medoo.lvtao.net/)
 if you wanna know more about its usage. now we just need to find out 
 how to get the DBO, as a matter of fact, it is very simple:   
 
-First configure the `database.php` then add the code belowed:
+First configure the `database.php` then add the code listed below:
 ```php
 <?php
 return array(
@@ -609,48 +609,40 @@ $downloader->onAfterDownloader = function($downloader){
 ```
 
 ## Available commands
-We have to remind you again that all the commands in `PHPCreeper` can only run on the command line, 
-and whatever the application is, you must write an entry startup script whose name
-assumed to be `AppWorker.php` before you start PHPCreeper, but if you use the 
-`PHPCreeper-Application` framework for development, the framework will automatically 
-generate the application entry startup script.
+Note that all the commands in `PHPCreeper` can only run on the command line, 
+and you must write a global entry startup script whose name
+assumed to be `AppWorker.php` before you start any crawling jobs, but if you use the 
+`PHPCreeper-Application` framework for your development, it will automatically 
+help you generate all the startup scripts including global we need.
 
-1、Start as debug mode:   
 ```
 php AppWorker.php start
 ```
 
-2、Start as daemon mode:   
 ```
 php AppWorker.php start -d
 ```
 
-3、Stop:
 ```
 php AppWorker.php stop
 ```
 
-4、Restart:
 ```
 php AppWorker.php restart
 ```
 
-5、Reload one by one:
 ```
 php AppWorker.php reload
 ```
 
-6、Reload gracefully:
 ```
 php AppWorker.php reload -g
 ```
 
-7、Show runtime status:
 ```
 php AppWorker.php status
 ```
 
-8、Show connections status:
 ```
 php AppWorker.php connections
 ```
@@ -684,7 +676,8 @@ If you break the law, you need to take responsibility for that.
 【2】[https://www.v2ex.com/t/689365](https://www.v2ex.com/t/689365)
 
 ## 友情链接
-[WarriorMan：协程版workerman](https://github.com/zyfei/WarriorMan)
+* 感谢Workerman官方：[Workerman](https://www.workerman.net)
+* 协程版Workerman：[WarriorMan](https://github.com/zyfei/WarriorMan)
 
 
 
