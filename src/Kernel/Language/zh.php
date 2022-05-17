@@ -23,6 +23,7 @@ return [
     'downloader_cache_enabled'      => "缓存校验: 检测到已启用任务缓存, 任务ID: %task_id%", 
     'downloader_create_cache_failed'=> "权限校验: 检测到下载任务时缓存目录禁写, 请确认是否是否赋予了足够的写权限", 
     'downloader_read_from_cache'    => "下载任务: 下载器命中到任务缓存, 任务ID: %task_id% 【缓存文件: %cache_path%】",
+    'downloader_write_into_cache'   => "下载任务: 下载器硬更新任务缓存, 任务ID: %task_id% 【缓存文件: %cache_path%】",
     'downloader_rebuild_task_null'  => "参数校验: 检测到下载任务时任务参数为空, 也许是你疏忽忘记了提供有效的 task_url", 
     'downloader_get_one_task'       => "消费任务: 下载器成功获得一条任务: %task_url%", 
     'downloader_download_task_yes'  => "下载任务: 检测到任务下载成功", 

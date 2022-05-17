@@ -877,7 +877,7 @@ class Downloader extends PHPCreeper
         $cache_path = $cache_dir . DIRECTORY_SEPARATOR . $cache_file;
         $cache_path = preg_replace("/\/*\//is", DIRECTORY_SEPARATOR, $cache_path);
 
-        if(false !== $enabled && is_file($cache_path) && file_exists($cache_path))
+        if(true === $enabled && is_file($cache_path) && file_exists($cache_path))
         {
             Logger::warn(Tool::replacePlaceHolder($this->langConfig['downloader_read_from_cache'], [
                 'task_id' => $task['id'],
@@ -895,15 +895,27 @@ class Downloader extends PHPCreeper
             return false;
         }
 
-        //now we get download data successfully
+        //now we have got download data successfully
         $download_data = $result['extra_msg']['content'];
 
-        //try to cache download data
-        if(false !== $enabled)
+        //try to cache download data in any of the following scenarios:
+        //1. or cache is enabled 
+        //2. or sizeof($old_download_data) <> sizeof($new_download_data) 
+        $cache_by_size = false;
+        if(!file_exists($cache_path) || strlen($download_data) <> strlen(file_get_contents($cache_path)))
+        {
+            $cache_by_size = true;
+        }
+
+        if(true === $enabled || true === $cache_by_size)
         {
             $rs = Tool::createMultiDirectory($cache_dir);
-            if(true !== $rs) Logger::warn($this->langConfig['downloader_create_cache_failed']);
-            if(true === $rs) file_put_contents($cache_path, $download_data, FILE_APPEND | LOCK_EX);
+            if(true !== $rs) return Logger::warn($this->langConfig['downloader_create_cache_failed']);
+            file_put_contents($cache_path, $download_data, LOCK_EX);
+            Logger::warn(Tool::replacePlaceHolder($this->langConfig['downloader_write_into_cache'], [
+                'task_id' => $task['id'],
+                'cache_path'  => $cache_path,
+            ]));
         }
 
         return $download_data;
