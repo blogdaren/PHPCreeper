@@ -1,4 +1,5 @@
 *.log
+*.lock
 *.pid
 .idea
 .buildpath
