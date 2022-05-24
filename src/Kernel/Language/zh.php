@@ -50,6 +50,7 @@ return [
     'ext_msgpack_not_install'       => "数据打包：检测到数据打包方式为msgpack, 但是msgpack扩展并未安装, 尝试切换为json",
     'invalid_httpclient_object'     => "危险行为：检测到非法的 httpClient 对象, 要求必须实现 HttpClientInterface 接口",
     'invalid_queueclient_object'    => "危险行为：检测到非法的 queueClient 对象, 要求必须实现 BrokerInterface 接口",
+    'work_as_single_worker_mode'    => "工作模式：注意当前为单worker工作模式，只允许运行下载器实例",
     'logger_prefix_producer'        => "Producer   | %worker_name% | %worker_id%号进程",
     'logger_prefix_downloader'      => "Downloader | %worker_name% | %worker_id%号进程",
     'logger_prefix_parser'          => "Parser     | %worker_name% | %worker_id%号进程",

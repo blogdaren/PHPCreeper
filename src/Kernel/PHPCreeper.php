@@ -216,6 +216,13 @@ class PHPCreeper extends Worker
     static private $_phpcreeperInstances = [];
 
     /**
+     * indicates whether has logged as single worker mode
+     *
+     * @var boolean
+     */
+    static private $_hasLoggedAsSingleWorker = false;
+
+    /**
      * user callbacks
      *
      * @var array
@@ -284,6 +291,14 @@ class PHPCreeper extends Worker
         //only allow to run downloader worker in single worker mode
         if(false === self::$isRunAsMultiWorker) 
         {
+            if(empty(self::$_hasLoggedAsSingleWorker)) 
+            {
+                $this->bindLangConfig(Configurator::get('globalConfig/main/language'));
+                Logger::warn(Tool::replacePlaceHolder($this->langConfig['work_as_single_worker_mode'], [
+                ]));
+                self::$_hasLoggedAsSingleWorker = true;
+            }
+
             $downloader_class = self::PHPCREEPER_BUILTIN_MIDDLE_CLASSES['downloader'];
             if(!$this instanceof $downloader_class) return;
 

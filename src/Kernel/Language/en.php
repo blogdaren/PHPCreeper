@@ -49,6 +49,7 @@ return [
     'ext_msgpack_not_install'       => "Assemble Package：detect the assemble package method `msgpack` enabled, but the `ext-msgpack` is not installed, so it will switch the assemble method to `json`",
     'invalid_httpclient_object'     => "Danger Action: detect `httpClient`  object invalid, must implement the interface with `HttpClientInterface`",
     'invalid_queueclient_object'    => "Danger Action: detect `queueClient` object invalid, must implement the interface with `BrokerInterface`",
+    'work_as_single_worker_mode'    => "Worker Mode：note that works as single-worker mode now, so only Downloader instances allowed to be run",
     'logger_prefix_producer'        => "Producer   | %worker_name% | Process %worker_id%",
     'logger_prefix_downloader'      => "Downloader | %worker_name% | Process %worker_id%",
     'logger_prefix_parser'          => "Parser     | %worker_name% | Process %worker_id%",
