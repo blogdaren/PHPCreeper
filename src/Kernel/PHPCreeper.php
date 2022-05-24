@@ -3,8 +3,8 @@
  * @script   PHPCreeper.php
  * @brief    This file is part of PHPCreeper
  * @author   blogdaren<blogdaren@163.com>
- * @version  1.0.0
- * @modify   2019-09-04
+ * @link     http://www.phpcreeper.com
+ * @create   2019-09-04
  */
 
 namespace PHPCreeper\Kernel;
@@ -40,7 +40,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const CURRENT_VERSION = '1.3.4';
+    const CURRENT_VERSION = '1.3.5';
 
     /**
      * valid assemble package methods
@@ -1289,6 +1289,17 @@ EOT;
 
         //remember to change the flag bit
         self::$hasShownGui = true;
+    }
+
+    /**
+     * @brief    rewrite listen     
+     *
+     * @return   void
+     */
+    public function serve()
+    {
+        $this->boot();
+        $this->listen();
     }
 
     /**

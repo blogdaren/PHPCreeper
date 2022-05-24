@@ -3,8 +3,8 @@
  * @script   Producer.php
  * @brief    This file is part of PHPCreeper
  * @author   blogdaren<blogdaren@163.com>
- * @version  1.0.0
- * @modify   2019-09-04
+ * @link     http://www.phpcreeper.com
+ * @create   2019-09-04
  */
 
 namespace PHPCreeper;

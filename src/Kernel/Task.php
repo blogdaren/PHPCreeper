@@ -3,8 +3,28 @@
  * @script   Task.php
  * @brief    This file is part of PHPCreeper
  * @author   blogdaren<blogdaren@163.com>
- * @version  1.0.0
- * @modify   2019-09-04
+ * @link     http://www.phpcreeper.com
+ * @create   2019-09-04
+ */
+
+namespace PHPCreeper\Kernel;
+
+//load common functions
+require_once __DIR__ . '/Library/Common/Functions.php';
+        
+use PHPCreeper\Kernel\Service\Service;
+use PHPCreeper\Kernel\Service\Provider\SystemServiceProvider;
+use PHPCreeper\Kernel\Service\Provider\HttpServiceProvider;
+use PHPCreeper\Kernel\Service\Provider\PluginServiceProvider;
+use PHPCreeper\Kernel\Service\Provider\QueueServiceProvider;
+use PHPCreeper\Kernel\Service\Provider\LockServiceProvider;
+use PHPCreeper\Kernel\Service\Provider\LanguageServiceProvider;
+use PHPCreeper\Kernel\Service\Provider\ExtractorServiceProvider;
+use PHPCreeper\Kernel\Service\Provider\DropDuplicateServiceProvider;
+use PHPCreeper\Kernel\Slot\BrokerInterface;
+use PHPCreeper\Kernel\Slot\DropDuplicateInterface;
+use PHPCreeper\Kernel\Slot\HttpClientInterface;
+use PHPCreeper\Kernel\Slot\LockInterface;
  */
 
 namespace PHPCreeper\Kernel;
