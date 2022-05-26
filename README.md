@@ -63,6 +63,9 @@ The chinese document is relatively complete, and the english document will be ke
 * PCNTL extension for PHP (**required**)
 * REDIS &nbsp;extension for PHP (optional, strongly recommend to install)
 * EVENT extension for PHP (optional, better to install)
+* 简单的说：只要能跑起来Workerman就能跑起来PHPCreeper，所以安装要求和Workerman完全一致。
+* POSIX扩展和PCNTL扩展是必选项，PHP发行包一般默认都会安装这两个扩展，若没有请自行编译安装。
+* REDIS扩展和EVENT扩展是可选项，但是建议最好安装，尤其是在多worker模式下必须安装redis扩展。
 
 ## Installation
 The recommended way to install PHPCreeper is through [Composer](https://getcomposer.org/).

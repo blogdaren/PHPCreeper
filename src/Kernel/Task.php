@@ -25,7 +25,6 @@ use PHPCreeper\Kernel\Slot\BrokerInterface;
 use PHPCreeper\Kernel\Slot\DropDuplicateInterface;
 use PHPCreeper\Kernel\Slot\HttpClientInterface;
 use PHPCreeper\Kernel\Slot\LockInterface;
- */
 
 namespace PHPCreeper\Kernel;
 
