@@ -160,7 +160,8 @@ function startAppDownloader()
     ]);
 
     $downloader->onBeforeDownload = function($downloader){
-        //try to disable ssl verify
+        //try to disable ssl verify in any of the following two ways 
+        //$downloader->httpClient->disableSSL();
         //$downloader->httpClient->setOptions(['verify' => false]);
     }; 
 }

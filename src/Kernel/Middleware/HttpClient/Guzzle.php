@@ -381,6 +381,44 @@ class Guzzle implements HttpClientInterface
     }
 
     /**
+     * @brief   disable SSL verify
+     *
+     * @return  object 
+     */
+    public function disableSSL()
+    {
+        self::$_config['verify'] = false;
+
+        return $this;
+    }
+
+    /**
+     * @brief   enable SSL verify
+     *
+     * @return  object 
+     */
+    public function enableSSL()
+    {
+        self::$_config['verify'] = true;
+
+        return $this;
+    }
+
+    /**
+     * @brief   set SSL certificate 
+     *
+     * @return  object 
+     */
+    public function setSSLCertificate($cafile = '')
+    {
+        if(empty($cafile) || !is_string($cafile)) return $this;
+
+        self::$_config['verify'] = $cafile;
+
+        return $this;
+    }
+
+    /**
      * @brief    get rand user agent   
      *
      * @param    string  $type
