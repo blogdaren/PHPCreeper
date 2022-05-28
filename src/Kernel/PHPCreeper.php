@@ -40,7 +40,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const CURRENT_VERSION = '1.3.6';
+    const CURRENT_VERSION = '1.3.7';
 
     /**
      * valid assemble package methods
@@ -136,7 +136,7 @@ class PHPCreeper extends Worker
      *
      * @var int
      */
-    static protected $_start_time = 0;
+    static protected $_startTime = 0;
 
     /**
      * phpcreeper instance 
@@ -223,6 +223,13 @@ class PHPCreeper extends Worker
     static private $_hasLoggedAsSingleWorker = false;
 
     /**
+     * runtime language
+     *
+     * @var string
+     */
+    static private $_lang = '';
+
+    /**
      * user callbacks
      *
      * @var array
@@ -293,7 +300,8 @@ class PHPCreeper extends Worker
         {
             if(empty(self::$_hasLoggedAsSingleWorker)) 
             {
-                $this->bindLangConfig(Configurator::get('globalConfig/main/language'));
+                $this->bindLangConfig(self::getLang());
+                self::showSplitLine("WorkerMode");
                 Logger::warn(Tool::replacePlaceHolder($this->langConfig['work_as_single_worker_mode'], [
                 ]));
                 self::$_hasLoggedAsSingleWorker = true;
@@ -399,7 +407,7 @@ class PHPCreeper extends Worker
      */
     public function initMiddleware()
     {
-        $this->bindLangConfig(Configurator::get('globalConfig/main/language'));
+        $this->bindLangConfig(self::getLang());
         $this->bindHttpClient('guzzle', []);
         $this->bindQueueClient('php');
         $this->bindExtractor();
@@ -1113,7 +1121,7 @@ EOT;
         $line_version .= str_pad('EVENT   Extension:', 34, ' ', STR_PAD_LEFT) .' '.Color::getColorfulText($event_text, $event_color, 'black');
         $line_version .= " [Optional]" . PHP_EOL;
         $line_version .= 'System      Platform:  ' . PHP_OS . str_pad('PHP Configuration: ', 48, ' ', STR_PAD_LEFT) . $php_config . PHP_EOL;
-        //$line_version .= 'PHPCreeper  StartTime: ' . Tool::getHumanLogTime(self::$_start_time) . PHP_EOL;
+        //$line_version .= 'PHPCreeper  StartTime: ' . Tool::getHumanLogTime(self::$_startTime) . PHP_EOL;
         !defined('LINE_VERSIOIN_LENGTH') && define('LINE_VERSIOIN_LENGTH', strlen($line_version));
 
         self::safeEcho($line_version);
@@ -1300,6 +1308,37 @@ EOT;
     {
         $this->boot();
         $this->listen();
+    }
+
+    /**
+     * @brief    set runtime language
+     *
+     * @param    string  $lang
+     *
+     * @return   void
+     */
+    static public function setLang($lang = "zh")
+    {
+        if(!is_string($lang) || !in_array($lang, ['zh', 'en']))
+        {
+            return;
+        }
+
+        self::$_lang = $lang;
+    }
+
+    /**
+     * @brief    get runtime language
+     *
+     * @return   string
+     */
+    static public function getLang()
+    {
+        if(!empty(self::$_lang)) return self::$_lang;
+
+        self::$_lang = Configurator::get('globalConfig/main/language') ?? "zh";
+
+        return self::$_lang;
     }
 
     /**

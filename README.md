@@ -65,7 +65,7 @@ The chinese document is relatively complete, and the english document will be ke
 * EVENT extension for PHP (optional, better to install)
 * 简单的说：只要能跑起来Workerman就能跑起来PHPCreeper，所以安装要求和Workerman完全一致。
 * POSIX扩展和PCNTL扩展是必选项，PHP发行包一般默认都会安装这两个扩展，若没有请自行编译安装。
-* REDIS扩展和EVENT扩展是可选项，但是建议最好安装，尤其是在多worker模式下必须安装redis扩展。
+* REDIS扩展和EVENT扩展是可选项，但是建议最好安装，尤其是在多worker模式下必须安装REDIS扩展。
 
 ## Installation
 The recommended way to install PHPCreeper is through [Composer](https://getcomposer.org/).
@@ -92,8 +92,11 @@ use PHPCreeper\Producer;
 use PHPCreeper\Downloader;
 use PHPCreeper\Parser;
 
+//switch runtime language: support both `zh` and `en`, default is `zh`【version >= 1.3.7】
+PHPCreeper::setLang('en');
+
 //uncomment the line below to enable the single worker mode so that we can run without redis,
-//but you should note that you are only allowed to run all the downloader worker in this case.
+//however you should note that you are limited to run all the downloader worker in this case.
 //PHPCreeper::$isRunAsMultiWorker = false;  【NOT recommend to use】
 //PHPCreeper::enableMultiWorkerMode(false); 【recommend to use with version >= 1.3.2】 
 
