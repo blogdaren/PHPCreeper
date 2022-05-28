@@ -128,7 +128,7 @@ function startAppProducer()
         );
 
         //task can also be configured like this, here `md5($url)` will be the rule name:
-        $task = array(
+        /*$task = array(
             'url' => array(
                 "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
              ),
@@ -138,7 +138,7 @@ function startAppProducer()
                     'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
                 ), 
             ),
-        );
+        );*/
 
         //various context settings
         $context = array(
@@ -148,7 +148,7 @@ function startAppProducer()
         );
 
         //we can call `createMultiTask()` for multi tasks: 
-        $producer->newTaskMan()->setContext($context)->createMultiTask($task);
+        //$producer->newTaskMan()->setContext($context)->createMultiTask($task);
 
         //we can also call `createTask()` for single task: 
         $producer->newTaskMan()->setUrl($task['url'])->setRule($task['rule'])->createTask();
