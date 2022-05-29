@@ -40,7 +40,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const CURRENT_VERSION = '1.3.7';
+    const CURRENT_VERSION = '1.3.8';
 
     /**
      * valid assemble package methods
@@ -60,6 +60,20 @@ class PHPCreeper extends Worker
         'parser'     => 'PHPCreeper\Parser',
         'server'     => 'PHPCreeper\Server',
     ];
+
+    /**
+     * pseudo worker
+     *
+     * @var string
+     */
+    const PSEUDO_WORKER = 'phpcreeper';
+
+    /**
+     * valid log level
+     *
+     * @var array 
+     */
+    const ALLOWED_LOG_LEVEL = ['info', 'debug', 'warn', 'error', 'crazy'];
 
     /**
      * http client
@@ -228,6 +242,20 @@ class PHPCreeper extends Worker
      * @var string
      */
     static private $_lang = '';
+
+    /**
+     * runtime log file
+     *
+     * @var array
+     */
+    static private $_logFile = [];
+
+    /**
+     * runtime log level
+     *
+     * @var array
+     */
+    static private $_logLevel = [];
 
     /**
      * user callbacks
@@ -453,19 +481,130 @@ class PHPCreeper extends Worker
             ])
         );
 
-        //mark as system level worker
-        $worker = strtoupper($worker);
+        //decide which kind of log level data should not be shown under debug mode
+        $log_level = self::getLogLevel($worker);
+        !empty($log_level) && Logger::disableLogShowWithLevel($log_level);
 
-        //decide log level in which should not be shown
-        $log_levels = Configurator::get("globalConfig/main/logger/{$worker}/log_disable_level");
-        Logger::disableLogShowWithLevel($log_levels);
-
-        //the full path where to store log file
-        $log_file_path = Configurator::get("globalConfig/main/logger/{$worker}/log_file_path");
-        Logger::setLogFile($log_file_path);
+        //decide the log path where to store log data by worker
+        $log_file = self::getLogFile($worker);
+        !empty($log_file) && Logger::setLogFile($log_file);
 
         return $this;
     }
+
+    /**
+     * @brief    set log file for worker
+     *
+     * @param    string  $path
+     * @param    string  $worker
+     *
+     * @return   void
+     */
+    static public function setLogFile($path, $worker = '')
+    {
+        $workers = array_keys(self::PHPCREEPER_BUILTIN_MIDDLE_CLASSES);
+
+        if(!is_string($worker) || !in_array($worker, $workers))
+        {
+            $worker = self::PSEUDO_WORKER;
+        } 
+
+        self::$_logFile[strtoupper($worker)] = $path;
+    }
+
+    /**
+     * @brief    get log file for worker
+     *
+     * @param    string  $worker
+     *
+     * @return   string
+     */
+    static public function getLogFile($worker = '')
+    {    
+        if(!empty(self::$_logFile[strtoupper(self::PSEUDO_WORKER)]))
+        {
+            $worker = strtoupper(self::PSEUDO_WORKER);
+            $path = self::$_logFile[strtoupper(self::PSEUDO_WORKER)];
+        }
+        else
+        {
+            $worker = strtoupper($worker);
+            $path = self::$_logFile[$worker] ?? '';
+        }
+
+        if(empty($path))
+        {
+            $path = Configurator::get("globalConfig/main/logger/{$worker}/log_file_path");
+        }
+
+        if(empty($path) || is_dir($path)) return '';
+
+        $path = preg_replace("/(\/|\\\)+/is", DIRECTORY_SEPARATOR, $path);
+        $path_info = pathinfo($path);
+        $dir = $path_info['dirname'];
+        $basename = $path_info['basename'];
+
+        Tool::createMultiDirectory($dir);
+
+        $_worker = strtolower($worker);
+        $fullfile = $dir . DIRECTORY_SEPARATOR . $basename . ".{$_worker}" ;
+
+        return $fullfile;
+    } 
+
+    /**
+     * @brief    disable log level for worker
+     *
+     * @param    array   $level     [info|debug|warn|error|crazy]
+     * @param    string  $worker
+     *
+     * @return   void
+     */
+    static public function disableLogLevel($level = [], $worker = '')
+    {
+        if(empty($level) || !is_array($level))  return;
+
+        $workers = array_keys(self::PHPCREEPER_BUILTIN_MIDDLE_CLASSES);
+
+        if(!is_string($worker) || !in_array($worker, $workers))
+        {
+            $worker = self::PSEUDO_WORKER;
+        } 
+
+        $valid_log_level = array_intersect($level, self::ALLOWED_LOG_LEVEL);
+
+        self::$_logLevel[strtoupper($worker)] = $valid_log_level;
+    }
+
+    /**
+     * @brief    get log level by worker
+     *
+     * @param    string  $worker
+     *
+     * @return   array
+     */
+    static public function getLogLevel($worker = '')
+    {    
+        $log_level = [];
+
+        if(!empty(self::$_logLevel[strtoupper(self::PSEUDO_WORKER)]))
+        {
+            $worker = strtoupper(self::PSEUDO_WORKER);
+            $log_level = self::$_logLevel[strtoupper(self::PSEUDO_WORKER)];
+        }
+        else
+        {
+            $worker = strtoupper($worker);
+            $log_level = self::$_logLevel[$worker] ?? '';
+        }
+
+        if(empty($log_level))
+        {
+            $log_level = Configurator::get("globalConfig/main/logger/{$worker}/log_disable_level");
+        }
+
+        return $log_level;
+    } 
 
     /**
      * @brief    check whether middleware is valid  
