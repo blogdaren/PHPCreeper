@@ -92,11 +92,14 @@ use PHPCreeper\Producer;
 use PHPCreeper\Downloader;
 use PHPCreeper\Parser;
 
-//switch runtime language: support both `zh` and `en`, default is `zh`【version >= 1.3.7】
+//switch runtime language between `zh` and `en`, default is `zh`【version >= 1.3.7】
 PHPCreeper::setLang('en');
 
 //set master pid file manually if necessary 【version >= 1.3.8】
 //PHPCreeper::setMasterPidFile('/path/to/master.pid');
+
+//set worker log file when run as daemon mode if necessary 【version >= 1.3.8】
+//PHPCreeper::setLogFile('/path/to/phpcreeper.log');
 
 //uncomment the line below to enable the single worker mode so that we can run without redis,
 //however you should note that you are limited to run all the downloader worker in this case.
