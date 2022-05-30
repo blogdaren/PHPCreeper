@@ -1243,6 +1243,41 @@ class Tool
 		}
 	}
 
+    /**
+     * @brief    convert path to absolute path  
+     *
+     * @param    string  $path
+     * @param    string  $prefix
+     * @param    string  $suffix
+     *
+     * @return   string
+     */
+    static public function convertToAbsolutePath($path, $prefix = '', $suffix = '')
+    {
+        $path = preg_replace("/(\/|\\\)+/is", DIRECTORY_SEPARATOR, $path);
+        $pieces = explode(DIRECTORY_SEPARATOR, $path);
+        $output = array();
+
+        foreach($pieces as $key => $value)
+        {
+            if($value == '..' && !empty($output))
+            {
+                array_pop($output);
+            }
+            elseif($value != '..' && $value != '.' && $value != '')
+            {
+                $output[] = $value;
+            }
+            elseif($value == '' && $path[0] == '/')
+            {
+                $output[] = $value;
+            }
+        }
+
+        $new_path = !empty($output) ? implode(DIRECTORY_SEPARATOR, $output) : DIRECTORY_SEPARATOR;
+
+        return $prefix . $new_path. $suffix;
+    }
 
 }
 

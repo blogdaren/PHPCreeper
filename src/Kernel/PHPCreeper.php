@@ -323,7 +323,7 @@ class PHPCreeper extends Worker
         //check app worker
         defined('USE_PHPCREEPER_APPLICATION_FRAMEWORK') && self::checkAppWorker();
 
-        //only allow to run downloader worker in single worker mode
+        //only allow to run downloader workers in single worker mode
         if(false === self::$isRunAsMultiWorker) 
         {
             if(empty(self::$_hasLoggedAsSingleWorker)) 
@@ -346,10 +346,6 @@ class PHPCreeper extends Worker
         $socket_address = $this->getServerSocketAddress();
         $socket_context = $this->getServerSocketContext();
         parent::__construct($socket_address, $socket_context);
-
-        //debug backtrace
-        $backrace = debug_backtrace();
-        $this->_autoloadRootPath = dirname($backrace[0]['file']);
 
         //display gui
         self::displayGui();
@@ -485,7 +481,7 @@ class PHPCreeper extends Worker
         $log_level = self::getLogLevel($worker);
         !empty($log_level) && Logger::disableLogShowWithLevel($log_level);
 
-        //decide the log path where to store log data by worker
+        //decide the log path where to store log message by worker
         $log_file = self::getLogFile($worker);
         !empty($log_file) && Logger::setLogFile($log_file);
 
@@ -605,6 +601,52 @@ class PHPCreeper extends Worker
 
         return $log_level;
     } 
+
+    /**
+     * @brief    reset master pid file
+     *
+     * @param    string  $pid_file
+     *
+     * @return   void
+     */
+    static public function setMasterPidFile($pid_file = '')
+    {
+        if(!is_string($pid_file)) return;
+
+        if(empty($pid_file)) 
+        {
+            $backtrace  = debug_backtrace();
+            $start_file = $backtrace[\count($backtrace) - 1]['file'];
+            $unique_prefix = str_replace('/', '_', $start_file);
+            $pid_file = dirname(__FILE__, 3) . DIRECTORY_SEPARATOR . "$unique_prefix.pid";
+        }
+
+        Worker::$pidFile = $pid_file;
+    }
+
+    /**
+     * @brief    get master pid file
+     *
+     * @return   string
+     */
+    static public function getMasterPidFile()
+    {
+        if(empty(Worker::$pidFile)) return '';
+
+        if(Worker::$pidFile[0] <> '/')
+        {
+            $backtrace  = \debug_backtrace();
+            $start_file = $backtrace[\count($backtrace) - 1]['file'];
+            $pid_file = dirname($start_file) . DIRECTORY_SEPARATOR .  Worker::$pidFile;
+            $pid_file = Tool::convertToAbsolutePath($pid_file);
+        }
+        else
+        {
+            $pid_file = Worker::$pidFile;
+        }
+
+        return $pid_file;
+    }
 
     /**
      * @brief    check whether middleware is valid  
@@ -1260,7 +1302,7 @@ EOT;
         $line_version .= str_pad('EVENT   Extension:', 34, ' ', STR_PAD_LEFT) .' '.Color::getColorfulText($event_text, $event_color, 'black');
         $line_version .= " [Optional]" . PHP_EOL;
         $line_version .= 'System      Platform:  ' . PHP_OS . str_pad('PHP Configuration: ', 48, ' ', STR_PAD_LEFT) . $php_config . PHP_EOL;
-        //$line_version .= 'PHPCreeper  StartTime: ' . Tool::getHumanLogTime(self::$_startTime) . PHP_EOL;
+        $line_version .= 'Master      PID File:  ' . self::getMasterPidFile() . PHP_EOL;
         !defined('LINE_VERSIOIN_LENGTH') && define('LINE_VERSIOIN_LENGTH', strlen($line_version));
 
         self::safeEcho($line_version);
@@ -1487,6 +1529,8 @@ EOT;
      */
     static public function runAll()
     {
+        empty(Worker::$pidFile) && self::setMasterPidFile();
+
         foreach(self::$_phpcreeperInstances as $creeper)
         {
             $creeper->boot();

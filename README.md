@@ -95,10 +95,12 @@ use PHPCreeper\Parser;
 //switch runtime language: support both `zh` and `en`, default is `zh`【version >= 1.3.7】
 PHPCreeper::setLang('en');
 
+//set master pid file manually if necessary 【version >= 1.3.8】
+//PHPCreeper::setMasterPidFile('/path/to/master.pid');
+
 //uncomment the line below to enable the single worker mode so that we can run without redis,
 //however you should note that you are limited to run all the downloader worker in this case.
-//PHPCreeper::$isRunAsMultiWorker = false;  【NOT recommend to use】
-//PHPCreeper::enableMultiWorkerMode(false); 【recommend to use with version >= 1.3.2】 
+//PHPCreeper::enableMultiWorkerMode(false); 【version >= 1.3.2】 
 
 //start producer instance
 startAppProducer();
