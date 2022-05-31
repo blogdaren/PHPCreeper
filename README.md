@@ -5,7 +5,7 @@
 [![pcntl](https://img.shields.io/badge/ext_pcntl-required-red.svg)]()
 [![event](https://img.shields.io/badge/ext_event-suggest-green.svg)]()
 [![redis](https://img.shields.io/badge/ext_redis-suggest-green.svg)]()
-[![license](https://img.shields.io/badge/license-MIT-000000.svg)]()
+[![license](https://img.shields.io/badge/license-MIT-ff69b4.svg)](https://github.com/blogdaren/PHPCreeper/blob/master/LICENSE.txt)
 
 ## What is it
 
