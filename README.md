@@ -10,7 +10,7 @@
 ## What is it
 
 [PHPCreeper](http://www.phpcreeper.com) is a new generation of multi-process 
-asynchronous event-driven spider engine based on [Workerman](https://www.workerman.net).    
+asynchronous event-driven spider engine based on [workerman](https://www.workerman.net).    
 
 * Focus on efficient agile development, and make the crawler job become more easy   
 * Solve the performance and scalability bottlenecks of traditional crawler frameworks
@@ -30,9 +30,10 @@ The chinese document is relatively complete, and the english document will be ke
 
 ## 技术交流
 * 左侧绿色二维码为VX交流群：&nbsp;phpcreeper 【群主热心、有问必答、进微信群需先加此专属微信并备注：爬山虎】  
-* 右侧灰色二维码为QQ交流群：1062098893【群主热心、有问必答、建议尽可能加微信大群、群口令：爬山虎】 
-* 上述两个群均围绕 [爬山虎引擎](http://www.phpcreeper.com) 和 [深入PHP内核源码](https://www.bilibili.com/video/BV1pP4y1G7ae) 
-技术交流，观看PHP内核视频请移步[B站](https://www.bilibili.com/video/BV1pP4y1G7ae)
+* 右侧灰色二维码为QQ交流群：1062098893【群主热心、有问必答、建议尽可能加微信群并备注群口令：爬山虎】 
+* 上述两个群均围绕 [爬山虎引擎](http://www.phpcreeper.com) 和 [workerman](https://www.workerman.net/)
+和 [深入PHP内核源码](https://www.bilibili.com/video/BV1pP4y1G7ae) 
+开展技术交流，观看PHP内核视频请移步[B站](https://www.bilibili.com/video/BV1pP4y1G7ae)
 
 ![qrcode-phpcreeper](./Image/QRCodePHPCreeperForWechat.png)
 &nbsp;&nbsp;![qrcode-phpcreeper](./Image/QRCodePHPCreeper.png)
@@ -42,7 +43,7 @@ The chinese document is relatively complete, and the english document will be ke
 ![EnglishVersion2](./Image/EnglishVersion2.png)
 
 ## Features
-* Inherit all features from [Workerman](https://www.workerman.net)
+* Inherit all features from [workerman](https://www.workerman.net)
 * Free to customize various plugins and callback
 * Free to customize the third-party middleware
 * Support for netflow traffic limitaion
@@ -63,8 +64,8 @@ The chinese document is relatively complete, and the english document will be ke
 * PCNTL extension for PHP (**required**)
 * REDIS &nbsp;extension for PHP (optional, strongly recommend to install)
 * EVENT extension for PHP (optional, better to install)
-* 简单的说：只要能跑起来Workerman就能跑起来PHPCreeper，所以安装要求和Workerman完全一致。
-* POSIX扩展和PCNTL扩展是必选项，PHP发行包一般默认都会安装这两个扩展，若没有请自行编译安装。
+* 简单的说：只要能跑起来workerman那就能跑起来PHPCreeper，所以安装要求和workerman完全一致。
+* POSIX扩展和PCNTL扩展是必选项，PHP发行包一般都会默认安装这两个扩展，若没有请自行编译安装。
 * REDIS扩展和EVENT扩展是可选项，但是建议最好安装，尤其是在多worker模式下必须安装REDIS扩展。
 
 ## Installation
@@ -698,8 +699,8 @@ If you break the law, you need to take responsibility for that.
 【2】[https://www.v2ex.com/t/689365](https://www.v2ex.com/t/689365)
 
 ## 友情链接
-* 感谢Workerman官方：[Workerman](https://www.workerman.net)
-* 协程版Workerman：[WarriorMan](https://github.com/zyfei/WarriorMan)
+* 感谢workerman官方：[workerman](https://www.workerman.net)
+* 协程版workerman：[WarriorMan](https://github.com/zyfei/WarriorMan)
 
 
 
