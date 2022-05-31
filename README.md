@@ -5,7 +5,7 @@
 [![pcntl](https://img.shields.io/badge/ext_pcntl-required-red.svg)]()
 [![event](https://img.shields.io/badge/ext_event-suggest-green.svg)]()
 [![redis](https://img.shields.io/badge/ext_redis-suggest-green.svg)]()
-[![license](http://img.shields.io/badge/license-Apache%202.0-000000.svg)]()
+[![license](https://img.shields.io/badge/license-MIT-000000.svg)]()
 
 ## What is it
 
@@ -697,20 +697,14 @@ I'm willing to accept donations from all sides. Thanks a lot.
 ![wechat](./Image/wechat.png)
 
 ## LICENSE
-[PHPCreeper](http://www.phpcreeper.com) is released under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).   
+[PHPCreeper](http://www.phpcreeper.com) is released under the [MIT License](https://github.com/blogdaren/PHPCreeper/blob/master/LICENSE.txt).   
 
 ## DISCLAIMER
 Please **DON'T** use PHPCreeper for businesses which are **NOT PERMITTED BY LAW** in your country. 
 If you break the law, you need to take responsibility for that.
 
-## 协议变更
-为什么协议由MIT暂变更为Apache 2.0：    
-【1】[http://www.blogdaren.com/post-2601.html](http://www.blogdaren.com/post-2601.html)   
-【2】[https://www.v2ex.com/t/689365](https://www.v2ex.com/t/689365)
-
 ## 友情链接
-* 感谢workerman官方：[workerman](https://www.workerman.net)
+* 致谢workerman官方：[workerman](https://www.workerman.net)
 * 协程版workerman：[WarriorMan](https://github.com/zyfei/WarriorMan)
-
 
 
