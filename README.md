@@ -220,161 +220,162 @@ php  Application/Sbin/Creeper
 ![AppAssistant](./Image/AppAssistantEnglish.png)
 
 #### *Step-4：Create One Application*
-    1、Create one spider application named **github**:
-    ```
-    php Application/Sbin/Creeper make github --en
-    ```
 
-    2、The complete execution process looks like this:   
+1、Create one spider application named **github**:
+```
+php Application/Sbin/Creeper make github --en
+```
+
+2、The complete execution process looks like this:   
 ![AppAssistant](./Image/AppGithubEnglish.png)
 
-    As matter of fact, we have accomplished all the jobs at this point,
-    you just need to run `php github.php start` to see what has happened, 
-    but you still need to finish the rest step of the work if you wanna
-    do some elaborate work or jobs.
+As matter of fact, we have accomplished all the jobs at this point,
+you just need to run `php github.php start` to see what has happened, 
+but you still need to finish the rest step of the work if you wanna
+do some elaborate work or jobs.
 
 #### *Step-5：Business Configuration*
-    1、Switch to the application config direcory:
-    ```
-    cd Application/Spider/Github/Config/
-    ```
-    2、Edit the global config file named **global.php**:   
-    ```
-    Basically, there is no need to change this file unless you wanna create a new global sub-config file
-    ```
-    3、Edit the global sub-config file named **database.php**:
-    ```php
-    <?php
-    return array(
-            'redis' => array(
-                'prefix' => 'Github',
-                'host'   => '127.0.0.1',
-                'port'   => 6379,
-                'database' => 0,
-                ),
-            );
+1、Switch to the application config direcory:
+```
+cd Application/Spider/Github/Config/
+```
+2、Edit the global config file named **global.php**:   
+```
+Normally, there is no need to change this file unless you wanna create a new global sub-config file
+```
+3、Edit the global sub-config file named **database.php**:
+```php
+<?php
+return array(
+    'redis' => array(
+        'prefix' => 'Github',
+        'host'   => '127.0.0.1',
+        'port'   => 6379,
+        'database' => 0,
+    ),
+);
 ```
 4、Edit the global sub-config file named **main.php**:
 ```php
+<?php
 return array(
-        //set the locale, currently support Chinese and English (optional, default `zh`)
-        'language' => 'en',
+    //set the locale, currently support Chinese and English (optional, default `zh`)
+    'language' => 'en',
 
-        //PHPCreeper has two modes to work: single worker mode and multi workers mode,   
-        //the former is seldomly to use, the only advantage is that you can play it   
-        //without redis-server, because it uses the PHP built-in queue service, so it    
-        //only applys to some simple jobs ; the latter is frequently used to handle    
-        //many more complex jobs, especially for distributed or separated work or jobs,    
-        //in this way, you must enable the redis server (optional, default `true`)
-        'multi_worker'  => true,
+    //PHPCreeper has two modes to work: single worker mode and multi workers mode,   
+    //the former is seldomly to use, the only advantage is that you can play it   
+    //without redis-server, because it uses the PHP built-in queue service, so it    
+    //only applys to some simple jobs ; the latter is frequently used to handle    
+    //many more complex jobs, especially for distributed or separated work or jobs,    
+    //in this way, you must enable the redis server (optional, default `true`)
+    'multi_worker'  => true,
 
-        //whether to start the given worker(s) instance or not(optional, default `true`)
-        'start' => array(
-            'GithubProducer'      => true,
-            'GithubDownloader'    => true,
-            'GithubParser'        => true,
-            ),
+    //whether to start the given worker(s) instance or not(optional, default `true`)
+    'start' => array(
+        'GithubProducer'      => true,
+        'GithubDownloader'    => true,
+        'GithubParser'        => true,
+    ),
 
-        'task' => array(
-            //set http request method (optional, default `get`)
-            'method'          => 'get', 
+    'task' => array(
+        //set http request method (optional, default `get`)
+        'method'          => 'get', 
 
-            //set the task crawl interval, the minimum 0.001 second (optional, default `1`)
-            'crawl_interval'  => 1,
+        //set the task crawl interval, the minimum 0.001 second (optional, default `1`)
+        'crawl_interval'  => 1,
 
-            //set the max crawl depth, 0 indicates no limit (optional, default `1`)
-            'max_depth'       => 1,
+        //set the max crawl depth, 0 indicates no limit (optional, default `1`)
+        'max_depth'       => 1,
 
-            //set the max number of the task queue, 0 indicates no limit (optional, default `0`)
-            'max_number'      => 1000,
+        //set the max number of the task queue, 0 indicates no limit (optional, default `0`)
+        'max_number'      => 1000,
 
-            //set the max number of the request for each socket connection,  
-            //if the cumulative number of socket requests exceeds the max number of requests,
-            //the parser will close the connection and try to reconect automatically.
-            //0 indicates no limit (optional, default `0`)
-            'max_request'     => 1000,
+        //set the max number of the request for each socket connection,  
+        //if the cumulative number of socket requests exceeds the max number of requests,
+        //the parser will close the connection and try to reconect automatically.
+        //0 indicates no limit (optional, default `0`)
+        'max_request'     => 1000,
 
-            'compress'  => array(
-                //whether to enable the data compress method (optional, default `true`)
-                'enabled'   =>  true,
+        'compress'  => array(
+            //whether to enable the data compress method (optional, default `true`)
+            'enabled'   =>  true,
 
-                //compress algorithm, support `gzip` and `deflate` (optional, default `gzip`)
-                'algorithm' => 'gzip',
-                ),
+            //compress algorithm, support `gzip` and `deflate` (optional, default `gzip`)
+            'algorithm' => 'gzip',
+        ),
 
-            //limit domains which are allowed to crawl, no limit if leave empty
-            'limit_domains' => array(
-                    ),
+        //limit domains which are allowed to crawl, no limit if leave empty
+        'limit_domains' => array(
+        ),
 
-            //set the initialized task url to crawl,  the value can be `string` or `array`, 
-            //if configured to array, the `key` indicates the name of the rule, which is
-            //corresponding to the key of the filed of `rule`, mainly used to quickly 
-            //index the target data set, and we can omit the key, then phpcreeper will use
-            //the `mdt($task_url)` as the default rule name
-            'url' => array(
-                    "r1" => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
-                    ),
+        //set the initialized task url to crawl,  the value can be `string` or `array`, 
+        //if configured to array, the `key` indicates the name of the rule, which is
+        //corresponding to the key of the filed of `rule`, mainly used to quickly 
+        //index the target data set, and we can omit the key, then phpcreeper will use
+        //the `mdt($task_url)` as the default rule name
+        'url' => array(
+            "r1" => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
+        ),
 
-            //please refer to the "How to set extractor rule" section for details
-            'rule' => array(
-                    //well, don't worry, just keep empty, we will append the rule after a while
-                    //"r1" => [set the business rule here], 
-                    ),
+        //please refer to the "How to set extractor rule" section for details
+        'rule' => array(
+            //well, don't worry, just keep empty, we will append the rule after a while
+            //"r1" => [set the business rule here], 
+        ),
 
-            //set the context params which is compatible to guzzle for http request, because 
-            //`guzzle` is the default http client, so refer to the guzzle manual if any trouble
-            'context' => array(
-                    //whether to enable the downlod cache or not (optional, default `false`)
-                    'cache_enabled'   => false,                               
+        //set the context params which is compatible to guzzle for http request, because 
+        //`guzzle` is the default http client, so refer to the guzzle manual if any trouble
+        'context' => array(
+            //whether to enable the downlod cache or not (optional, default `false`)
+            'cache_enabled'   => false,                               
 
-                    //set the download cache directory (optional, default is the system tmp directory)
-                    'cache_directory' => '/tmp/DownloadCache4PHPCreeper/', 
-                    ),
-            ),
-            );
-
+            //set the download cache directory (optional, default is the system tmp directory)
+            'cache_directory' => '/tmp/DownloadCache4PHPCreeper/', 
+        ),
+    ),
+);
 ```
 5、Edit the business worker config file named **AppProducer.php**：
 ```php
 <?php
 return array(
-        'name' => 'producer1',
-        'count' => 1,
-        'interval' => 1,
-        );
+    'name' => 'producer1',
+    'count' => 1,
+    'interval' => 1,
+);
 ```
 
 6、Edit the business worker config file named **AppDownloader.php**：
 ```php
 <?php
 return array(
-        'name' => 'downloader1',
-        'count' => 2,
-        'socket' => array(
-            'client' => array(
-                'parser' => array(
-                    'scheme' => 'ws',
-                    'host' => '127.0.0.1',
-                    'port' => 8888,
-                    ),
-                ),
+    'name' => 'downloader1',
+    'count' => 2,
+    'socket' => array(
+        'client' => array(
+            'parser' => array(
+                'scheme' => 'ws',
+                'host' => '127.0.0.1',
+                'port' => 8888,
             ),
-        );
+        ),
+    ),
+);
 ```
 7、Edit the business worker config file named **AppParser.php**：
 ```php
 <?php
 return array(
-        'name'  => 'parser1',
-        'count' => 3,
-        'socket' => array(
-            'server' => array(
-                'scheme' => 'websocket',
-                'host' => '0.0.0.0',
-                'port' => 8888,
-                ),
-            ),
-        );
+    'name'  => 'parser1',
+    'count' => 3,
+    'socket' => array(
+        'server' => array(
+            'scheme' => 'websocket',
+            'host' => '0.0.0.0',
+            'port' => 8888,
+        ),
+    ),
+);
 ```
 #### *Step-6：Set Business Rule*
 1、Switch to the application config directory again:
@@ -383,23 +384,25 @@ cd Application/Spider/Github/Config/
 ```
 2、Edit **main.php** to append the business rules:
 ```php
+<?php
 return array(
-        'task' => array(
-            'url' => array(
-                "r1" => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
-                ),
-            'rule' => array(
-                "r1" => array(
-                    'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
-                    'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
-                    ), 
-                ),
-            ),
-        );
+    'task' => array(
+        'url' => array(
+            "r1" => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
+        ),
+        'rule' => array(
+            "r1" => array(
+                'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
+                'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
+            ), 
+        ),
+    ),
+);
 ```
 #### *Step-7：Write Business Callback*
 1、Write business callback for AppProducer:
-    ```php
+```php
+<?php
 public function onProducerStart($producer)
 {
     //here we can add another new task 
@@ -416,7 +419,8 @@ public function onProducerReload($producer)
 }
 ``` 
 2、Write business callback for AppDownloader:
-    ```php
+```php
+<?php
 public function onDownloaderStart($downloader)
 {
 }
@@ -443,6 +447,7 @@ public function onBeforeDownload($downloader, $task)
     //$downloader->httpClient->setConnectTimeout(3);
     //$downloader->httpClient->setTransferTimeout(10);
     //$downloader->httpClient->setProxy('http://180.153.144.138:8800');
+    //$downloader->httpClient->disableSSL();
 }
 
 public function onStartDownload($downloader, $task)
@@ -456,7 +461,8 @@ public function onAfterDownload($downloader, $download_data, $task)
 }
 ```
 3、Write business callback for AppParser:
-    ```php
+```php
+<?php
 public function onParserStart($parser)
 {
 }
@@ -495,7 +501,7 @@ public function onParserExtractField($parser, $download_data, $fields)
 There are two ways to start an application instance, one is `Global Startup`, 
 and the other is `Single Startup`, we just need to choose one of them.
 `Global Startup` means that all workers run in the same group of processes under the same application,
-it can be deployed in a distributed way, but it cannot be deployed separately,
+it can be deployed in a distributed way, but it can't be deployed separately,
 `Single Startup` means that different workers run in different groups of processes under the same application,
 it can be distributed or deployed separately.
 
@@ -516,23 +522,25 @@ php Application/Spider/Github/AppParser.php start
 * The type of rule value must be ***Array***
 * For a single task, the depth of the corresponding rule item, that is, the depth of the array, can only be 2
 * For multi tasks, the depth of the corresponding rule item, that is, the depth of the array, can only be 3
+
 ```php
+<?php
 $urls = array(
     'rule_name1' => 'http://www.blogdaren.com';
-    ...........................................;
+    '..........' => '........................';
     'rule_nameN' => 'http://www.phpcreeper.com';
 );
 
 $rule = array( 
     'rule_name1' => array(
         'field1' => ['selector', 'flag', 'range', 'callback'],
-        .....................................................,
+        '......' => ['........', '....', '.....', '........'];
         'fieldN' => ['selector', 'flag', 'range', 'callback'],
     );
     .........................................................,
     'rule_nameN' => array(
         'field1' => ['selector', 'flag', 'range', 'callback'],
-        .....................................................,
+        '......' => ['........', '....', '.....', '........'];
         'fieldN' => ['selector', 'flag', 'range', 'callback'],
     );
 );
@@ -562,7 +570,8 @@ the value can be like `#idName` or `.className` or `Html Element` and so on.
 + **callback**  
 you can trigger a callback here, but remember to return the data expected.
 
-```php
+```php   
+<?php
 //extractor rule code example
 $html = "<div><a href='http://www.phpcreeper.com' id='site' class="site">PHPCreeper</a></div>";
 $rule = array(
@@ -614,6 +623,7 @@ return array(
 
 Now we can get DBO and start the query or the other operation as you like: 
 ```php
+<?php
 $downloader->onAfterDownloader = function($downloader){
     //dbo single instance and we can pass the DSN string `test`
     $downloader->getDbo('test')->select('title', '*');
@@ -701,8 +711,6 @@ If you break the law, you need to take responsibility for that.
 ## 友情链接
 * 感谢workerman官方：[workerman](https://www.workerman.net)
 * 协程版workerman：[WarriorMan](https://github.com/zyfei/WarriorMan)
-
-
 
 
 
