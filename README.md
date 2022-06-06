@@ -78,12 +78,11 @@ composer require blogdaren/phpcreeper
 Firstly, there is another matched Application Framework 
 named [PHPCreeper-Application](https://github.com/blogdaren/PHPCreeper-Application) 
 which is published simultaneously for your development convenience,
-although this framework is not necessary, we strongly recommend that you use it for 
-business development, thus it's no doubt that it will greatly improve your job efficiency.
-However, somebody still wanna write the code which **NOT** depends on the framework, it is 
-also easy to make it.   
+although this framework is not necessary, we strongly recommend that you use it
+which will greatly improve your job efficiency. Besides, we can certainly write 
+the code which **NOT** depends on the framework, it is also easy to make it.   
 
-Assume we wanna capture the github top 10 repos ranked by stars, now let's take an example to illustrate the usage:
+Assume we wanna capture `the github top 10 repos ranked by stars`, now let's take an example to illustrate the usage:
 ```php
 <?php 
 require "./vendor/autoload.php";
@@ -99,11 +98,11 @@ PHPCreeper::setLang('en');
 //set master pid file manually if necessary 【version >= 1.3.8】
 //PHPCreeper::setMasterPidFile('/path/to/master.pid');
 
-//set worker log file when run as daemon mode if necessary 【version >= 1.3.8】
+//set worker log file when start as daemon mode if necessary 【version >= 1.3.8】
 //PHPCreeper::setLogFile('/path/to/phpcreeper.log');
 
-//uncomment the line below to enable the single worker mode so that we can run without redis,
-//however you should note that you are limited to run all the downloader worker in this case.
+//try to enable the single worker mode so that we can run without redis as you like,
+//however you should note it will be limited to run only all the downloader workers in this case.
 //PHPCreeper::enableMultiWorkerMode(false); 【version >= 1.3.2】 
 
 //start producer instance
@@ -153,10 +152,10 @@ function startAppProducer()
             //..........................
         );
 
-        //we can call `createMultiTask()` for multi tasks: 
+        //or we can call `createMultiTask()` API for multi tasks: 
         //$producer->newTaskMan()->setContext($context)->createMultiTask($task);
 
-        //we can also call `createTask()` for single task: 
+        //or we can call `createTask()` API for single task: 
         $producer->newTaskMan()->setUrl($task['url'])->setRule($task['rule'])->createTask();
     };
 }
@@ -168,11 +167,18 @@ function startAppDownloader()
         'ws://127.0.0.1:8888',
     ]);
 
-    $downloader->onBeforeDownload = function($downloader){
+    $downloader->onBeforeDownload = function($downloader, $task){
         //try to disable ssl verify in any of the following two ways 
         //$downloader->httpClient->disableSSL();
         //$downloader->httpClient->setOptions(['verify' => false]);
     }; 
+
+    //some more downloader callbacks
+    //$downloader->onDownloaderStart = function($downloader){};
+    //$downloader->onDownloaderStop  = function($downloader){};
+    //$downloader->onStartDownload = function($downloader, $task){};
+    //$downloader->onAfterDownload = function($downloader, $download_data, $task){};
+    //$downloader->onDownloaderMessage = function($downloader, $parser_reply){};
 }
 
 function startAppParser()
@@ -182,6 +188,12 @@ function startAppParser()
     $parser->onParserExtractField = function($parser, $download_data, $fields){
         pprint($fields);
     };
+
+    //some more parser callbacks
+    //$parser->onParserStart = function($parser){};
+    //$parser->onParserStop  = function($parser){};
+    //$parser->onParserMessage = function($parser, $connection, $download_data){};
+    //$parser->onParserFindUrl = function($parser, $sub_url){};
 }
 
 //start phpcreeper
