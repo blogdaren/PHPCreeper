@@ -91,14 +91,15 @@ use PHPCreeper\Kernel\PHPCreeper;
 use PHPCreeper\Producer;
 use PHPCreeper\Downloader;
 use PHPCreeper\Parser;
+use PHPCreeper\Timer;
 
 //switch runtime language between `zh` and `en`, default is `zh`【version >= 1.3.7】
 PHPCreeper::setLang('en');
 
-//set master pid file manually if necessary 【version >= 1.3.8】
+//set master pid file manually as needed【version >= 1.3.8】
 //PHPCreeper::setMasterPidFile('/path/to/master.pid');
 
-//set worker log file when start as daemon mode if necessary 【version >= 1.3.8】
+//set worker log file when start as daemon mode as needed【version >= 1.3.8】
 //PHPCreeper::setLogFile('/path/to/phpcreeper.log');
 
 //try to enable the single worker mode so that we can run without redis as you like,
@@ -114,9 +115,18 @@ startAppDownloader();
 //start parser instance
 startAppParser();
 
+//well, we could configure many config items as needed such as redis item here
+//configure redis with array value of One-dimension or Two-dimension as needed
+//for details on how to configure the value, refer to the Follow-Up sections
+//$config['redis'] = [];
+
 function startAppProducer()
 {
     $producer = new Producer;
+
+    //maybe need to set config 
+    //global $config; $producer->setConfig($config);
+
     $producer->setName('AppProducer')->setCount(1);
     $producer->onProducerStart = function($producer){
         //task can be configured like this, here the rule name like `r1` should be given:
@@ -163,6 +173,10 @@ function startAppProducer()
 function startAppDownloader()
 {
     $downloader = new Downloader();
+
+    //maybe need to set config 
+    //global $config; $downloader->setConfig($config);
+
     $downloader->setName('AppDownloader')->setCount(2)->setClientSocketAddress([
         'ws://127.0.0.1:8888',
     ]);
@@ -259,12 +273,22 @@ Normally, there is no need to change this file unless you wanna create a new glo
 ```php
 <?php
 return array(
-    'redis' => array(
+    'redis' => [
         'prefix' => 'Github',
         'host'   => '127.0.0.1',
         'port'   => 6379,
         'database' => 0,
-    ),
+    ],
+);
+```
+or 
+```
+    'redis' => [[
+        'prefix' => 'Github',
+        'host'   => '127.0.0.1',
+        'port'   => 6379,
+        'database' => 0,
+    ]],
 );
 ```
 4、Edit the global sub-config file named **main.php**:
