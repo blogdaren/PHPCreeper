@@ -10,6 +10,7 @@
 namespace PHPCreeper\Kernel\Middleware\LockManager;
 
 use PHPCreeper\Kernel\Slot\LockInterface;
+use PHPCreeper\Kernel\Middleware\MessageQueue\RedisExtension;
 use \Redis;
 
 class RedisLock implements LockInterface
@@ -54,11 +55,16 @@ class RedisLock implements LockInterface
     {
         if($entity instanceof \Redis) {
             $this->_redis = $entity;
-        }elseif($entity->queueClient){
-            $this->_redis = $entity->queueClient;
+        }elseif($entity instanceof RedisExtension) {
+            $this->_redis = $entity;
+        }elseif(is_array($entity)){
+            $this->_redis = new RedisExtension($entity);
         }else{
-            throw new \Exception('invalid redis instance provided');
+            throw new \Exception("invalid redis instance provided with \$entity = " . var_export($entity, true));
         }
+
+        //force to route to 0 partion
+        $this->_redis->setPartionId(0);
 
         if(method_exists($entity, 'getConfig'))
         {

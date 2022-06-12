@@ -32,25 +32,17 @@ class DropDuplicateService
      */
     static public function create($type = 'redis', ...$args)
     {
-        $hashKey = md5(json_encode($type));
-        $type = strtolower($type);
-
-        if(empty(self::$_dropDuplicateFilter[$hashKey])) 
-        {
-            if(empty($type) || $type == 'redis'){
-                $filter = new BloomFilterRedis(...$args);
-            }elseif($type == 'local'){
-                $filter = new BloomFilterLocal(...$args);
-            }elseif(is_callable($type)){
-                $filter = call_user_func($type, ...$args);
-            }else{
-                $filter = new BloomFilterLocal(...$args);
-            }
-
-            self::$_dropDuplicateFilter[$hashKey] = $filter;
+        if(empty($type) || $type == 'redis'){
+            $filter = new BloomFilterRedis(...$args);
+        }elseif($type == 'local'){
+            $filter = new BloomFilterLocal(...$args);
+        }elseif(is_callable($type)){
+            $filter = call_user_func($type, ...$args);
+        }else{
+            $filter = new BloomFilterLocal(...$args);
         }
 
-        return self::$_dropDuplicateFilter[$hashKey];
+        return $filter;
     }
 }
 

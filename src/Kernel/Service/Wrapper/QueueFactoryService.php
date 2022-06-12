@@ -33,26 +33,19 @@ class QueueFactoryService
      */
     static public function createQueueClient($type = 'redis', ...$args)
     {
-        $hashKey = md5(json_encode($type));
-
-        if(empty(self::$_client[$hashKey])) 
-        {
-            if(empty($type) || $type == 'redis'){
-                $client = new RedisExtension(...$args);
-            }elseif($type == 'amqp'){
-                $client = new AmqpExtension(...$args);
-            }elseif($type == 'php'){
-                $client = new PhpQueue(...$args);
-            }elseif(is_callable($type)){
-                $client = call_user_func($type, ...$args);
-            }else{
-                $client = new RedisExtension(...$args);
-            }
-
-            self::$_client[$hashKey] = $client;
+        if(empty($type) || $type == 'redis'){
+            $client = new RedisExtension(...$args);
+        }elseif($type == 'amqp'){
+            $client = new AmqpExtension(...$args);
+        }elseif($type == 'php'){
+            $client = new PhpQueue(...$args);
+        }elseif(is_callable($type)){
+            $client = call_user_func($type, ...$args);
+        }else{
+            $client = new RedisExtension(...$args);
         }
 
-        return self::$_client[$hashKey];
+        return $client;
     }
 }
 

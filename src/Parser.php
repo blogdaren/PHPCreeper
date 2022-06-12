@@ -11,9 +11,9 @@ namespace PHPCreeper;
 
 use PHPCreeper\Kernel\PHPCreeper;
 use PHPCreeper\Kernel\Library\Helper\Tool;
+use PHPCreeper\Timer;
 use Configurator\Configurator;
 use Logger\Logger;
-use Workerman\Lib\Timer;
 
 
 class Parser extends PHPCreeper

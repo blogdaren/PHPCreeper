@@ -27,8 +27,8 @@ class SystemServiceProvider
      */
     public function render(Service $service)
     {
-        $service->inject('bindRedisClient', function(...$args){
-            return $this->redisClient = QueueFactoryService::createQueueClient('redis', ...$args);
+        $service->inject('bindRedisClient', function($type, ...$args){
+            return $this->redisClient = QueueFactoryService::createQueueClient($type, ...$args);
         });
 
         $service->inject('getTaskMan', function($task_options = []){

@@ -10,6 +10,10 @@
 namespace PHPCreeper;
 
 use PHPCreeper\Kernel\PHPCreeper;
+use PHPCreeper\Kernel\Library\Helper\Tool;
+use PHPCreeper\Timer;
+use Configurator\Configurator;
+use Logger\Logger;
 
 class Server extends PHPCreeper
 {

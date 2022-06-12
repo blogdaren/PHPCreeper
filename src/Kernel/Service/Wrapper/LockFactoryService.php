@@ -32,24 +32,17 @@ class LockFactoryService
      */
     static public function createLockHelper($type = 'redis', ...$args)
     {
-        $hashKey = md5(json_encode($type));
-
-        if(empty(self::$_helper[$hashKey])) 
-        {
-            if(empty($type) || 'redis' == $type){
-                $helper = new RedisLock(...$args);
-            }elseif('file' == $type){
-                $helper = new FileLock(...$args);
-            }elseif(is_callable($type)){
-                $helper = call_user_func($type, ...$args);
-            }else{
-                $helper = new FileLock(...$args);
-            }
-
-            self::$_helper[$hashKey] = $helper;
+        if(empty($type) || 'redis' == $type){
+            $helper = new RedisLock(...$args);
+        }elseif('file' == $type){
+            $helper = new FileLock(...$args);
+        }elseif(is_callable($type)){
+            $helper = call_user_func($type, ...$args);
+        }else{
+            $helper = new FileLock(...$args);
         }
 
-        return self::$_helper[$hashKey];
+        return $helper;
     }
 }
 

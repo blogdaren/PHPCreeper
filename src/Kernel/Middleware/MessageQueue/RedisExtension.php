@@ -10,15 +10,44 @@
 namespace PHPCreeper\Kernel\Middleware\MessageQueue;
 
 use PHPCreeper\Kernel\Slot\BrokerInterface;
+use PHPCreeper\Kernel\Library\Helper\Tool;
 
 class RedisExtension implements BrokerInterface
 {
     /**
      * \RedisConnection
      *
-     * @var object
+     * @var array
      */
     protected $_connection = null;
+
+    /**
+     * the number of redis-instance
+     *
+     * @var int
+     */
+    static public $serverCount = 0;
+
+    /**
+     * allowed policy
+     *
+     * @var string
+     */
+    static private $_allowedPolicy = ['hand', 'hash'];
+
+    /**
+     * route policy
+     *
+     * @var string
+     */
+    public $policy = "hash";
+
+    /**
+     * partion id
+     *
+     * @var int
+     */
+    public $partion_id = 0;
 
     /**
      * @brief    __construct    
@@ -29,10 +58,27 @@ class RedisExtension implements BrokerInterface
      */
     public function __construct($connection_config = array())
     {
-        empty($connection_config) && $connection_config = [];
-        $this->connectionConfig = array_merge($this->getDefaultConfig(), $connection_config);
-        $this->getConnection();
-        //$this->_context = new Context();
+        empty($connection_config) && $connection_config = []; 
+        !is_array($connection_config) && $connection_config = [$connection_config];
+
+        if(!empty($connection_config) && Tool::getArrayDepth($connection_config) <> 2)
+        {   
+            $connection_config = [$connection_config];
+        }   
+
+        $this->connectionConfig = empty($connection_config) ? $this->getDefaultConfig() : $connection_config;
+        self::$serverCount = count($this->connectionConfig);
+    }
+
+
+    /**
+     * @brief    get connection config    
+     *
+     * @return   array
+     */
+    public function getConnectionConfig()
+    {
+        return $this->connectionConfig;
     }
 
     /**
@@ -42,7 +88,7 @@ class RedisExtension implements BrokerInterface
      */
     public function getDefaultConfig()
     {
-        return array(
+        return [[
             'host'      =>  '127.0.0.1',
             'port'      =>  6379,
             'auth'      =>  false,
@@ -60,67 +106,176 @@ class RedisExtension implements BrokerInterface
             'ssl_cert'  =>  '',
             'ssl_key'   =>  '',
             'ssl_passphrase' => '',
-        );
+        ]];
     }
 
     /**
-     * @brief    get connection object
+     * @brief   get connection object
+     *
+     * @param   string  $k
+     *
+     * @return  object
+     */
+    public function getConnection($k = '')
+    {
+        $index = $this->getRoutePartion($k);
+
+        if(empty($this->_connection[$index]) || !$this->_connection[$index]->isConnected()) 
+        {
+            $this->_connection[$index] = new \Redis();
+
+            $method = 'connect';
+            if(!empty($this->connectionConfig[$index]['persisted']) && true === $this->connectionConfig[$index]['persisted'])
+            {
+                $method = 'pconnect';
+            }
+
+            //if(empty($this->connectionConfig[$index]['host']) || empty($this->connectionConfig[$index]['port'])) return;
+            $rs = call_user_func(
+                [$this->_connection[$index], $method],
+                $this->connectionConfig[$index]['host'] ?? '',
+                $this->connectionConfig[$index]['port'] ?? 0,
+                $this->connectionConfig[$index]['connection_timeout'] ?? 0,
+                $this->connectionConfig[$index]['persist_id'] ?? null,
+                $this->connectionConfig[$index]['retry_interval'] ?? 0,
+                $this->connectionConfig[$index]['read_write_timeout'] ?? 0
+            );
+
+            $host = $this->connectionConfig[$index]['host'];
+            $port = $this->connectionConfig[$index]['port'];
+
+            if(empty($rs)) throw new \RedisException("connect redis-server-{$index} failed($host:$port)");
+        }
+
+        true === $this->connectionConfig[$index]['auth'] && $this->_connection[$index]->auth($this->connectionConfig[$index]['pass']);
+        !empty($this->connectionConfig[$index]['database']) && $this->_connection[$index]->select($this->connectionConfig[$index]['database']);
+
+        return $this->_connection[$index];
+    }
+
+    /**
+     * @brief    set route policy
+     *
+     * @param    string  $policy
      *
      * @return   object
      */
-    public function getConnection()
+    public function setPolicy($policy)
     {
-        if(empty($this->_connection) || !$this->_connection->isConnected()) 
+        if(!in_array($policy, self::$_allowedPolicy))
         {
-            $this->_connection = new \Redis();
-
-            $method = true === $this->connectionConfig['persisted'] ? 'pconnect' : 'connect';
-
-            $rs = call_user_func(
-                array($this->_connection, $method),
-                $this->connectionConfig['host'],
-                $this->connectionConfig['port'],
-                $this->connectionConfig['connection_timeout'],
-                $this->connectionConfig['persist_id'] ?? null,
-                $this->connectionConfig['retry_interval'] ?? 0,
-                $this->connectionConfig['read_write_timeout'] ?? 0
-            );
-
-            if(empty($rs)) throw new \RedisException('redis connect failed...');
+            return $this;
         }
 
-        true === $this->connectionConfig['auth'] && $this->_connection->auth($this->connectionConfig['pass']);
-        !empty($this->connectionConfig['database']) && $this->_connection->select($this->connectionConfig['database']);
+        $this->policy = $policy;
 
-        return $this->_connection;
+        return $this;
+    }
+
+    /**
+     * @brief    get route policy  
+     *
+     * @return   string
+     */
+    public function getPolicy()
+    {
+        return $this->policy;
+    }
+
+    /**
+     * @brief    set partion id 
+     *
+     * @param    int|NULL $index
+     *
+     * @return   object 
+     */
+    public function setPartionId($index = 0)
+    {
+        if(is_null($index))
+        {
+            $this->setPolicy('hash');
+            return $this;
+        }
+
+        $this->setPolicy('hand');
+        $valid_partion_ids = range(0, self::$serverCount - 1);
+        !is_int($index) && $index = 0;
+        $this->partion_id = $index;
+
+        if(!in_array($index, $valid_partion_ids))
+        {
+            $this->partion_id = 0;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @brief    get partion id 
+     *
+     * @return   int
+     */
+    public function getPartionId()
+    {
+        return $this->partion_id;
+    }
+
+    /**
+     * @brief    get route partion 
+     *
+     * @param    string  $k
+     *
+     * @return   int
+     */
+    public function getRoutePartion($k = '')
+    {
+        $index = 0;
+
+        switch($this->getPolicy())
+        {
+            case 'hand':
+                $index = self::getPartionId();
+                break;
+            case 'hash':
+                $index = self::getHashIndex($k);
+                break;
+            default:
+                break;
+        }
+
+        return $index;
     }
 
     /**
      * @brief    get queue key
      *
-     * @param    string  $queue_name
+     * @param    string  $key
      *
      * @return   string
      */
-    public function getQueueKey($queue_name)
+    public function getStandardKey($key)
     {
-        $prefix = $this->connectionConfig['prefix'] ? $this->connectionConfig['prefix'] : 'default';
+        if(empty($key)) return '';
 
-        return "{$prefix}:queue_{$queue_name}";
+        $index = self::getHashIndex($key);
+        $prefix = $this->connectionConfig[$index]['prefix'] ? $this->connectionConfig[$index]['prefix'] : 'PHPCreeper';
+
+        return "{$prefix}:{$key}";
     }
 
     /**
      * @brief   push data into queue
      *
-     * @param   string  $queue_name
+     * @param   string  $key
      * @param   string  $text
      *
      * @return  int
      */
-    public function push($queue_name = '', $text = '')
+    public function push($key = '', $text = '')
     {
         $text = json_encode($text);
-        $rs = $this->_connection->lpush($this->getQueueKey($queue_name), $text);
+        $skey = $this->getStandardKey($key);
+        $rs = $this->getConnection($skey)->lpush($skey, $text);
 
         return $rs;
     }
@@ -128,56 +283,59 @@ class RedisExtension implements BrokerInterface
     /**
      * @brief   pop data from queue
      *
-     * @param   string  $queue_name
+     * @param   string  $key
      * @param   bool    $wait 
      *
      * @return  array
      */
-    public function pop($queue_name, $wait = false)
+    public function pop($key, $wait = false)
     {
-        $message = $this->_connection->rpop($this->getQueueKey($queue_name));
+        $skey = $this->getStandardKey($key);
+        $message = $this->getConnection($skey)->rpop($skey);
 
         if(!$message) return false;
 
-        $task = json_decode($message, true);
+        $msg = json_decode($message, true);
 
-        return $task;
+        return $msg;
     }
 
     /**
      * @brief    get the queue length
      *
-     * @param    string  $queue_name
+     * @param    string  $key
      *
      * @return   int
      */
-    public function llen($queue_name)
+    public function llen($key)
     {
-        return $this->_connection->llen($this->getQueueKey($queue_name));
+        $skey = $this->getStandardKey($key);
+        return $this->getConnection($skey)->llen($skey);
     }
 
     /**
      * @brief    message acknowledge    
      *
-     * @param    string  $queue_name
+     * @param    string  $key
      * @param    string  $delivery_tag
      *
      * @return   boolean
      */
-    public function acknowledge($queue_name, $delivery_tag)
+    public function acknowledge($key, $delivery_tag)
     {
     }
 
     /**
      * @brief    purge the queue
      *
-     * @param    string  $queue_name
+     * @param    string  $key
      *
      * @return   boolean
      */
-    public function purge($queue_name)
+    public function purge($key)
     {
-        $this->_connection->del($this->getQueueKey($queue_name));
+        $skey = $this->getStandardKey($key);
+        $this->getConnection($skey)->del($skey);
 
         return true;
     }
@@ -187,13 +345,55 @@ class RedisExtension implements BrokerInterface
      *
      * @return void
      */
-    public function close()
+    public function close($key = '')
     {
-        if(!empty($this->_connection) || $this->_connection->isConnected()) 
+        if(empty($key) || !is_string($key)) return;
+
+        $skey = $this->getStandardKey($key);
+
+        if(!empty($this->getConnection($skey)) || $this->getConnection($skey)->isConnected()) 
         {
-            $this->_connection->close();
-            $this->_connection = null;
+            $this->getConnection($skey)->close();
         }
+    }
+
+    /**
+     * @brief    get hash value
+     *
+     * @param    string  $key
+     *
+     * @return   int
+     */
+    static public function getHash($key)
+    {
+        return abs(crc32($key));
+    }
+
+    /**
+     * @brief    get hash index
+     *
+     * @param    string  $key
+     *
+     * @return   int
+     */
+    static public function getHashIndex($key)
+    {
+        return self::getHash($key) % self::$serverCount;
+    }
+
+    /**
+     * @brief    get config
+     *
+     * @param    string  $key
+     *
+     * @return   array
+     */
+    public function getConfig($key = '')
+    {
+        $skey = $this->getStandardKey($key);
+        $index = self::getHashIndex($skey);
+
+        return $this->connectionConfig[$index] ?? [];
     }
 
     /**
@@ -206,7 +406,12 @@ class RedisExtension implements BrokerInterface
      */
     public function __call($function_name, $args)
     {
-        return $this->getConnection()->{$function_name}(...$args);
+        $skey = $this->getStandardKey($args[0] ?? null);
+
+        //important: rewrite $args[0];
+        $skey && $args[0] = $skey;
+
+        return $this->getConnection($skey)->{$function_name}(...$args);
     }
 
 }

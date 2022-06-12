@@ -9,8 +9,7 @@
 
 namespace PHPCreeper\Kernel;
 
-//load common functions
-require_once __DIR__ . '/Library/Common/Functions.php';
+require_once dirname(__FILE__, 1) . '/Library/Common/Functions.php';
         
 use PHPCreeper\Kernel\Service\Service;
 use PHPCreeper\Kernel\Service\Provider\SystemServiceProvider;
@@ -25,14 +24,11 @@ use PHPCreeper\Kernel\Slot\BrokerInterface;
 use PHPCreeper\Kernel\Slot\DropDuplicateInterface;
 use PHPCreeper\Kernel\Slot\HttpClientInterface;
 use PHPCreeper\Kernel\Slot\LockInterface;
-
-namespace PHPCreeper\Kernel;
-
 use PHPCreeper\Kernel\PHPCreeper;
 use PHPCreeper\Kernel\Library\Helper\Tool;
-use Ramsey\Uuid\Uuid;
 use Configurator\Configurator;
 use Logger\Logger;
+use Ramsey\Uuid\Uuid;
 
 class Task 
 {

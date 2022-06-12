@@ -12,9 +12,9 @@ namespace PHPCreeper;
 use PHPCreeper\Kernel\PHPCreeper;
 use PHPCreeper\Kernel\Library\Helper\Benchmark;
 use PHPCreeper\Kernel\Library\Helper\Tool;
+use PHPCreeper\Timer;
 use Configurator\Configurator;
 use Logger\Logger;
-use Workerman\Lib\Timer;
 use Workerman\Worker;
 
 class Producer extends PHPCreeper
@@ -268,8 +268,8 @@ class Producer extends PHPCreeper
             return $this;
         }
 
-        //important: no sleep will lead to url repeated 
-        usleep(100000);
+        //important: with sleep to avoid creating url repeated unexpectdly
+        sleep(1);
 
         $this->dropDuplicateFilter->removeBucket();
 

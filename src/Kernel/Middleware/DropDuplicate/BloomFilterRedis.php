@@ -53,15 +53,20 @@ class BloomFilterRedis implements DropDuplicateInterface
      *
      * @return   void 
      */
-    public function __construct($entity, $bucket = 'default', $bit_size = 10000, $hash_times = 3) 
+    public function __construct($entity, $bucket = 'bucket', $bit_size = 10000, $hash_times = 3) 
     {
         if($entity instanceof \Redis) {
             $this->_redis = $entity;
-        }elseif($entity->redisClient instanceof RedisExtension){
-            $this->_redis = $entity->redisClient;
+        }elseif($entity instanceof RedisExtension) {
+            $this->_redis = $entity;
+        }elseif(is_array($entity)){
+            $this->_redis = new RedisExtension($entity);
         }else{
-            throw new \Exception('invalid redis instance given');
+            throw new \Exception("invalid redis instance provided with \$entity = " . var_export($entity, true));
         }
+
+        //force to route to 0 partion
+        $this->_redis->setPartionId(0);
 
         $this->setBucket($bucket);
         $this->setBitSize($bit_size);
@@ -77,8 +82,8 @@ class BloomFilterRedis implements DropDuplicateInterface
      */
     public function setBucket($bucket)
     {
-        empty($bucket) && $bucket = 'default';
-        $this->bucket = 'Bucket:' . $bucket;
+        empty($bucket) && $bucket = 'bucket';
+        $this->bucket = $bucket;
 
         return $this;
     }
@@ -155,10 +160,11 @@ class BloomFilterRedis implements DropDuplicateInterface
         $index = 0;
         $pipe = $this->_redis->pipeline();
 
+        $skey = $this->_redis->getStandardKey($this->getBucket());
         while($index < $this->getHashCount()) 
         {
             $crc = $this->hash($element, $index);
-            $pipe->setbit($this->getBucket(), $crc, 1);
+            $pipe->setbit($skey, $crc, 1);
             $index++;
         }
 
@@ -176,11 +182,12 @@ class BloomFilterRedis implements DropDuplicateInterface
     {
         $index = 0;
         $pipe = $this->_redis->pipeline();
+        $skey = $this->_redis->getStandardKey($this->getBucket());
 
         while($index < $this->hashTimes) 
         {
             $crc = $this->hash($element, $index);
-            $pipe->getbit($this->getBucket(), $crc);
+            $pipe->getbit($skey, $crc);
             $index++;
         }
 

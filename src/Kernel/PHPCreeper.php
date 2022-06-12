@@ -40,7 +40,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const CURRENT_VERSION = '1.3.8';
+    const CURRENT_VERSION = '1.3.9';
 
     /**
      * valid assemble package methods
@@ -438,10 +438,11 @@ class PHPCreeper extends Worker
 
         if(self::$isRunAsMultiWorker)
         {
-            $this->bindQueueClient('redis', Configurator::get('globalConfig/database/redis'));
-            $this->bindLockHelper('redis',  $this);
-            $this->bindRedisClient(Configurator::get('globalConfig/database/redis'));
-            $this->bindDropDuplicateFilter('redis', $this);
+            $rdbconfig = (array)Configurator::get('globalConfig/database/redis');
+            $this->bindQueueClient('redis', $rdbconfig);
+            $this->bindRedisClient('redis', $rdbconfig);
+            $this->bindLockHelper('redis',  $rdbconfig);
+            $this->bindDropDuplicateFilter('redis', $rdbconfig);
         }
 
         return $this;
@@ -683,7 +684,27 @@ class PHPCreeper extends Worker
 
         $appworker = $this->_config['main']['appworker'] ?? '';
         if(array_key_exists($appworker, $config)) unset($config[$appworker]);
+
+        array_map(function($key)use(&$config){
+            if(isset($config[$key])) unset($config[$key]);
+        }, ['redis', 'mysql', 'lang']);
+
         Configurator::reset('globalConfig', $config);
+
+        if(!empty($this->_config['redis']))
+        {
+            Configurator::set('globalConfig/database/redis', $this->_config['redis']);
+        }
+
+        if(!empty($this->_config['mysql']))
+        {
+            Configurator::set('globalConfig/database/mysql', $this->_config['mysql']);
+        }
+
+        if(!empty($this->_config['lang']))
+        {
+            Configurator::set('globalConfig/main/language', $this->_config['lang']);
+        }
 
         return $this;
     }
@@ -923,6 +944,10 @@ class PHPCreeper extends Worker
         if(array_key_exists($k, self::$callbacks) && is_callable($v))
         {
             self::$callbacks[$k][] = $v;
+        }
+        else
+        {
+            $this->$k = $v;
         }
 
         return false;

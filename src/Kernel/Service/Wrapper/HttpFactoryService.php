@@ -32,24 +32,17 @@ class HttpFactoryService
      */
     static public function createHttpClient($type = 'guzzle', ...$args)
     {
-        $hashKey = md5(json_encode($type));
-
-        if(empty(self::$_client[$hashKey])) 
-        {
-            if(empty($type) || $type == 'guzzle'){
-                $client = new Guzzle(...$args);
-            }elseif($type == 'curl'){
-                $client = new Guzzle(...$args);
-            }elseif(is_callable($type)){
-                $client = call_user_func($type, ...$args);
-            }else{
-                $client = new Guzzle(...$args);
-            }
-
-            self::$_client[$hashKey] = $client;
+        if(empty($type) || $type == 'guzzle'){
+            $client = new Guzzle(...$args);
+        }elseif($type == 'curl'){
+            $client = new Guzzle(...$args);
+        }elseif(is_callable($type)){
+            $client = call_user_func($type, ...$args);
+        }else{
+            $client = new Guzzle(...$args);
         }
 
-        return self::$_client[$hashKey];
+        return $client;
     }
 }
 

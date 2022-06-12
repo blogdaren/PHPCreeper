@@ -11,10 +11,10 @@ namespace PHPCreeper;
 
 use PHPCreeper\Kernel\PHPCreeper;
 use PHPCreeper\Kernel\Library\Helper\Tool;
+use PHPCreeper\Timer;
 use Configurator\Configurator;
 use Logger\Logger;
 use Workerman\Connection\AsyncTcpConnection;
-use Workerman\Lib\Timer;
 
 class Downloader extends PHPCreeper
 {
@@ -428,9 +428,6 @@ class Downloader extends PHPCreeper
          */
 
         $task = $this->getTaskMan()->getTask();
-
-        //debug
-        //!empty($task) && Tool::debug($task);
 
         //unlock
         /*
