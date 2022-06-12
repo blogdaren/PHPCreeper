@@ -147,7 +147,11 @@ class RedisExtension implements BrokerInterface
             if(empty($rs)) throw new \RedisException("connect redis-server-{$index} failed($host:$port)");
         }
 
-        true === $this->connectionConfig[$index]['auth'] && $this->_connection[$index]->auth($this->connectionConfig[$index]['pass']);
+        if(!empty($this->connectionConfig[$index]['auth']) && true == $this->connectionConfig[$index]['auth'])
+        {
+            $this->_connection[$index]->auth($this->connectionConfig[$index]['pass'] ?? '');
+        }
+
         !empty($this->connectionConfig[$index]['database']) && $this->_connection[$index]->select($this->connectionConfig[$index]['database']);
 
         return $this->_connection[$index];
