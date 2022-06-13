@@ -129,7 +129,7 @@ function startAppProducer()
 
     $producer->setName('AppProducer')->setCount(1);
     $producer->onProducerStart = function($producer){
-        //various context settings
+        //various task context settings
         $context = array(
             //'cache_enabled'    => true,                              
             //'cache_directory'  => '/tmp/DownloadCache4PHPCreeper/',
@@ -268,24 +268,26 @@ Normally, there is no need to change this file unless you wanna create a new glo
 3、Edit the global sub-config file named **database.php**:
 ```php
 <?php
-return array(
+return [
     'redis' => [
         'prefix' => 'Github',
         'host'   => '127.0.0.1',
         'port'   => 6379,
         'database' => 0,
     ],
-);
+];
 ```
 or 
 ```
+<?php
+return [
     'redis' => [[
         'prefix' => 'Github',
         'host'   => '127.0.0.1',
         'port'   => 6379,
         'database' => 0,
     ]],
-);
+];
 ```
 4、Edit the global sub-config file named **main.php**:
 ```php
