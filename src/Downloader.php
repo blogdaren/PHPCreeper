@@ -951,7 +951,7 @@ class Downloader extends PHPCreeper
      */
     public function installTimer()
     {
-        $this->timerId = Timer::add($this->getTaskCrawlInterval(), array($this, 'consumeOneTask'), [], $this->getTaskCrawlInterval());
+        $this->timerId = Timer::add($this->getTaskCrawlInterval(), array($this, 'consumeOneTask'), [], true);
 
         return $this;
     }

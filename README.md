@@ -129,7 +129,16 @@ function startAppProducer()
 
     $producer->setName('AppProducer')->setCount(1);
     $producer->onProducerStart = function($producer){
+        //various context settings
+        $context = array(
+            //'cache_enabled'    => true,                              
+            //'cache_directory'  => '/tmp/DownloadCache4PHPCreeper/',
+            //'allow_url_repeat' => true,
+            //..........................
+        );
+
         //task can be configured like this, here the rule name like `r1` should be given:
+        //note that we need to call `createMultiTask()` API for multi tasks: 
         $task = array(
             'url' => array(
                 "r1" => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
@@ -141,31 +150,18 @@ function startAppProducer()
                 ),  
             ),
         );
+        $producer->newTaskMan()->setContext($context)->createMultiTask($task);
 
         //task can also be configured like this, here `md5($url)` will be the rule name:
-        /*$task = array(
-            'url' => array(
-                "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
-             ),
+        //note that we need to call `createTask()` API for single task: 
+        $task = array(
+            'url' => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
             'rule' => array(
-                array(
-                    'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
-                    'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
-                ), 
+                'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
+                'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
             ),
-        );*/
-
-        //various context settings
-        $context = array(
-            //'cache_enabled'   => true,                              
-            //'cache_directory' => '/tmp/DownloadCache4PHPCreeper/',
-            //..........................
         );
-
-        //or we can call `createMultiTask()` API for multi tasks: 
-        //$producer->newTaskMan()->setContext($context)->createMultiTask($task);
-
-        //or we can call `createTask()` API for single task: 
+        $producer->newTaskMan()->setContext($context)->createTask($task);
         $producer->newTaskMan()->setUrl($task['url'])->setRule($task['rule'])->createTask();
     };
 }

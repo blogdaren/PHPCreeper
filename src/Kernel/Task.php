@@ -175,7 +175,11 @@ class Task
     {
         //check task params
         $check_result = self::checkTaskParams($input);
-        if(true !== $check_result) return $check_result;
+        if(true !== $check_result) 
+        {
+            Logger::error(Tool::replacePlaceHolder($this->phpcreeper->langConfig['queue_url_invalid']));
+            return $check_result;
+        }
 
         //check task number
         if(true !== $check_result = $this->checkTaskNumber())
@@ -209,34 +213,10 @@ class Task
             return false;
         };
 
-        $allow_url_repeat = false;
-        if(!empty($input['context']['allow_url_repeat']) && true === $input['context']['allow_url_repeat'])
-        {
-            $allow_url_repeat = true;
-        }
-
-        if(PHPCreeper::$isRunAsMultiWorker && !$allow_url_repeat)
-        {
-            if(true === $this->hasUrl($input['url'])) 
-            {
-                Logger::warn(Tool::replacePlaceHolder($this->phpcreeper->langConfig['queue_duplicate_task'], [
-                    'task_url'  => $input['url'],
-                ]));
-
-                //unlock
-                $this->phpcreeper->count > 1 && $this->phpcreeper->lockHelper->unlock('pushtask', $gold_key);
-
-                return false;
-            }
-
-            $this->phpcreeper->dropDuplicateFilter->add($input['url']);
-        }
-
+        //rewash params
         if(isset($input['rule_name'])) $this->setRuleName($input['rule_name']);
         $rule_name = $this->getRuleName();
         if(empty($rule_name) || !is_string($rule_name)) $rule_name = md5($input['url']);
-
-
         $url     = $input['url'];
         $type    = (empty($input['type']) || !is_string($input['type'])) ? $this->getType() : $input['type'];
         $method  = (empty($input['method']) || !is_string($input['method'])) ? $this->getMethod() : $input['method'];
@@ -247,6 +227,30 @@ class Task
         $depth      = $input['depth'];
         $context    = $this->getContext($input['context'] ?? []);
         $task_id    = $this->createTaskId();
+
+        //check task url allowed to repeat or not
+        $allow_url_repeat = false;
+        if(!empty($context['allow_url_repeat']) && true === $context['allow_url_repeat'])
+        {
+            $allow_url_repeat = true;
+        }
+
+        if(PHPCreeper::$isRunAsMultiWorker && !$allow_url_repeat)
+        {
+            if(true === $this->hasUrl($input['url'])) 
+            {
+                Logger::warn(Tool::replacePlaceHolder($this->phpcreeper->langConfig['queue_duplicate_task'], [
+                    'task_url'  => $url,
+                ]));
+
+                //unlock
+                $this->phpcreeper->count > 1 && $this->phpcreeper->lockHelper->unlock('pushtask', $gold_key);
+
+                return false;
+            }
+
+            $this->phpcreeper->dropDuplicateFilter->add($url);
+        }
 
         $task_data = [
             'id'          => $task_id,

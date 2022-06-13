@@ -11,6 +11,7 @@ namespace PHPCreeper\Kernel\Middleware\MessageQueue;
 
 use PHPCreeper\Kernel\Slot\BrokerInterface;
 use PHPCreeper\Kernel\Library\Helper\Tool;
+use PHPCreeper\Timer;
 
 class RedisExtension implements BrokerInterface
 {
@@ -19,7 +20,7 @@ class RedisExtension implements BrokerInterface
      *
      * @var array
      */
-    protected $_connection = null;
+    protected $_connection = [];
 
     /**
      * the number of redis-instance
@@ -49,6 +50,13 @@ class RedisExtension implements BrokerInterface
      */
     public $partion_id = 0;
 
+    /** 
+     * hearbeat
+     *
+     * @var int
+     */
+    const PING_INTERVAL = 25;
+
     /**
      * @brief    __construct    
      *
@@ -69,7 +77,6 @@ class RedisExtension implements BrokerInterface
         $this->connectionConfig = empty($connection_config) ? $this->getDefaultConfig() : $connection_config;
         self::$serverCount = count($this->connectionConfig);
     }
-
 
     /**
      * @brief    get connection config    
@@ -130,7 +137,6 @@ class RedisExtension implements BrokerInterface
                 $method = 'pconnect';
             }
 
-            //if(empty($this->connectionConfig[$index]['host']) || empty($this->connectionConfig[$index]['port'])) return;
             $rs = call_user_func(
                 [$this->_connection[$index], $method],
                 $this->connectionConfig[$index]['host'] ?? '',
@@ -145,6 +151,22 @@ class RedisExtension implements BrokerInterface
             $port = $this->connectionConfig[$index]['port'];
 
             if(empty($rs)) throw new \RedisException("connect redis-server-{$index} failed($host:$port)");
+
+            if(strpos($host, '127.0.0.1') !== 0 && $this->_connection[$index]->isConnected())
+            {                                                                                   
+                $this->_connection[$index]->ping_timer = Timer::add(self::PING_INTERVAL, function()use($index){
+                    $this->_connection[$index]->ping();
+                });
+            }
+        }
+
+        if(!$this->_connection[$index]->isConnected())
+        {
+            if(!empty($this->_connection[$index]->ping_timer))
+            {
+                Timer::del($this->_connection[$index]->ping_timer);
+            }
+            unset($this->_connection[$index]);
         }
 
         if(!empty($this->connectionConfig[$index]['auth']) && true == $this->connectionConfig[$index]['auth'])
@@ -345,17 +367,17 @@ class RedisExtension implements BrokerInterface
     }
 
     /**
-     * close the connection and channel
+     * with client to close the connection and channel
      *
      * @return void
      */
     public function close($key = '')
     {
-        if(empty($key) || !is_string($key)) return;
+        if(!is_string($key)) return;
 
         $skey = $this->getStandardKey($key);
 
-        if(!empty($this->getConnection($skey)) || $this->getConnection($skey)->isConnected()) 
+        if(!empty($this->getConnection($skey)) && $this->getConnection($skey)->isConnected()) 
         {
             $this->getConnection($skey)->close();
         }
