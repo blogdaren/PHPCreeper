@@ -278,7 +278,7 @@ return [
 ];
 ```
 or 
-```
+```php
 <?php
 return [
     'redis' => [[
