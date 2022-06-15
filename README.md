@@ -173,6 +173,7 @@ function startAppDownloader()
     //maybe need to set config 
     //global $config; $downloader->setConfig($config);
 
+    //set the client socket address based on the listening parser server 
     $downloader->setName('AppDownloader')->setCount(2)->setClientSocketAddress([
         'ws://127.0.0.1:8888',
     ]);
