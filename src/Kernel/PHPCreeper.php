@@ -1207,7 +1207,12 @@ class PHPCreeper extends Worker
         //check redis extension in multi worker mode
         if(true === self::$isRunAsMultiWorker)
         {
-            if(!Tool::checkWhetherPHPExtensionIsLoaded('redis', false)) 
+            if(self::getDefaultRedisClient() == 'predis' && version_compare(PHP_VERSION, '7.2.0', 'lt'))
+            {
+                self::showHelpByeBye('predis client require PHP_VERSION >= 7.2.0, current PHP_VRESION:' . PHP_VERSION);
+            }
+
+            if(self::getDefaultRedisClient() == 'redis' && !Tool::checkWhetherPHPExtensionIsLoaded('redis', false)) 
             {
                 self::showHelpByeBye('plz make sure the REDIS extension is installed in multi worker mode');
             }
