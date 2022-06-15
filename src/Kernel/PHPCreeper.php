@@ -9,7 +9,6 @@
 
 namespace PHPCreeper\Kernel;
 
-//load common functions
 require_once __DIR__ . '/Library/Common/Functions.php';
         
 use PHPCreeper\Kernel\Service\Service;
@@ -40,7 +39,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const CURRENT_VERSION = '1.4.1';
+    const CURRENT_VERSION = '1.4.2';
 
     /**
      * valid assemble package methods
@@ -258,6 +257,13 @@ class PHPCreeper extends Worker
     static private $_logLevel = [];
 
     /**
+     * default redis client
+     *
+     * @var string
+     */
+    static private $_defaultRedisClient = 'predis';
+
+    /**
      * user callbacks
      *
      * @var array
@@ -438,11 +444,12 @@ class PHPCreeper extends Worker
 
         if(self::$isRunAsMultiWorker)
         {
+            $rdbclient = self::getDefaultRedisClient();
             $rdbconfig = (array)Configurator::get('globalConfig/database/redis');
-            $this->bindQueueClient('redis', $rdbconfig);
-            $this->bindRedisClient('redis', $rdbconfig);
-            $this->bindLockHelper('redis',  $rdbconfig);
-            $this->bindDropDuplicateFilter('redis', $rdbconfig);
+            $this->bindQueueClient($rdbclient, $rdbconfig);
+            $this->bindRedisClient($rdbclient, $rdbconfig);
+            $this->bindLockHelper($rdbclient,  $rdbconfig);
+            $this->bindDropDuplicateFilter($rdbclient, $rdbconfig);
         }
 
         return $this;
@@ -1545,6 +1552,33 @@ EOT;
         self::$_lang = Configurator::get('globalConfig/main/language') ?? "zh";
 
         return self::$_lang;
+    }
+
+    /**
+     * @brief    set default redis client  
+     *
+     * @param    string  $client
+     *
+     * @return   void
+     */
+    static public function setDefaultRedisClient($client = '')
+    {
+        if(empty($client) || !is_string($client) || !in_array($client, ['redis', 'predis']))
+        {
+            $client = 'predis';
+        }
+
+        self::$_defaultRedisClient = $client;
+    }
+
+    /**
+     * @brief    get default redis client  
+     *
+     * @return   string
+     */
+    static public function getDefaultRedisClient()
+    {
+        return self::$_defaultRedisClient;
     }
 
     /**

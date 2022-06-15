@@ -10,6 +10,7 @@
 namespace PHPCreeper\Kernel\Service\Wrapper;
 
 use PHPCreeper\Kernel\Middleware\MessageQueue\BrokeInterface;
+use PHPCreeper\Kernel\Middleware\MessageQueue\PredisClient;
 use PHPCreeper\Kernel\Middleware\MessageQueue\RedisExtension;
 use PHPCreeper\Kernel\Middleware\MessageQueue\AmqpExtension;
 use PHPCreeper\Kernel\Middleware\MessageQueue\PhpQueue;
@@ -33,7 +34,9 @@ class QueueFactoryService
      */
     static public function createQueueClient($type = 'redis', ...$args)
     {
-        if(empty($type) || $type == 'redis'){
+        if(empty($type) || $type == 'predis'){
+            $client = new PredisClient(...$args);
+        }elseif($type == 'redis'){
             $client = new RedisExtension(...$args);
         }elseif($type == 'amqp'){
             $client = new AmqpExtension(...$args);

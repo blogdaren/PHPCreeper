@@ -46,7 +46,7 @@ return [
     'parser_task_report'            => "收到反馈：第%connection_id%号连接:封包处理成功 (%task_id%)",
     'parser_find_url'               => "新子任务：解析器成功提取到新子任务并压入任务队列: %sub_url%",
     'task_exceed_max_depth'         => "采集深度：检测到采集深度已经超过最大深度%max_depth%, 不再入队: %sub_url%",
-    'ping_from_downloader'          => "心跳监控：检测到来自下载器的心跳数据：心跳间隔为 %interval% 秒.......................",
+    'ping_from_downloader'          => "心跳监控：检测到来自下载器的心跳数据包：心跳间隔为 %interval% 秒.......................",
     'ext_msgpack_not_install'       => "数据打包：检测到数据打包方式为msgpack, 但是msgpack扩展并未安装, 尝试切换为json",
     'invalid_httpclient_object'     => "危险行为：检测到非法的 httpClient 对象, 要求必须实现 HttpClientInterface 接口",
     'invalid_queueclient_object'    => "危险行为：检测到非法的 queueClient 对象, 要求必须实现 BrokerInterface 接口",

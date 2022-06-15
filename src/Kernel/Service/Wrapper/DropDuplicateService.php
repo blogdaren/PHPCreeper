@@ -12,6 +12,7 @@ namespace PHPCreeper\Kernel\Service\Wrapper;
 use PHPCreeper\Kernel\Slot\DropDuplicateInterface;
 use PHPCreeper\Kernel\Middleware\DropDuplicate\BloomFilterLocal;
 use PHPCreeper\Kernel\Middleware\DropDuplicate\BloomFilterRedis;
+use PHPCreeper\Kernel\Middleware\DropDuplicate\BloomFilterPredis;
 
 class DropDuplicateService
 {
@@ -32,7 +33,9 @@ class DropDuplicateService
      */
     static public function create($type = 'redis', ...$args)
     {
-        if(empty($type) || $type == 'redis'){
+        if(empty($type) || $type == 'predis'){
+            $filter = new BloomFilterPredis(...$args);
+        }elseif($type == 'redis'){
             $filter = new BloomFilterRedis(...$args);
         }elseif($type == 'local'){
             $filter = new BloomFilterLocal(...$args);

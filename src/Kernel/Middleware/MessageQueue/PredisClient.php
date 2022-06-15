@@ -1,10 +1,10 @@
 <?php
 /**
- * @script   RedisExtension.php
+ * @script   PredisClient.php
  * @brief    This file is part of PHPCreeper
  * @author   blogdaren<blogdaren@163.com>
  * @link     http://www.phpcreeper.com
- * @create   2019-09-07
+ * @create   2022-06-14
  */
 
 namespace PHPCreeper\Kernel\Middleware\MessageQueue;
@@ -13,7 +13,7 @@ use PHPCreeper\Kernel\Slot\BrokerInterface;
 use PHPCreeper\Kernel\Library\Helper\Tool;
 use PHPCreeper\Timer;
 
-class RedisExtension implements BrokerInterface
+class PredisClient implements BrokerInterface
 {
     /**
      * \RedisConnection
@@ -57,6 +57,21 @@ class RedisExtension implements BrokerInterface
      */
     const PING_INTERVAL = 25;
 
+    /** 
+     * behavior args
+     *
+     * @var array
+     */
+    const BEHAVIOR_ARGS = [
+        'exceptions',
+        'connections',
+        'cluster',
+        'replication',
+        'aggregate',
+        'parameters',
+        'commands',
+    ];
+
     /**
      * @brief    __construct    
      *
@@ -96,22 +111,16 @@ class RedisExtension implements BrokerInterface
     public function getDefaultConfig()
     {
         return [[
+            'scheme'    =>  'tcp',
             'host'      =>  '127.0.0.1',
             'port'      =>  6379,
             'auth'      =>  false,
             'pass'      =>  'guest',
-            'prefix'    =>  '',
             'database'  =>  '0',
-            'connection_timeout' => 3,
-            'read_write_timeout' => 3,
+            'connection_timeout' => 3.,
+            'read_write_timeout' => 3.,
             'persisted' =>  false,
-            'lazy'      =>  true,
-            'ssl_on'    =>  false,
-            'ssl_verify'=>  true,
-            'ssl_cacert'=>  '',
-            'ssl_cert'  =>  '',
-            'ssl_key'   =>  '',
-            'ssl_passphrase' => '',
+            'ssl'       =>  [],
         ]];
     }
 
@@ -128,28 +137,15 @@ class RedisExtension implements BrokerInterface
 
         if(empty($this->_connection[$index]) || !$this->_connection[$index]->isConnected()) 
         {
-            $this->_connection[$index] = new \Redis();
+            $output = $this->rebuildConnectionParamsAndOptions($index);
+            if(empty($output['params'])) throw new \Exception("predis connection params invalid");
 
-            $method = 'connect';
-            if(!empty($this->connectionConfig[$index]['persisted']) && true === $this->connectionConfig[$index]['persisted'])
-            {
-                $method = 'pconnect';
-            }
+            $this->_connection[$index] = new \Predis\Client($output['params'], $output['options']);
 
-            $rs = call_user_func(
-                [$this->_connection[$index], $method],
-                $this->connectionConfig[$index]['host'] ?? '',
-                $this->connectionConfig[$index]['port'] ?? 0,
-                $this->connectionConfig[$index]['connection_timeout'] ?? 0,
-                $this->connectionConfig[$index]['persist_id'] ?? null,
-                $this->connectionConfig[$index]['retry_interval'] ?? 0,
-                $this->connectionConfig[$index]['read_write_timeout'] ?? 0
-            );
-
-            $host = $this->connectionConfig[$index]['host'];
-            $port = $this->connectionConfig[$index]['port'];
-
-            if(empty($rs)) throw new \RedisException("connect redis-server-{$index} failed($host:$port)");
+            $scheme = $output['params']['scheme'];
+            $host = $output['params']['host'];
+            $port = $output['params']['port'];
+            $this->_connection[$index]->connect();
 
             if(strpos($host, '127.0.0.1') !== 0 && $this->_connection[$index]->isConnected())
             {                                                                                   
@@ -168,14 +164,86 @@ class RedisExtension implements BrokerInterface
             unset($this->_connection[$index]);
         }
 
-        if(!empty($this->connectionConfig[$index]['auth']) && true == $this->connectionConfig[$index]['auth'])
+        return $this->_connection[$index];
+    }
+
+    /**
+     * @brief    rebuild connection params and options
+     *
+     * @param    int  $index
+     *
+     * @return   array
+     */
+    public function rebuildConnectionParamsAndOptions($index = 0)
+    {
+        $params = $options = [];
+        $output = [
+            'params' => $params,
+            'options' => $options,
+        ];
+
+        if(!is_int($index) || empty($this->connectionConfig[$index]) || !is_array($this->connectionConfig[$index])) 
         {
-            $this->_connection[$index]->auth($this->connectionConfig[$index]['pass'] ?? '');
+            return $output;
         }
 
-        !empty($this->connectionConfig[$index]['database']) && $this->_connection[$index]->select($this->connectionConfig[$index]['database']);
+        $config = $this->connectionConfig[$index];
 
-        return $this->_connection[$index];
+        $params['scheme'] = $config['scheme'] ?? 'tcp';
+        $params['host']   = $config['host'] ?? '127.0.0.1';
+        $params['port']   = $config['port'] ?? 6379;
+        $params['persistent'] = !empty($config['persisted']) ? true : null;
+
+        $params['timeout'] = 0;
+        if(isset($config['connection_timeout']) && is_int($config['connection_timeout']))
+        {
+            $params['timeout'] = $config['connection_timeout'];
+        }
+
+        $params['read_write_timeout'] = 0;
+        if(isset($config['read_write_timeout']) && is_int($config['read_write_timeout']))
+        {
+            $params['read_write_timeout'] = $config['read_write_timeout'];
+        }
+
+        $params['ssl'] = [];
+        if(isset($config['ssl']) && is_array($config['ssl']))
+        {
+            $params['ssl'] = $config['ssl'];
+        }
+
+        if(!empty($config['auth']) && true === $config['auth'])
+        {
+            $params['password'] = $config['pass'] ?? '';
+        }
+
+        $common_args = $this->getDefaultConfig()[0];
+        foreach($config as $k => $v)
+        {
+            if(!array_key_exists($k, $common_args))
+            {
+                $options[$k] = $v;
+            }
+        }
+
+        foreach(self::BEHAVIOR_ARGS as $k => $v)
+        {
+            if(isset($params[$v]))
+            {
+                $options[$v] = $params[$v];
+                unset($params[$v]);
+            }
+        }
+
+        //force to unset $options['prefix']
+        if(isset($options['prefix'])) unset($options['prefix']);
+
+        $output = [
+            'params'  => $params,
+            'options' => $options,
+        ];
+
+        return $output;
     }
 
     /**
@@ -423,12 +491,12 @@ class RedisExtension implements BrokerInterface
     /**
      * @brief    __call     
      *
-     * @param    string  $func
+     * @param    string  $function_name
      * @param    mixed   $args
      *
      * @return   void
      */
-    public function __call($func, $args)
+    public function __call($function_name, $args)
     {
         $key = $args[0] ?? '';
         $skey = $this->getStandardKey($key);
@@ -436,7 +504,7 @@ class RedisExtension implements BrokerInterface
         //important: rewrite $args[0];
         $skey && $args[0] = $skey;
 
-        return $this->getConnection($key)->{$func}(...$args);
+        return $this->getConnection($key)->{$function_name}(...$args);
     }
 
 }

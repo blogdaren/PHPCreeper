@@ -62,11 +62,12 @@ The chinese document is relatively complete, and the english document will be ke
 * A POSIX compatible operating system (Linux、OSX、BSD)  
 * POSIX &nbsp;extension for PHP (**required**)
 * PCNTL extension for PHP (**required**)
-* REDIS &nbsp;extension for PHP (optional, strongly recommend to install)
-* EVENT extension for PHP (optional, better to install)
+* REDIS &nbsp;extension for PHP (optional, note `predis` will be the default redis client since v1.4.2)
+* EVENT extension for PHP (optional, for better performance to install)
 * 简单的说：只要能跑起来workerman那就能跑起来PHPCreeper，所以安装要求和workerman完全一致。
-* POSIX扩展和PCNTL扩展是必选项，PHP发行包一般都会默认安装这两个扩展，若没有请自行编译安装。
-* REDIS扩展和EVENT扩展是可选项，但是建议最好安装，尤其是在多worker模式下必须安装REDIS扩展。
+* POSIX扩展和PCNTL扩展是必选项：PHP发行包一般都会默认安装这两个扩展，若没有请自行编译安装。
+* EVENT扩展是可选项：建议最好安装，这是提升各路性能的一个主要支撑。
+* REDIS扩展是可选项： **注意：v1.4.2版本之后，内核默认采用predis客户端，所以不再强依赖REDIS扩展。**
 
 ## Installation
 The recommended way to install PHPCreeper is through [Composer](https://getcomposer.org/).
@@ -95,6 +96,10 @@ use PHPCreeper\Timer;
 
 //switch runtime language between `zh` and `en`, default is `zh`【version >= 1.3.7】
 PHPCreeper::setLang('en');
+
+//note that `predis` will be the default redis client since v1.4.2, 
+//but you can switch it to be `redis` if you prefer to use ext-redis
+//PHPCreeper::setDefaultRedisClient('redis');
 
 //set master pid file manually as needed【version >= 1.3.8】
 //PHPCreeper::setMasterPidFile('/path/to/master.pid');

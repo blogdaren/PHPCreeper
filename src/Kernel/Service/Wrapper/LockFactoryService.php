@@ -10,6 +10,7 @@
 namespace PHPCreeper\Kernel\Service\Wrapper;
 
 use PHPCreeper\Kernel\Slot\LockInterface;
+use PHPCreeper\Kernel\Middleware\LockManager\PredisLock;
 use PHPCreeper\Kernel\Middleware\LockManager\RedisLock;
 use PHPCreeper\Kernel\Middleware\LockManager\FileLock;
 
@@ -32,7 +33,9 @@ class LockFactoryService
      */
     static public function createLockHelper($type = 'redis', ...$args)
     {
-        if(empty($type) || 'redis' == $type){
+        if(empty($type) || 'predis' == $type){
+            $helper = new PredisLock(...$args);
+        }elseif('redis' == $type){
             $helper = new RedisLock(...$args);
         }elseif('file' == $type){
             $helper = new FileLock(...$args);
