@@ -270,6 +270,14 @@ class Task
         //unlock
         $this->phpcreeper->count > 1 && $this->phpcreeper->lockHelper->unlock('pushtask', $gold_key);
 
+        if(!empty($rs))
+        {
+            Logger::info(Tool::replacePlaceHolder($this->phpcreeper->langConfig['queue_push_task'], [
+                'task_id'   => $task_id,
+                'task_url'  => $url,
+            ]));
+        }
+
         return !empty($rs) ? $task_id : 0;
     }
 
@@ -317,14 +325,6 @@ class Task
                             ->setRule($rule)
                             ->setContext($context)
                             ->createTask();
-
-            if(!empty($task_id))
-            {
-                Logger::info(Tool::replacePlaceHolder($this->phpcreeper->langConfig['queue_push_task'], [
-                    'task_id'   => $task_id,
-                    'task_url'  => $url,
-                ]));
-            }
         }
 
         if(empty($urls)) 

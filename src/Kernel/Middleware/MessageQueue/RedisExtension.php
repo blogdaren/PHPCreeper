@@ -3,8 +3,8 @@
  * @script   RedisExtension.php
  * @brief    This file is part of PHPCreeper
  * @author   blogdaren<blogdaren@163.com>
- * @version  1.0.0
- * @modify   2019-09-07
+ * @link     http://www.phpcreeper.com
+ * @create   2019-09-07
  */
 
 namespace PHPCreeper\Kernel\Middleware\MessageQueue;
@@ -102,9 +102,8 @@ class RedisExtension implements BrokerInterface
             'pass'      =>  'guest',
             'prefix'    =>  '',
             'database'  =>  '0',
-            'connection_timeout' => 3.,
-            'read_write_timeout' => 3.,
-            'heartbeat' =>  0,
+            'connection_timeout' => 3,
+            'read_write_timeout' => 3,
             'persisted' =>  false,
             'lazy'      =>  true,
             'ssl_on'    =>  false,
@@ -301,7 +300,7 @@ class RedisExtension implements BrokerInterface
     {
         $text = json_encode($text);
         $skey = $this->getStandardKey($key);
-        $rs = $this->getConnection($skey)->lpush($skey, $text);
+        $rs = $this->getConnection($key)->lpush($skey, $text);
 
         return $rs;
     }
@@ -317,7 +316,7 @@ class RedisExtension implements BrokerInterface
     public function pop($key, $wait = false)
     {
         $skey = $this->getStandardKey($key);
-        $message = $this->getConnection($skey)->rpop($skey);
+        $message = $this->getConnection($key)->rpop($skey);
 
         if(!$message) return false;
 
@@ -336,7 +335,7 @@ class RedisExtension implements BrokerInterface
     public function llen($key)
     {
         $skey = $this->getStandardKey($key);
-        return $this->getConnection($skey)->llen($skey);
+        return $this->getConnection($key)->llen($skey);
     }
 
     /**
@@ -361,7 +360,7 @@ class RedisExtension implements BrokerInterface
     public function purge($key)
     {
         $skey = $this->getStandardKey($key);
-        $this->getConnection($skey)->del($skey);
+        $this->getConnection($key)->del($skey);
 
         return true;
     }
@@ -377,9 +376,9 @@ class RedisExtension implements BrokerInterface
 
         $skey = $this->getStandardKey($key);
 
-        if(!empty($this->getConnection($skey)) && $this->getConnection($skey)->isConnected()) 
+        if(!empty($this->getConnection($key)) && $this->getConnection($key)->isConnected()) 
         {
-            $this->getConnection($skey)->close();
+            $this->getConnection($key)->close();
         }
     }
 
@@ -416,8 +415,7 @@ class RedisExtension implements BrokerInterface
      */
     public function getConfig($key = '')
     {
-        $skey = $this->getStandardKey($key);
-        $index = self::getHashIndex($skey);
+        $index = self::getHashIndex($key);
 
         return $this->connectionConfig[$index] ?? [];
     }
@@ -425,19 +423,20 @@ class RedisExtension implements BrokerInterface
     /**
      * @brief    __call     
      *
-     * @param    string  $function_name
+     * @param    string  $func
      * @param    mixed   $args
      *
      * @return   void
      */
-    public function __call($function_name, $args)
+    public function __call($func, $args)
     {
-        $skey = $this->getStandardKey($args[0] ?? null);
+        $key = $args[0] ?? '';
+        $skey = $this->getStandardKey($key);
 
         //important: rewrite $args[0];
         $skey && $args[0] = $skey;
 
-        return $this->getConnection($skey)->{$function_name}(...$args);
+        return $this->getConnection($key)->{$func}(...$args);
     }
 
 }
