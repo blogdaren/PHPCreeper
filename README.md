@@ -43,8 +43,8 @@ The chinese document is relatively complete, and the english document will be ke
 ![EnglishVersion2](./Image/EnglishVersion2.png)
 
 ## Features
-* Inherit all features from [workerman](https://www.workerman.net)
-* Free to customize various plugins and callback
+* Inherit almost all features from [workerman](https://www.workerman.net)
+* Free to customize various plugins and callbacks
 * Free to customize the third-party middleware
 * Support for netflow traffic limitaion
 * Support for distributed deployment
@@ -83,7 +83,7 @@ although this framework is not necessary, we strongly recommend that you use it
 which will greatly improve your job efficiency. Besides, we can certainly write 
 the code which **NOT** depends on the framework, it is also easy to make it.   
 
-Assume we wanna capture `the github top 10 repos ranked by stars`, now let's take an example to illustrate the usage:
+Next let's take an example to show how to capture the `github top 10 repos ranked by stars`：
 ```php
 <?php 
 require "./vendor/autoload.php";
@@ -97,8 +97,8 @@ use PHPCreeper\Timer;
 //switch runtime language between `zh` and `en`, default is `zh`【version >= 1.3.7】
 PHPCreeper::setLang('en');
 
-//note that `predis` will be the default redis client since v1.4.2, 
-//but you can switch it to be `redis` if you prefer to use ext-redis
+//note that `predis` will be the default redis client since【version >= 1.4.2】
+//but you could still switch it to be `redis` if you prefer to use ext-redis
 //PHPCreeper::setDefaultRedisClient('redis');
 
 //set master pid file manually as needed【version >= 1.3.8】
@@ -107,9 +107,9 @@ PHPCreeper::setLang('en');
 //set worker log file when start as daemon mode as needed【version >= 1.3.8】
 //PHPCreeper::setLogFile('/path/to/phpcreeper.log');
 
-//try to enable the single worker mode so that we can run without redis as you like,
-//however you should note it will be limited to run only all the downloader workers in this case.
-//PHPCreeper::enableMultiWorkerMode(false); 【version >= 1.3.2】 
+//enable the single worker mode so that we can run without redis, however, you should note 
+//it will be limited to run only all the downloader workers in this case【version >= 1.3.2】
+//PHPCreeper::enableMultiWorkerMode(false);
 
 //start producer instance
 startAppProducer();
@@ -127,14 +127,14 @@ startAppParser();
 
 function startAppProducer()
 {
-    $producer = new Producer;
+    $producer = new Producer();
 
     //maybe need to set config 
     //global $config; $producer->setConfig($config);
 
     $producer->setName('AppProducer')->setCount(1);
     $producer->onProducerStart = function($producer){
-        //various task context settings
+        //various context settings
         $context = array(
             //'cache_enabled'    => true,                              
             //'cache_directory'  => '/tmp/DownloadCache4PHPCreeper/',
@@ -184,12 +184,12 @@ function startAppDownloader()
     ]);
 
     $downloader->onBeforeDownload = function($downloader, $task){
-        //try to disable ssl verify in any of the following two ways 
+        //disable http ssl verify in any of the following two ways 
         //$downloader->httpClient->disableSSL();
         //$downloader->httpClient->setOptions(['verify' => false]);
     }; 
 
-    //some more downloader callbacks
+    //some more downloader callbacks commonly used
     //$downloader->onDownloaderStart = function($downloader){};
     //$downloader->onDownloaderStop  = function($downloader){};
     //$downloader->onStartDownload = function($downloader, $task){};
@@ -205,7 +205,7 @@ function startAppParser()
         pprint($fields);
     };
 
-    //some more parser callbacks
+    //some more parser callbacks commonly used
     //$parser->onParserStart = function($parser){};
     //$parser->onParserStop  = function($parser){};
     //$parser->onParserMessage = function($parser, $connection, $download_data){};
