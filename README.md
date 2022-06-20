@@ -1,11 +1,11 @@
 # PHPCreeper
-[![language](https://img.shields.io/badge/language-php-ff69b4.svg)]()
-[![php](https://img.shields.io/badge/php->=7.0.0-519dd9.svg)]()
+<!--[![language](https://img.shields.io/badge/language-php-ff69b4.svg)]()-->
+[![php](https://img.shields.io/badge/PHP->=7.0.0-519dd9.svg)]()
 [![posix](https://img.shields.io/badge/ext_posix-required-red.svg)]()
 [![pcntl](https://img.shields.io/badge/ext_pcntl-required-red.svg)]()
 [![event](https://img.shields.io/badge/ext_event-suggest-green.svg)]()
 [![redis](https://img.shields.io/badge/ext_redis-suggest-green.svg)]()
-[![license](https://img.shields.io/badge/license-MIT-ff69b4.svg)](https://github.com/blogdaren/PHPCreeper/blob/master/LICENSE.txt)
+[![license](https://img.shields.io/badge/License-MIT-ff69b4.svg)](https://github.com/blogdaren/PHPCreeper/blob/master/LICENSE.txt)
 
 ## What is it
 
@@ -58,15 +58,15 @@ The chinese document is relatively complete, and the english document will be ke
 
 
 ## Prerequisites
-* PHP_VERSION \>= 7.0.0     
-* A POSIX compatible operating system (Linux、OSX、BSD)  
-* POSIX &nbsp;extension for PHP (**required**)
-* PCNTL extension for PHP (**required**)
-* REDIS &nbsp;extension for PHP (optional, note `predis` will be the default redis client since v1.4.2)
-* EVENT extension for PHP (optional, for better performance to install)
+* PHP_VERSION \>= 7.0.0 (Better to choose PHP 7.2+ for some compatibility reasons)    
+* A POSIX compatible OS (Linux、OSX、BSD)  
+* POSIX &nbsp;extension for PHP (**Required**)
+* PCNTL extension for PHP (**Required**)
+* REDIS &nbsp;extension for PHP (Optional, note that `predis` will be the default redis client since v1.4.2)
+* EVENT extension for PHP (Optional, it's strongly recommended to install for better performance)
 * 简单的说：只要能跑起来workerman那就能跑起来PHPCreeper，所以安装要求和workerman完全一致。
 * POSIX扩展和PCNTL扩展是必选项：PHP发行包一般都会默认安装这两个扩展，若没有请自行编译安装。
-* EVENT扩展是可选项：建议最好安装，这是提升各路性能的一个主要支撑。
+* EVENT扩展是可选项：建议最好安装，这是提升各路性能的一个主要支撑；另注意需要[优化Linux内核](https://www.workerman.net/doc/workerman/appendices/kernel-optimization.html)。
 * REDIS扩展是可选项： **注意：v1.4.2版本之后，内核默认采用predis客户端，所以不再强依赖REDIS扩展。**
 
 ## Installation
@@ -120,8 +120,8 @@ startAppDownloader();
 //start parser instance
 startAppParser();
 
-//well, we could configure many config items as needed such as redis item here
-//configure redis with array value of One-dimension or Two-dimension as needed
+//we could configure many config items such as redis item here as we needed,
+//configure redis with array value of One-dimension or Two-dimension support, 
 //for details on how to configure the value, refer to the Follow-Up sections
 //$config['redis'] = [];
 
