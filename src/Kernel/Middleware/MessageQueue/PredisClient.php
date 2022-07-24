@@ -90,7 +90,43 @@ class PredisClient implements BrokerInterface
         }   
 
         $this->connectionConfig = empty($connection_config) ? $this->getDefaultConfig() : $connection_config;
+
+        //remove the config items which have dirty config keys
+        $this->connectionConfig = self::purifyConnectionConfig($this->connectionConfig);
+
         self::$serverCount = count($this->connectionConfig);
+    }
+
+    /**
+     * @brief    purify connection config    
+     *
+     * @param    array  $config
+     *
+     * @return   array
+     */
+    static public function purifyConnectionConfig($config)
+    {
+        $max_key = 0;
+
+        foreach($config as $k => $v)
+        {
+            if(!is_numeric($k)) 
+            {
+                unset($config[$k]);
+            }
+            else
+            {
+                $max_key = $k > $max_key ? $k : $max_key;
+            }
+
+        }
+
+        if($max_key > (count($config) - 1))
+        {
+            return array_values($config);
+        }
+
+        return $config;
     }
 
     /**
