@@ -39,7 +39,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const CURRENT_VERSION = '1.4.3';
+    const CURRENT_VERSION = '1.4.4';
 
     /**
      * valid assemble package methods
@@ -1338,7 +1338,7 @@ EOT;
         $line_version .= " [Optional]";
         $line_version .= str_pad('EVENT   Extension:', 34, ' ', STR_PAD_LEFT) .' '.Color::getColorfulText($event_text, $event_color, 'black');
         $line_version .= " [Optional]" . PHP_EOL;
-        $line_version .= 'System      Platform:  ' . PHP_OS . str_pad('PHP Configuration: ', 48, ' ', STR_PAD_LEFT) . $php_config . PHP_EOL;
+        $line_version .= 'System      Platform:  ' . PHP_OS . str_pad('PHP     Configure: ', 48, ' ', STR_PAD_LEFT) . $php_config . PHP_EOL;
         $line_version .= 'Master      PID File:  ' . self::getMasterPidFile() . PHP_EOL;
         !defined('LINE_VERSIOIN_LENGTH') && define('LINE_VERSIOIN_LENGTH', strlen($line_version));
 
@@ -1360,7 +1360,7 @@ EOT;
             $text_key = $extension . '_text';
             $color_key = $extension . '_color';
             $ouput[$text_key]  =  Tool::checkWhetherPHPExtensionIsLoaded($extension);
-            $ouput[$color_key] = 'enabled' == $ouput[$text_key] ? 'green' : 'yellow';
+            $ouput[$color_key] = 'enabled' == $ouput[$text_key] ? 'light_green' : 'yellow';
         }
 
         return $ouput;

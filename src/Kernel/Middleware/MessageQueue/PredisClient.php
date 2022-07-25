@@ -77,7 +77,7 @@ class PredisClient implements BrokerInterface
      *
      * @param    array  $connection_config
      *
-     * @return   null
+     * @return   void
      */
     public function __construct($connection_config = array())
     {

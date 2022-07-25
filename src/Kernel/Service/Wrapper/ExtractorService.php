@@ -224,7 +224,7 @@ class ExtractorService
     {
         if(!empty($selector))
         {
-            $this->document = $this->find($selector);
+            $this->document = $this->originDocument->find($selector);
         }
         else
         {
