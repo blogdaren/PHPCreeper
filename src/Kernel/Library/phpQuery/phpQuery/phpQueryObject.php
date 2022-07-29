@@ -1361,7 +1361,7 @@ class phpQueryObject
 	}
 
     /**
-     * @brief    css    
+     * @brief    css action
      *
      * @param    string  $props
      *
@@ -1373,11 +1373,18 @@ class phpQueryObject
 
         $all_props = $partial_props = [];
         $style = explode(';', $this->attr('style'));
+
         foreach($style as $k => $v)
         {
             if(empty($v)) continue;
-            list($key, $value) = explode(':', $v);
-            $all_props[$key] = $value;
+            if(false !== $pos = strpos($v, ':'))
+            {
+                $key = substr($v, 0, $pos);
+                $value = substr($v, $pos + 1);
+                preg_match('/url\s*\((.*?)\)/is', $value, $match);
+                !empty($match[1]) && $value = $match[1];
+                $all_props[$key] = $value;
+            }
         }
 
         if(empty($props)) return $all_props;
@@ -1398,6 +1405,7 @@ class phpQueryObject
 
         return $partial_props;
 	}
+
 	/**
 	 * @todo
 	 *
