@@ -260,6 +260,8 @@ class ExtractorService
                     $data = pq($node, $this->document)->text();
                 }elseif('html' == $action) {
                     $data = pq($node, $this->document)->html();
+                }elseif(0 === strpos($action, 'css')) {
+                    $data = pq($node, $this->document)->css(substr($action, 3));
                 }elseif('preg' == $action) {
                     $source = pq($node, $this->document)->html();
                     !empty($rule[0]) && preg_match($rule[0], $source, $data);

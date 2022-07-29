@@ -594,11 +594,14 @@ just like jQuery selector, its value can be like `#idName` or `.className` or `H
 and so on, besides, it also can be a regular expression depending on the value of ***flag***.
 
 + **flag**  
+indicates what action we should take, the value can be one of the following:    
 `attr`： used to get the attrbute value of html element     
 　　　　【**Attention: the real value shoud be the attribute like `src`、`href` etc, NOT `attr` itself**】   
 `html`： used to get the html code snippets    
 `text`： used to get the text of html element    
-`preg`： just a wrapper for ***preg_match()***  
+`css` ： &nbsp;used specially to get the style attribute of html element, and return as an array form   
+　　　　【**Attention: support also more variant format like `css:*`、`css:prop1,prop2,...propN`**】   
+`preg`： &nbsp;just a wrapper for ***preg_match()***  
 `pregs`：just a wrapper for ***preg_match_all()***   
 
 + **range**  
@@ -611,11 +614,13 @@ you can trigger a callback here, but remember to return the data expected.
 ```php   
 <?php
 //extractor rule code example
-$html = "<div><a href='http://www.phpcreeper.com' id='site' class="site">PHPCreeper</a></div>";
+$html = "<div><a href='http://www.phpcreeper.com' id='site' style='color:red;font-size:100px;'>PHPCreeper</a></div>";
 $rule = array(
     'link_element'  => ['div',      'html'],
     'link_text '    => ['#site',    'text'],
-    'link_address'  => ['div.site', 'href'],
+    'link_address'  => ['a',        'href'],
+    'link_css1'     => ['a',        'css'],
+    'link_css2'     => ['div>a',    'css:font-size'],
     'callback_data' => ['/<a .*?>(.*)<\/a>/is', 'preg', [], function($field_name, $data){
         return 'Hello ' . $data[1];
     }], 
@@ -628,11 +633,23 @@ Array
 (
     [0] => Array
         (
-            ['link_element']  => <a href="http://www.phpcreeper.com" id="site">PHPCreeper</a>
-            ['link_text']     => PHPCreeper
-            ['link_address']  => http://www.phpcreeper.com
-            ['callback_data'] => Hello PHPCreeper
+            [link_element] => <a href="http://www.phpcreeper.com" id="site" style="color:red;font-size:100px;">PHPCreeper</a>
+            [link_text ] => PHPCreeper
+            [link_address] => http://www.phpcreeper.com
+            [link_css1] => Array
+                (
+                    [color] => red
+                    [font-size] => 100px
+                )
+
+            [link_css2] => Array
+                (
+                    [font-size] => 100px
+                )
+
+            [callback_data] => Hello PHPCreeper
         )
+
 )
 ```
 

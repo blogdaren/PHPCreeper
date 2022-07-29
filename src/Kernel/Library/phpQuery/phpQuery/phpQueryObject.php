@@ -1359,15 +1359,44 @@ class phpQueryObject
 				->markup($html);
 		}
 	}
-	/**
-	 * Enter description here...
-	 *
-	 * @return phpQuery|QueryTemplatesSource|QueryTemplatesParse|QueryTemplatesSourceQuery
-	 * @todo
-	 */
-	public function css() {
-		// TODO
-		return $this;
+
+    /**
+     * @brief    css    
+     *
+     * @param    string  $props
+     *
+     * @return   array
+     */
+    public function css($props = '') 
+    {
+        if(!is_string($props)) return [];
+
+        $all_props = $partial_props = [];
+        $style = explode(';', $this->attr('style'));
+        foreach($style as $k => $v)
+        {
+            if(empty($v)) continue;
+            list($key, $value) = explode(':', $v);
+            $all_props[$key] = $value;
+        }
+
+        if(empty($props)) return $all_props;
+
+        $props = str_replace(':', '', $props);
+        $props = preg_replace('/,+/is', ',', $props);
+        $partial = explode(',', $props);
+
+        foreach($partial as $k => $v)
+        {
+            if($v == '*') return $all_props;
+
+            if(array_key_exists($v, $all_props))
+            {
+                $partial_props[$v] = $all_props[$v];
+            }
+        }
+
+        return $partial_props;
 	}
 	/**
 	 * @todo
