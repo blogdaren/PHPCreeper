@@ -44,15 +44,13 @@ The chinese document is relatively complete, and the english document will be ke
 * Inherit almost all features from [workerman](https://www.workerman.net)
 * Free to customize various plugins and callbacks
 * Free to customize the third-party middleware
-* Support for netflow traffic limitaion
-* Support for distributed deployment
-* Support for separated deployment
-* Support for socket programming
-* Support multi-language environment
+* Support Crontab-Jobs similar to Linux-Crontab
+* Support distributed and separated deployment
+* Support for multi-language environment
 * Support for agile development with [PHPCreeper-Application](https://github.com/blogdaren/PHPCreeper-Application)
 * Use PHPQuery as the elegant content extractor
 * With high performance and strong scalability
-* With rich and human-readable development documents 
+* With rich and human-readable development docs
 
 
 ## Prerequisites
