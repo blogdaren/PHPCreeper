@@ -30,6 +30,9 @@
     "autoload": {
         "psr-4": {
             "PHPCreeper\\" : "src/"
-        }   
+        },
+        "files": [
+            "src/Kernel/Library/Common/Functions.php"
+        ]
     } 
 }
