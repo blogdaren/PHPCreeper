@@ -39,7 +39,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const  CURRENT_VERSION = '1.4.7';
+    const  CURRENT_VERSION = '1.4.8';
 
     /**
      * valid assemble package methods
@@ -240,7 +240,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    static private $_lang = '';
+    static private $_lang = 'zh';
 
     /**
      * runtime log file

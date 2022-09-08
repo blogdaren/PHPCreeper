@@ -204,6 +204,18 @@ class Tool
     }
 
     /**
+     * alias of getHumanLogTime()
+     *
+     * @param  int  $time
+     *
+     * @return string
+     */
+    static public function getHumanTime($time = 0)
+    {
+        return self::getHumanLogTime($time);
+    }
+
+    /**
      * 获取当前系统时间
      *
      * @param  int  $human      是否返回人性化时间
