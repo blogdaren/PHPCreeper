@@ -15,16 +15,22 @@
  * @create   2022-09-08
  */
 
+
 require dirname(__FILE__, 2) . "/vendor/autoload.php";
+
+
+//只是临时为了兼容工具函数库在低版本工作正常以及演示需要，实际并不需要这行代码
+require_once dirname(__FILE__, 2) . "/src/Kernel/Library/Common/Functions.php";
+
 
 use PHPCreeper\Kernel\PHPCreeper;
 use PHPCreeper\Producer;
 use PHPCreeper\Downloader;
 use PHPCreeper\Parser;
 use PHPCreeper\Server;
+use PHPCreeper\Tool;
 use PHPCreeper\Timer;
 use PHPCreeper\Crontab;
-use PHPCreeper\Kernel\Library\Helper\Tool;
 use Logger\Logger;
 
 
@@ -61,8 +67,8 @@ startAppDownloader();
 startAppParser();
 
 /*
- * 启动通用型服务器组件，项目较少使用，可以按需自由定制一些服务，完全独立于[Producer|Downloader|Parser]
- * start the general server component，seldom to use in project，can customize some services freely on demand，
+ * 启动通用型服务器组件，项目较少使用，可以按需自由定制一些服务，完全独立于 [Producer|Downloader|Parser] 组件
+ * start the general server component，seldom to use in project，can customize some services freely as needed，
  * and fully indepent on those components like [Producer|Downloader|Parser]
  */
 startAppServer();
@@ -77,14 +83,14 @@ startAppServer();
  *
  * 1、单worker运作模式：限定只能编写若干特定的downloader实例，即可完成所有的爬虫需求，
  *    好处是开箱即用，不依赖redis服务，使用PHP内置队列，缺点是只能对付简单的爬虫需求;
- * 2、多worker运作模式：支持自由编写任意多个业务worker实例，这是爬山虎默认的工作模式;
+ * 2、多worker运作模式：支持自由编写任意多个业务worker实例，这是爬山虎默认的运作模式;
  */
 //PHPCreeper::enableMultiWorkerMode(false);
 
 
 /*
  * switch runtime language between `zh` and `en`, default is `zh`【version >= 1.3.7】
- * 多语言环境开关：暂支持中文和英文，默认是英文【version >= 1.3.7】
+ * 多语言运行时环境开关：暂支持中文和英文，默认是中文【version >= 1.3.7】
  */
 //PHPCreeper::setLang('en');
 
@@ -107,17 +113,21 @@ startAppServer();
  * set master pid file manually as needed【version >= 1.3.8】
  * 设置主进程PID文件【version >= 1.3.8】
  */
-//PHPCreeper::setMasterPidFile('baidu.pid');
+//PHPCreeper::setMasterPidFile('master.pid');
 
 
 /*
  * note that `predis` will be the default redis client since【version >= 1.4.2】
  * but you could still switch it to be `redis` if you prefer to use ext-redis
- * 设置默认的redis客户端，默认为predis，如果喜欢也可以切换为基于ext-redis的redis
+ * 设置默认的redis客户端，默认为predis，也可切换为基于ext-redis的redis【version >= 1.4.2】
  */
 //PHPCreeper::setDefaultRedisClient('redis');
 
 
+/*
+ * all components support distributed or separated deployment
+ * 所有组件支持分布式或分离式部署
+ */
 function startAppProducer()
 {
     global $config;
@@ -127,7 +137,7 @@ function startAppProducer()
     //模拟抓取未来7天内的天气预报
     $producer->onProducerStart = function($producer){
         $context = [
-            'cache_enabled'   => true,                              
+            'cache_enabled'   => true,
             'cache_directory' => '/tmp/task/download/' . date('Ymd'), 
             //'allow_url_repeat' => true,
         ];
@@ -161,6 +171,11 @@ function startAppProducer()
     };
 }
 
+
+/*
+ * all components support distributed or separated deployment
+ * 所有组件支持分布式或分离式部署
+ */
 function startAppDownloader()
 {
     global $config;
@@ -178,9 +193,16 @@ function startAppDownloader()
     };
 
     $downloader->onAfterDownload = function($downloader, $data, $task){
+        //Tool::debug($content, $json = true, $append = true, $filename = "debug", $base_dir = "/tmp/")
+        //Tool::debug($task);
     };
 }
 
+
+/*
+ * all components support distributed or separated deployment
+ * 所有组件支持分布式或分离式部署
+ */
 function startAppParser()
 {
     $parser = new Parser();
@@ -216,14 +238,20 @@ function startAppServer()
          *  |   +------------ min (0 - 59)
          *  +-------------- sec (0-59)[可省略，如果没有0位,则最小时间粒度是分钟]
          *
-         * 图省事完全照搬了walkor大大的workerman-crontab而来, 
-         * 很小且为了方便所以将此库脱离了composer库并揉进了PHPCreeper内核，
-         * 所以直接使用即可，具体用法请参照workerman官方手册：
+         * 防止重复造轮子且图省事完全照搬了walkor大大的workerman-crontab而来, 
+         * 很小巧且为了方便所以将此库脱离了composer库并揉进了PHPCreeper内核，
+         * 高仿Linux风格的Crontab，语法层面除了支持秒级以外，其余用法基本一致，
+         * 所以平时crontab怎么用现在就怎么用，具体用法请参照workerman官方手册：
          * https://www.workerman.net/doc/webman/components/crontab.html
          */
 
-        //使用Linux风格的Crontab
+        //每隔1秒执行一次任务
         new Crontab('*/1 * * * * *', function(){
+            pprint(Tool::getHumanTime());
+        });
+
+        //每隔2分钟执行一次任务
+        new Crontab('*/2 * * * *', function(){
             pprint(Tool::getHumanTime());
         });
     };

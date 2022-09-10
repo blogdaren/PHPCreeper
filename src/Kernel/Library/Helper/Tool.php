@@ -1,11 +1,10 @@
 <?php
 /**
- * @script   tool.php
- * @brief    PHP Toolbox
+ * @script   Tool.php
+ * @brief    
  * @author   blogdaren<blogdaren@163.com>
- * @link     http://www.blogdaren.com
- * @version  1.0.0
- * @modify   2018-09-26
+ * @link     http://www.phpcreeper.com
+ * @create   2018-09-26
  */
 
 namespace PHPCreeper\Kernel\Library\Helper;
@@ -265,9 +264,10 @@ class Tool
     static function arrayRecursive(&$array, $function, $apply_to_keys_also = false)
     {
         static $recursive_counter = 0;
+
         if (++$recursive_counter > 1000)
         {
-            die('possible deep recursion attack');
+            throw new Exception('possible deep recursion attack');
         }
 
         foreach ($array as $key => $value)
@@ -427,7 +427,7 @@ class Tool
      *  $data = Tool::stop($error_code, $error_msg, $extra_msg);
      * @usage
      *
-     * @return exit
+     * @return void
      */
     static public function stop($error_code = '', $error_msg = '', $extra_msg = array())
     {
@@ -464,7 +464,7 @@ class Tool
      * $data = Tool::throwback($error_code, $error_msg, $extra_msg);
      * @usage
      *
-     * @return exit
+     * @return array
      */
     static public function throwback($error_code = '', $error_msg = '', $extra_msg = array())
     {
