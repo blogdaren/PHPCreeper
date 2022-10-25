@@ -39,7 +39,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const  CURRENT_VERSION = '1.4.9';
+    const  CURRENT_VERSION = '1.5.0';
 
     /**
      * valid assemble package methods
@@ -1158,8 +1158,11 @@ class PHPCreeper extends Worker
         //check sapi
         strtolower(PHP_SAPI) != 'cli'   && self::showHelpByeBye("only allowed to run on the command line");
 
-        //check php version
-        version_compare(PHP_VERSION, '7.0.0', 'lt') && self::showHelpByeBye("the PHP version must greater than >= 7.0.0");
+        //check php minor version
+        version_compare(PHP_VERSION, '7.0.0', 'lt') && self::showHelpByeBye("the PHP VERSION must greater than >= 7.0.0");
+
+        //check php major version
+        version_compare(PHP_VERSION, '8.0.0', 'gt') && self::showHelpByeBye("PHP 8.0+ is not currently supported, but will be soon, use PHP 7.0+ instead.");
 
         //check posix extension
         !Tool::checkWhetherPHPExtensionIsLoaded('posix', false) && self::showHelpByeBye('plz make sure the POSIX extension is installed');
