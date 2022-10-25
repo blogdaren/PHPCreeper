@@ -77,7 +77,7 @@ class PHPCreeper extends Worker
     /**
      * http client
      *
-     * @var object
+     * @var HttpClientInterface|null
      */
     public $httpClient = null;
 
