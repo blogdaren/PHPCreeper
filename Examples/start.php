@@ -134,14 +134,24 @@ function startAppProducer()
     $producer = new Producer;
     $producer->setName('AppProducer')->setCount(1)->setConfig($config);
 
-    //模拟抓取未来7天内的天气预报
+    //模拟抓取未来7天内北京的天气预报
     $producer->onProducerStart = function($producer){
         $context = [
             'cache_enabled'   => true,
             'cache_directory' => '/tmp/task/download/' . date('Ymd'), 
+            //特定的生命周期内是否允许重复抓取同一个URL资源
             //'allow_url_repeat' => true,
+            //注意cookies成员的配置格式和guzzle官方不大一样，屏蔽了cookieJar，取值[false|array]
+            /*
+             *'cookies' => [
+             *    'domain' => 'domain.com',
+             *    'k1' => 'v1',
+             *    'k2' => 'v2',
+             *],
+             */
         ];
 
+        //批量任务接口
         $task = array(
             'url' => array(
                 "r1" => "http://www.weather.com.cn/weather/101010100.shtml",
@@ -157,6 +167,7 @@ function startAppProducer()
         );
         $producer->newTaskMan()->setContext($context)->createMultiTask($task);
 
+        //单个任务接口
         $task = [
             'url' => "http://www.weather.com.cn/weather/101010100.shtml",
             "rule" => array(

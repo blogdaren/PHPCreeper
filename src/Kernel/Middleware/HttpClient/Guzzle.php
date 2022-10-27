@@ -145,7 +145,7 @@ class Guzzle implements HttpClientInterface
     {
         return [
             'verify'  => false,
-            'cookies' => self::getCookieJar(),
+            'cookies' => self::setCookies(),
         ];
     }
 
@@ -159,6 +159,32 @@ class Guzzle implements HttpClientInterface
         self::$_cookieJar || self::$_cookieJar = new CookieJar();
 
         return self::$_cookieJar;
+    }
+
+    /**
+     * @brief    set cookies
+     *
+     * @param    boolean | array  $cookies
+     *
+     * @return   object
+     */
+    static public function setCookies($cookies = [])
+    {
+        if(false === $cookies) return false;
+
+        $jar = self::getCookieJar();
+
+        if(empty($cookies) || !is_array($cookies) || !isset($cookies['domain'])) 
+        {
+            return $jar;
+        }
+
+        $domain = $cookies['domain'];
+        unset($cookies['domain']);
+
+        $jar = $jar->fromArray($cookies, $domain);
+
+        return $jar;
     }
 
     /**
@@ -214,11 +240,14 @@ class Guzzle implements HttpClientInterface
             $options['headers']['referer'] = self::$_config['referer'] ?? '';
         }
 
-        //try to trace request args 
-        if(isset($options['trace_request_args']) && true === $options['trace_request_args'] && is_object($this->getWorker()))
+        //set cookies
+        $options['cookies'] = self::setCookies($options['cookies'] ?? []);
+
+        //try to track request args 
+        if(isset($options['track_request_args']) && true === $options['track_request_args'] && is_object($this->getWorker()))
         {
             $full_args = ['url' => $url, 'method' => $method] + $options;
-            Logger::info(Tool::replacePlaceHolder($this->getWorker()->langConfig['trace_request_args'], [
+            Logger::info(Tool::replacePlaceHolder($this->getWorker()->langConfig['track_request_args'], [
                 'request_args' => json_encode($full_args),
             ]));
         }

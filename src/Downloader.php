@@ -711,8 +711,8 @@ class Downloader extends PHPCreeper
             list($method, $url) = [$args['method'], $args['url']];
             unset($args['method'], $args['url']);
 
-            //try to set download worker only when need to trace request args 
-            if(isset($args['trace_request_args']) && true === $args['trace_request_args'])
+            //try to set download worker only when need to track request args 
+            if(isset($args['track_request_args']) && true === $args['track_request_args'])
             {
                 $this->httpClient->setWorker($this);
             }
@@ -783,6 +783,9 @@ class Downloader extends PHPCreeper
         });
         !empty($args['referer']) && $headers['referer'] = $args['referer'];
         !empty($headers) && $args['headers'] = $headers;
+
+        //cookies
+        (!isset($args['cookies']) || !is_array($args['cookies'])) && $args['cookies'] = NULL;
 
         //redirect
         if(!isset($args['allow_redirects'])){
