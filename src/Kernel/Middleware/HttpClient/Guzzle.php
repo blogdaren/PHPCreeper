@@ -9,9 +9,12 @@
 
 namespace PHPCreeper\Kernel\Middleware\HttpClient;
 
+use PHPCreeper\Kernel\PHPCreeper;
+use PHPCreeper\Kernel\Library\Helper\Tool;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use PHPCreeper\Kernel\Slot\HttpClientInterface;
+use Logger\Logger;
 
 class Guzzle implements HttpClientInterface
 {
@@ -42,6 +45,13 @@ class Guzzle implements HttpClientInterface
      * @var object
      */
     static private $_response = null;
+
+    /**
+     * worker object
+     *
+     * @var object
+     */
+    static private $_worker = null;
 
     /**
      * user agent
@@ -202,6 +212,15 @@ class Guzzle implements HttpClientInterface
         if(!isset($options['headers']['referer']))
         {
             $options['headers']['referer'] = self::$_config['referer'] ?? '';
+        }
+
+        //try to trace request args 
+        if(isset($options['trace_request_args']) && true === $options['trace_request_args'] && is_object($this->getWorker()))
+        {
+            $full_args = ['url' => $url, 'method' => $method] + $options;
+            Logger::info(Tool::replacePlaceHolder($this->getWorker()->langConfig['trace_request_args'], [
+                'request_args' => json_encode($full_args),
+            ]));
         }
 
         self::$_response = self::getInstance()->request($method, $url, $options);
@@ -434,6 +453,33 @@ class Guzzle implements HttpClientInterface
         $user_agent = self::$userAgent[$type][$rand_key] . rand(0, 10000);
 
         return $user_agent;
+    }
+
+    /**
+     * @brief    set downloader worker
+     *
+     * @return   object
+     */
+    public function setWorker($worker)
+    {
+        $downloader_class = PHPCreeper::PHPCREEPER_BUILTIN_MIDDLE_CLASSES['downloader'];
+
+        if(empty(self::$_worker) && $worker instanceof $downloader_class)
+        {
+            self::$_worker = $worker;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @brief    get downloader worker
+     *
+     * @return   object
+     */
+    public function getWorker()
+    {
+        return self::$_worker;
     }
 }
 

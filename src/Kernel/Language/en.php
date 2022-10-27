@@ -54,6 +54,7 @@ return [
     'logger_prefix_downloader'      => "Downloader | %worker_name% | Process %worker_id%",
     'logger_prefix_parser'          => "Parser     | %worker_name% | Process %worker_id%",
     'logger_prefix_server'          => "Server     | %worker_name% | Process %worker_id%",
+    'trace_request_args'            => "Request Arguments：%request_args%",
 
     //more fields to be configured......
 ];

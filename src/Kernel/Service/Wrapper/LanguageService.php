@@ -34,7 +34,7 @@ class LanguageService
 
             if(!is_file($config_file) || !file_exists($config_file)) 
             {
-                $config_file = dirname(dirname(dirname(__FILE__))) . '/Language/zh.php';
+                $config_file = dirname(__FILE__, 3) . '/Language/zh.php';
             }
 
             self::$_lang_config = include_once($config_file);

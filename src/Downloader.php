@@ -710,6 +710,13 @@ class Downloader extends PHPCreeper
         try{
             list($method, $url) = [$args['method'], $args['url']];
             unset($args['method'], $args['url']);
+
+            //try to set download worker only when need to trace request args 
+            if(isset($args['trace_request_args']) && true === $args['trace_request_args'])
+            {
+                $this->httpClient->setWorker($this);
+            }
+
             $code = $this->httpClient->request($method, $url, $args)->getResponseStatusCode();
 
             if(in_array($code, [301, 302])){

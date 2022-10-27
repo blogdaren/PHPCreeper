@@ -55,6 +55,7 @@ return [
     'logger_prefix_downloader'      => "Downloader | %worker_name% | %worker_id%号进程",
     'logger_prefix_parser'          => "Parser     | %worker_name% | %worker_id%号进程",
     'logger_prefix_server'          => "Server     | %worker_name% | %worker_id%号进程",
+    'trace_request_args'            => "请求参数：%request_args%",
 
     //若干待配字段......
 ];
