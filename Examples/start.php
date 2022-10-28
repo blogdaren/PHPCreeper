@@ -136,12 +136,19 @@ function startAppProducer()
 
     //模拟抓取未来7天内北京的天气预报
     $producer->onProducerStart = function($producer){
+        //context上下文成员主要是针对任务设置的，但同时拥有很大灵活性，可以间接影响依赖性服务，
+        //比如可以通过设置context上下文成员来影响HTTP请求时的各种上下文参数 (可选项，默认为空)
+        //HTTP引擎默认采用Guzzle客户端，兼容支持Guzzle所有的请求参数选项，具体参考Guzzle手册。
+        //特别注意：个别上下文成员的用法是和Guzzle官方不一致的，一方面主要就是屏蔽其技术性概念，
+        //另一方面就是面向开发者来说，要的就是能进行简单的配置即可，所以不一致的会注释特别说明。
         $context = [
             'cache_enabled'   => true,
             'cache_directory' => '/tmp/task/download/' . date('Ymd'), 
-            //特定的生命周期内是否允许重复抓取同一个URL资源
-            //'allow_url_repeat' => true,
-            //注意cookies成员的配置格式和guzzle官方不大一样，屏蔽了cookieJar，取值[false|array]
+            //在特定的生命周期内是否允许重复抓取同一个URL资源 [默认false]
+            'allow_url_repeat' => false,
+            //要不要跟踪完整的HTTP请求参数，开启后终端会显示完整的请求参数 [默认false]
+            'track_request_args' => false,
+            //cookies成员的配置格式和guzzle官方不大一样，屏蔽了cookieJar，取值[false|array]
             /*
              *'cookies' => [
              *    'domain' => 'domain.com',
@@ -258,12 +265,12 @@ function startAppServer()
 
         //每隔1秒执行一次任务
         new Crontab('*/1 * * * * *', function(){
-            pprint(Tool::getHumanTime());
+            pprint("模拟每隔1秒打印一下当前时间：" . Tool::getHumanTime());
         });
 
         //每隔2分钟执行一次任务
         new Crontab('*/2 * * * *', function(){
-            pprint(Tool::getHumanTime());
+            pprint("模拟每隔2分钟打印一下当前时间：" . Tool::getHumanTime());
         });
     };
 }
