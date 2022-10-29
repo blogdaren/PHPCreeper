@@ -39,7 +39,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const  CURRENT_VERSION = '1.5.1';
+    const  CURRENT_VERSION = '1.5.2';
 
     /**
      * valid assemble package methods
@@ -262,6 +262,13 @@ class PHPCreeper extends Worker
      * @var string
      */
     static private $_defaultRedisClient = 'predis';
+
+    /**
+     * default timezone 
+     *
+     * @var string
+     */
+    static private $_defaultTimezone = 'Asia/Shanghai';
 
     /**
      * user callbacks
@@ -1590,13 +1597,42 @@ EOT;
     }
 
     /**
+     * @brief    set default timezone     
+     *
+     * @param    string  $timezone
+     *
+     * @return   void
+     */
+    static public function setDefaultTimezone($timezone = '')
+    {
+        self::$_defaultTimezone = $default_timezone = "Asia/Shanghai";
+
+        if(empty($timezone) || !is_string($timezone))
+        {
+            $timezone = $default_timezone;
+        }
+
+        if(true === date_default_timezone_set($timezone))
+        {
+            self::$_defaultTimezone = $timezone;
+            return;
+        }
+
+        date_default_timezone_set(self::$_defaultTimezone);
+    }
+
+    /**
      * @brief    rewrite method runAll
      *
      * @return   void
      */
     static public function runAll()
     {
+        //set master pid file
         empty(Worker::$pidFile) && self::setMasterPidFile();
+
+        //set default timezone
+        self::setDefaultTimezone(self::$_defaultTimezone);
 
         foreach(self::$_phpcreeperInstances as $creeper)
         {
