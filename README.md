@@ -55,13 +55,11 @@ The chinese document is relatively complete, and the english document will be ke
 
 ## Prerequisites
 * PHP_VERSION ≥ 7.0.0 (Better to choose PHP 7.2+ for some compatibility reasons)    
-* **PHP_VERSION \<  8.0.0 (PHP 8.0+ is not currently supported for some compatibility reasons, but will be soon)**    
 * A POSIX compatible OS (Linux、OSX、BSD)  
 * POSIX &nbsp;extension for PHP (**Required**)
 * PCNTL extension for PHP (**Required**)
 * REDIS &nbsp;extension for PHP (Optional, note that `predis` will be the default redis client since v1.4.2)
 * EVENT extension for PHP (Optional, it's strongly recommended to install for better performance)
-* **特别声明：PHP 8.0+版本暂不支持，因为爬山虎以及依赖的第三方库均存在语法兼容性问题，很快会解决。**
 * 简单的说：只要能跑起来workerman那就能跑起来PHPCreeper，所以安装要求和workerman完全一致。
 * POSIX扩展和PCNTL扩展是必选项：PHP发行包一般都会默认安装这两个扩展，若没有请自行编译安装。
 * EVENT扩展是可选项：建议最好安装，这是提升各路性能的一个主要支撑；另注意需要[优化Linux内核](https://www.workerman.net/doc/workerman/appendices/kernel-optimization.html)。
@@ -98,6 +96,9 @@ PHPCreeper::setLang('en');
 //note that `predis` will be the default redis client since【version >= 1.4.2】
 //but you could still switch it to be `redis` if you prefer to use ext-redis
 //PHPCreeper::setDefaultRedisClient('redis');
+
+//set default timezone, default is `Asia/Shanghai`【version >= 1.5.2】
+//PHPCreeper::setDefaultTimezone('Asia/Shanghai');
 
 //set master pid file manually as needed【version >= 1.3.8】
 //PHPCreeper::setMasterPidFile('/path/to/master.pid');
