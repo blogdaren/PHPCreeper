@@ -230,8 +230,8 @@ class PredisClient implements BrokerInterface
         $params['port']   = $config['port'] ?? 6379;
         $params['persistent'] = !empty($config['persisted']) ? true : null;
 
-        $params['timeout'] = 0;
-        if(isset($config['connection_timeout']) && is_int($config['connection_timeout']))
+        $params['timeout'] = 5;
+        if(isset($config['connection_timeout']) && is_int($config['connection_timeout']) && $config['connection_timeout'] > 0)
         {
             $params['timeout'] = $config['connection_timeout'];
         }

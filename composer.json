@@ -20,7 +20,6 @@
         "workerman/workerman": ">=3.5.0",
         "blogdaren/configurator": "^1.0",
         "blogdaren/logger": "^1.1.2",
-        "ramsey/uuid": "^3.8 || ^4.0",
         "guzzlehttp/guzzle": "^6.4 || ^7.0",
         "predis/predis": "^2.0"
     },

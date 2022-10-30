@@ -16,6 +16,7 @@
  */
 
 
+//自行设定自动加载器路径
 require dirname(__FILE__, 2) . "/vendor/autoload.php";
 
 
@@ -34,7 +35,8 @@ use PHPCreeper\Crontab;
 use Logger\Logger;
 
 
-/* just leave redis config alone if run as Single-Worker mode
+/**
+ * just leave redis config alone when run as Single-Worker mode
  * 仅单worker运作模式下不依赖redis，所以此时redis的配置可以忽略不管
  */
 $config['redis'] = [
@@ -45,6 +47,7 @@ $config['redis'] = [
         'pass'      =>  'guest',
         'prefix'    =>  'sohu', 
         'database'  =>  '0',
+        'connection_timeout' => 5,
     ],
     /*[
         'host'      =>  '192.168.1.234',
@@ -53,6 +56,7 @@ $config['redis'] = [
         'pass'      =>  'guest',
         'prefix'    =>  '', 
         'database'  =>  '0',
+        'connection_timeout' => 5,
     ],*/
 ];
 
@@ -66,7 +70,7 @@ startAppDownloader();
 //启动解析器组件
 startAppParser();
 
-/*
+/**
  * 启动通用型服务器组件，项目较少使用，可以按需自由定制一些服务，完全独立于 [Producer|Downloader|Parser] 组件
  * start the general server component，seldom to use in project，can customize some services freely as needed，
  * and fully indepent on those components like [Producer|Downloader|Parser]
@@ -74,7 +78,7 @@ startAppParser();
 startAppServer();
 
 
-/*
+/**
  * enable the single worker mode so that we can run without redis, however, you should note 
  * it will be limited to run only all the downloader workers in this case【version >= 1.3.2】
  * and the default is Multi-Worker run mode.
@@ -88,14 +92,14 @@ startAppServer();
 //PHPCreeper::enableMultiWorkerMode(false);
 
 
-/*
+/**
  * switch runtime language between `zh` and `en`, default is `zh`【version >= 1.3.7】
  * 多语言运行时环境开关：暂支持中文和英文，默认是中文【version >= 1.3.7】
  */
 //PHPCreeper::setLang('en');
 
 
-/*
+/**
  * set the corresponding app log according to the component, 
  * and can also mask the log of the corresponding log level.
  * 根据组件保存相应的应用日志，也可以屏蔽掉相应日志级别的日志。
@@ -109,14 +113,14 @@ startAppServer();
 //PHPCreeper::disableLogLevel(['crazy','debug','info', 'warn'], 'downloader');
 
 
-/*
+/**
  * set master pid file manually as needed【version >= 1.3.8】
  * 设置主进程PID文件【version >= 1.3.8】
  */
 //PHPCreeper::setMasterPidFile('master.pid');
 
 
-/*
+/**
  * note that `predis` will be the default redis client since【version >= 1.4.2】
  * but you could still switch it to be `redis` if you prefer to use ext-redis
  * 设置默认的redis客户端，默认为predis，也可切换为基于ext-redis的redis【version >= 1.4.2】
@@ -124,7 +128,14 @@ startAppServer();
 //PHPCreeper::setDefaultRedisClient('redis');
 
 
-/*
+/**
+ * set default timezone【version >= 1.5.2】
+ * 设置默认时区，默认为 Asia/Shanghai
+ */
+//PHPCreeper::setDefaultTimezone('Asia/Shanghai');
+
+
+/**
  * all components support distributed or separated deployment
  * 所有组件支持分布式或分离式部署
  */
@@ -190,7 +201,7 @@ function startAppProducer()
 }
 
 
-/*
+/**
  * all components support distributed or separated deployment
  * 所有组件支持分布式或分离式部署
  */
@@ -217,7 +228,7 @@ function startAppDownloader()
 }
 
 
-/*
+/**
  * all components support distributed or separated deployment
  * 所有组件支持分布式或分离式部署
  */
@@ -231,7 +242,7 @@ function startAppParser()
     };
 }
 
-/*
+/**
  * General Server independ on [Producer|Downloader|Parser]
  * 通用型服务器组件，完全独立于[Producer|Downloader|Parser]
  */
@@ -276,5 +287,4 @@ function startAppServer()
 }
 
 PHPCreeper::runAll();
-
 

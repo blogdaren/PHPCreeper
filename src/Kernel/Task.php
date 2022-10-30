@@ -28,7 +28,7 @@ use PHPCreeper\Kernel\PHPCreeper;
 use PHPCreeper\Kernel\Library\Helper\Tool;
 use Configurator\Configurator;
 use Logger\Logger;
-use Ramsey\Uuid\Uuid;
+use PHPCreeper\Kernel\Library\Polyfill\Uuid;
 
 class Task 
 {
@@ -381,7 +381,7 @@ class Task
      */
     public function createTaskId()
     {
-        $this->id = Uuid::uuid4()->toString();
+        $this->id = Uuid::uuid_create();
 
         return $this->id;
     }

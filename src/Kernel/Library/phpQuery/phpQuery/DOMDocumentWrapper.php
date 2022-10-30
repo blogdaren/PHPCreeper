@@ -53,6 +53,7 @@ class DOMDocumentWrapper {
 	}
 	public function load($markup, $contentType = null, $newDocumentID = null) {
 //		phpQuery::$documents[$id] = $this;
+        if(empty($contentType)) $contentType = '';
 		$this->contentType = strtolower($contentType);
 		if ($markup instanceof DOMDOCUMENT) {
 			$this->document = $markup;
@@ -157,8 +158,8 @@ class DOMDocumentWrapper {
 		}
 		// Should be careful here, still need 'magic encoding detection' since lots of pages have other 'default encoding'
 		// Worse, some pages can have mixed encodings... we'll try not to worry about that
-		$requestedCharset = strtoupper($requestedCharset);
-		$documentCharset = strtoupper($documentCharset);
+		$requestedCharset = empty($requestedCharset) ? null : strtoupper($requestedCharset);
+		$documentCharset  = empty($documentCharset)  ? null : strtoupper($documentCharset);
 		phpQuery::debug("DOC: $documentCharset REQ: $requestedCharset");
 		if ($requestedCharset && $documentCharset && $requestedCharset !== $documentCharset) {
 			phpQuery::debug("CHARSET CONVERT");
@@ -299,9 +300,11 @@ class DOMDocumentWrapper {
 	}
 	protected function isXHTML($markup = null) {
 		if (! isset($markup)) {
+            if(empty($this->contentType)) $this->contentType = '';
 			return strpos($this->contentType, 'xhtml') !== false;
 		}
 		// XXX ok ?
+        if(empty($markup)) $markup = '';
 		return strpos($markup, "<!DOCTYPE html") !== false;
 //		return stripos($doctype, 'xhtml') !== false;
 //		$doctype = isset($dom->doctype) && is_object($dom->doctype)
@@ -310,12 +313,13 @@ class DOMDocumentWrapper {
 	}
 	protected function isXML($markup) {
 //		return strpos($markup, '<?xml') !== false && stripos($markup, 'xhtml') === false;
+        if(empty($markup)) $markup = '';
 		return strpos(substr($markup, 0, 100), '<'.'?xml') !== false;
 	}
 
 	protected function contentTypeToArray($contentType) {
         $test = null;
-        $test =
+        if(empty($contentType)) $contentType = '';
 		$matches = explode(';', trim(strtolower($contentType)));
 		if (isset($matches[1])) {
 			$matches[1] = explode('=', $matches[1]);
@@ -356,7 +360,7 @@ class DOMDocumentWrapper {
 		preg_match('@<'.'?xml[^>]+encoding\\s*=\\s*(["|\'])(.*?)\\1@i',
 			$markup, $matches
 		);
-		return isset($matches[2])
+		return (isset($matches[2]) && is_string($matches[2]))
 			? strtolower($matches[2])
 			: null;
 	}
@@ -389,6 +393,7 @@ class DOMDocumentWrapper {
 			.$charset.'" '
 			.($xhtml ? '/' : '')
 			.'>';
+        if(empty($html)) $html = '';
 		if (strpos($html, '<head') === false) {
 			if (strpos($html, '<html') === false) {
 				return $meta.$html;
@@ -532,6 +537,7 @@ class DOMDocumentWrapper {
 		} else {
 			$markup2 = phpQuery::$defaultDoctype.'<html><head><meta http-equiv="Content-Type" content="text/html;charset='
 				.$charset.'"></head>';
+            if(empty($markup)) $markup = '';
 			$noBody = strpos($markup, '<body') === false;
 			if ($noBody)
 				$markup2 .= '<body>';
@@ -557,12 +563,14 @@ class DOMDocumentWrapper {
 		$markup = $fragment->markup();
 		if ($fragment->isXML) {
 			$markup = substr($markup, 0, strrpos($markup, '</fake>'));
+            if(empty($markup)) $markup = '';
 			if ($fragment->isXHTML) {
 				$markup = substr($markup, strpos($markup, '<fake')+43);
 			} else {
 				$markup = substr($markup, strpos($markup, '<fake>')+6);
 			}
 		} else {
+                if(empty($markup)) $markup = '';
 				$markup = substr($markup, strpos($markup, '<body>')+6);
 				$markup = substr($markup, 0, strrpos($markup, '</body>'));
 		}
@@ -665,6 +673,7 @@ class DOMDocumentWrapper {
 	 */
 	public static function expandEmptyTag($tag, $xml){
         $indice = 0;
+        if(empty($xml)) $xml = '';
         while ($indice< strlen($xml)){
             $pos = strpos($xml, "<$tag ", $indice);
             if ($pos){

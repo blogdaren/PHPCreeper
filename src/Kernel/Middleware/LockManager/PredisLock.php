@@ -65,7 +65,7 @@ class PredisLock implements LockInterface
         //force to route to 0 partion
         $this->_predis->setPartionId(0);
 
-        if(method_exists($entity, 'getConfig'))
+        if(is_object($entity) && method_exists($entity, 'getConfig'))
         {
             $entity_config = $entity->getConfig();
             !empty($entity_config['redis']['prefix']) && $this->lockPrefix = $entity_config['redis']['prefix'] . ':';

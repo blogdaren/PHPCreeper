@@ -22,7 +22,7 @@ class Tool
     {
         if(empty($url) || !is_string($url)) return false;
 
-        $result = filter_var($url, FILTER_VALIDATE_URL);
+        $result = \filter_var($url, FILTER_VALIDATE_URL);
 
         return false !== $result ? true : false;
     }
@@ -35,6 +35,8 @@ class Tool
 	 */
 	static public function checkEmail($email)
 	{
+        if(empty($email)) return false;
+
 		if(preg_match("/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/", $email))
 		{
 			list($username, $domain)= explode('@', $email);
@@ -59,6 +61,8 @@ class Tool
 	 */
 	static public function checkMobile($mobile)
 	{
+        if(empty($mobile)) return false;
+
 		if(!preg_match("/^(1[3-9])\d{9}$/", $mobile))
 		{
 			return false;
@@ -76,6 +80,8 @@ class Tool
 	 */
 	static public function checkTelphone($mobile)
 	{
+        if(empty($mobile)) return false;
+
 		if(!preg_match("/^(0[0-9]{2,3}-)?([2-9][0-9]{6,7})+(-[0-9]{1,4})?$/", $mobile))
 		{
 			return false;
@@ -121,6 +127,8 @@ class Tool
      */
     static public function checkIsInt($input)
     {
+        if(empty($input)) return false;
+
         return preg_match('/^[1-9][0-9]*$/is', $input, $matches);
     }
 
@@ -133,6 +141,8 @@ class Tool
      */
     static public function checkIsIntOrZero($input)
     {
+        if(empty($input)) return false;
+
         return preg_match('/^([1-9][0-9]*|0)$/is', $input, $matches);
     }
 
@@ -145,6 +155,8 @@ class Tool
      */
     static public function checkIsFloat($input)
     {
+        if(empty($input)) return false;
+
         return preg_match('/^\d+.\d+$/', $input, $matches);
     }
 
@@ -157,6 +169,8 @@ class Tool
      */
     static public function checkIsIntFloat($input)
     {
+        if(empty($input)) return false;
+
         return preg_match('/^\d+(\.[0-9]+|\d*)$/', $input, $matches);
     }
 
@@ -169,6 +183,8 @@ class Tool
      */
     static public function checkIsIntFloatZero($input)
     {
+        if(empty($input)) return false;
+
         return preg_match('/^\d+(\.[0]+)?$/', $input, $matches);
     }
 
@@ -312,22 +328,27 @@ class Tool
     /**
      * 校验日期格式：支持多种有效的日期格式
      *
-     * @param  int  $datetime       外部日期参数
+     * @param  int  $datetime   外部日期参数
      *
      * @return bool
      */
 	static function checkDateTime($datetime)
     {
+        if(empty($datetime)) return false;
+
 		if("0000-00-00 00:00:00" == $datetime) return true;
 		
 		//合法格式
 		$dateformat = array('Y-m-d H:i:s','Y-m-d','Y-m-d H:i');
+
 		foreach($dateformat as $val)
 		{
- 			if($datetime == date($val,strtotime($datetime))){
+            if($datetime == date($val, strtotime($datetime)))
+            {
   				return true;
  			}
 		}
+
 		return false;	
     }	
     
@@ -340,6 +361,8 @@ class Tool
      */
     static function checkDateFormat($date)
     {
+        if(empty($date)) return false;
+
         if("0000-00-00" == $date) return true;
 
         if(preg_match("/^(\d{4})-(\d{2})-(\d{2})$/", $date, $matches))
@@ -630,7 +653,7 @@ class Tool
      */
     static public function isPrivateIP($ip) 
     {
-        return !filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+        return !\filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
     }
 
     /**
@@ -644,7 +667,7 @@ class Tool
     {
         if(empty($ip)) return false;
 
-        return filter_var($ip, FILTER_VALIDATE_IP) ? true : false;
+        return \filter_var($ip, FILTER_VALIDATE_IP) ? true : false;
     }
     
     /**

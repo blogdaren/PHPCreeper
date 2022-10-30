@@ -1,18 +1,25 @@
 <?php
 /**
- * @script   SplQueue.php
+ * @script   PhpQueue.php
  * @brief    This file is part of PHPCreeper
  * @author   blogdaren<blogdaren@163.com>
- * @version  1.0.0
- * @modify   2019-11-14
+ * @link     http://www.phpcreeper.com
+ * @create   2022-10-30
  */
 
 namespace PHPCreeper\Kernel\Middleware\MessageQueue;
 
 use PHPCreeper\Kernel\Slot\BrokerInterface;
 
-class PhpQueue extends \SplQueue implements BrokerInterface
+class PhpQueue implements BrokerInterface
 {
+    /**
+     * php queue object
+     *
+     * @var object
+     */
+    protected $_phpQueueObject = NULL;
+
     /**
      * @brief    __construct    
      *
@@ -22,7 +29,12 @@ class PhpQueue extends \SplQueue implements BrokerInterface
      */
     public function __construct($config = []) 
     {
-        parent::setIteratorMode(\SplQueue::IT_MODE_DELETE);
+        if(empty($this->_phpQueueObject))
+        {
+            $this->_phpQueueObject = new \SplQueue();
+        }
+
+        $this->_phpQueueObject->setIteratorMode(\SplQueue::IT_MODE_DELETE);
     }
 
     /**
@@ -37,14 +49,14 @@ class PhpQueue extends \SplQueue implements BrokerInterface
     {
         $text = json_encode($text);
 
-        return parent::enqueue($text);
+        return $this->_phpQueueObject->enqueue($text);
     }
 
     /**
      * @brief    pop data from queue   
      *
-     * @param    string  $queue_name
-     * @param    string  $wait
+     * @param    string     $queue_name
+     * @param    boolean    $wait
      *
      * @return   string
      */
@@ -52,9 +64,9 @@ class PhpQueue extends \SplQueue implements BrokerInterface
     {
         $message = '';
 
-        if(!parent::isEmpty())
+        if(!$this->_phpQueueObject->isEmpty())
         {
-            $message = parent::dequeue();
+            $message = $this->_phpQueueObject->dequeue();
             $message = json_decode($message, true);
         }
 
@@ -66,11 +78,11 @@ class PhpQueue extends \SplQueue implements BrokerInterface
      *
      * @param    string  $queue_name
      *
-     * @return   init
+     * @return   int
      */
     public function llen($queue_name = '')
     {
-        return parent::count();
+        return $this->_phpQueueObject->count();
     }
 
     /**

@@ -1168,9 +1168,6 @@ class PHPCreeper extends Worker
         //check php minor version
         version_compare(PHP_VERSION, '7.0.0', 'lt') && self::showHelpByeBye("the PHP VERSION must greater than >= 7.0.0");
 
-        //check php major version
-        version_compare(PHP_VERSION, '8.0.0', 'gt') && self::showHelpByeBye("PHP 8.0+ is not currently supported, but will be soon, use PHP 7.0+ instead.");
-
         //check posix extension
         !Tool::checkWhetherPHPExtensionIsLoaded('posix', false) && self::showHelpByeBye('plz make sure the POSIX extension is installed');
 

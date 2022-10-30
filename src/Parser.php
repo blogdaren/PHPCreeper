@@ -408,10 +408,12 @@ class Parser extends PHPCreeper
      */
     public function rebuildSubUrl($url)
     {
+        if(empty($url)) return false;
+
         $url = str_replace(array('"', "'", '&amp;'), array('', '', '&'), trim($url));
         $task_url = trim($this->task['url']);
 
-        if(empty($url) || preg_match("@^(mailto|javascript:|#|'|\")@i", $url))
+        if(preg_match("@^(mailto|javascript:|#|'|\")@i", $url))
         {
             return false;
         }
