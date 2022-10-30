@@ -97,7 +97,7 @@ PHPCreeper::setLang('en');
 //but you could still switch it to be `redis` if you prefer to use ext-redis
 //PHPCreeper::setDefaultRedisClient('redis');
 
-//set default timezone, default is `Asia/Shanghai`【version >= 1.5.2】
+//set default timezone, default is `Asia/Shanghai`【version >= 1.5.3】
 //PHPCreeper::setDefaultTimezone('Asia/Shanghai');
 
 //set master pid file manually as needed【version >= 1.3.8】
