@@ -248,7 +248,7 @@ class Guzzle implements HttpClientInterface
         {
             $full_args = ['url' => $url, 'method' => $method] + $options;
             Logger::info(Tool::replacePlaceHolder($this->getWorker()->langConfig['track_request_args'], [
-                'request_args' => json_encode($full_args),
+                'request_args' => str_replace("\\/", "/", json_encode($full_args)),
             ]));
         }
 

@@ -39,7 +39,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const  CURRENT_VERSION = '1.5.3';
+    const CURRENT_VERSION = '1.5.5';
 
     /**
      * valid assemble package methods
@@ -68,7 +68,7 @@ class PHPCreeper extends Worker
     const PSEUDO_WORKER = 'phpcreeper';
 
     /**
-     * valid log level
+     * log level
      *
      * @var array 
      */
@@ -77,7 +77,7 @@ class PHPCreeper extends Worker
     /**
      * http client
      *
-     * @var HttpClientInterface|null
+     * @var object
      */
     public $httpClient = null;
 
@@ -124,7 +124,7 @@ class PHPCreeper extends Worker
     public $langConfig = [];
 
     /**
-     * PHPCreeper config
+     * phpcreeper config
      *
      * @var array
      */

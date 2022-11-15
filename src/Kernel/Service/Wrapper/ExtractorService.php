@@ -243,6 +243,13 @@ class ExtractorService
     {
         $result = [];
 
+        //如果规则为空，则返回原始的html文档
+        if(empty($this->rule) || !is_array($this->rule))
+        {
+            $result = $this->getHtml();
+        }
+
+        //如果规则非空，则按照规则遍历处理
         foreach($this->rule as $name => $rule)
         {
             $i = 0;
