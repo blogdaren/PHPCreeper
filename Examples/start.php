@@ -129,7 +129,7 @@ startAppServer();
 
 
 /**
- * set default timezone, default is `Asia/Shanghai`【version >= 1.5.3】
+ * set default timezone, default is `Asia/Shanghai`【version >= 1.5.4】
  * 设置默认时区，默认为 Asia/Shanghai
  */
 //PHPCreeper::setDefaultTimezone('Asia/Shanghai');

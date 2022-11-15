@@ -15,7 +15,7 @@ asynchronous event-driven spider engine based on [workerman](https://www.workerm
 * Focus on efficient agile development, and make the crawler job become more easy   
 * Solve the performance and scalability bottlenecks of traditional crawler frameworks
 
-爬山虎是基于workerman开发的全新一代多进程异步事件驱动型PHP爬虫引擎, 它有助于我们：
+爬山虎是基于workerman开发的全新一代多进程异步事件驱动型PHP爬虫引擎, 它有助于：
 * 专注于高效敏捷开发，让爬取工作变得更加简单.
 * 解决传统型PHP爬虫框架的性能和扩展瓶颈问题.
 
@@ -97,7 +97,7 @@ PHPCreeper::setLang('en');
 //but you could still switch it to be `redis` if you prefer to use ext-redis
 //PHPCreeper::setDefaultRedisClient('redis');
 
-//set default timezone, default is `Asia/Shanghai`【version >= 1.5.3】
+//set default timezone, default is `Asia/Shanghai`【version >= 1.5.4】
 //PHPCreeper::setDefaultTimezone('Asia/Shanghai');
 
 //set master pid file manually as needed【version >= 1.3.8】
