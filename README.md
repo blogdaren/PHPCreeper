@@ -26,7 +26,7 @@ The chinese document is relatively complete, and the english document will be ke
 * 爬山虎中文官方网站：[http://www.phpcreeper.com](http://www.phpcreeper.com)
 * 中文开发文档主节点：[http://www.blogdaren.com/docs/](http://www.blogadren.com/docs/)
 * 中文开发文档备节点：[http://www.phpcreeper.com/docs/](http://www.phpcreeper.com/docs/)
-* **作者未涉足任何商业性资源和平台，全靠兴趣和热爱支撑，感谢你的小星星Star支持。**
+* **作者未涉足任何商业性资源和平台，全靠兴趣和热爱支撑，感谢小星星Star支持。**
 
 ## 技术交流
 * 下方绿色二维码为VX交流群：&nbsp;phpcreeper 【群主热心、有问必答、进微信群需先加此专属微信并备注：爬山虎】  
@@ -50,7 +50,6 @@ The chinese document is relatively complete, and the english document will be ke
 * Support for agile development with [PHPCreeper-Application](https://github.com/blogdaren/PHPCreeper-Application)
 * Use PHPQuery as the elegant content extractor
 * With high performance and strong scalability
-* With rich and human-readable development docs
 
 
 ## Prerequisites
@@ -63,7 +62,7 @@ The chinese document is relatively complete, and the english document will be ke
 * 简单的说：只要能跑起来workerman那就能跑起来PHPCreeper，所以安装要求和workerman完全一致。
 * POSIX扩展和PCNTL扩展是必选项：PHP发行包一般都会默认安装这两个扩展，若没有请自行编译安装。
 * EVENT扩展是可选项：建议最好安装，这是提升各路性能的一个主要支撑；另注意需要[优化Linux内核](https://www.workerman.net/doc/workerman/appendices/kernel-optimization.html)。
-* REDIS扩展是可选项： **注意：v1.4.2版本之后，内核默认采用predis客户端，所以不再强依赖REDIS扩展。**
+* REDIS扩展是可选项： **注意：v1.4.2版本之后，引擎默认采用predis客户端，所以不再强依赖REDIS扩展。**
 
 ## Installation
 The recommended way to install PHPCreeper is through [Composer](https://getcomposer.org/).
