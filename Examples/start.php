@@ -159,6 +159,8 @@ function startAppProducer()
             'allow_url_repeat' => false,
             //要不要跟踪完整的HTTP请求参数，开启后终端会显示完整的请求参数 [默认false]
             'track_request_args' => true,
+            //要不要跟踪完整的TASK数据包，开启后终端会显示完整的任务数据包 [默认false]
+            'track_task_package' => true,
             //cookies成员的配置格式和guzzle官方不大一样，屏蔽了cookieJar，取值[false|array]
             /*
              *'cookies' => [
@@ -194,6 +196,7 @@ function startAppProducer()
                 'tem'  => ['div#7d ul.t.clearfix p.tem',   'text'],
                 'wind' => ['div#7d ul.t.clearfix p.win i', 'text'],
             ), 
+            "context" => $context,
         ];
         $producer->newTaskMan()->setUrl($task['url'])->setRule($task['rule'])->setContext($context)->createTask();
         $producer->newTaskMan()->setContext($context)->createTask($task);
@@ -210,7 +213,7 @@ function startAppDownloader()
     global $config;
     $downloader = new Downloader();
     $downloader->setConfig($config);
-    //$downloader->setTaskCrawlInterval(7);
+    //$downloader->setTaskCrawlInterval(5);
     $downloader->setName('AppDownloader')->setCount(1)->setClientSocketAddress([
         'ws://192.168.1.234:8888',
     ]);

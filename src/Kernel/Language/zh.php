@@ -56,6 +56,7 @@ return [
     'logger_prefix_parser'          => "Parser     | %worker_name% | %worker_id%号进程",
     'logger_prefix_server'          => "Server     | %worker_name% | %worker_id%号进程",
     'track_request_args'            => "请求参数：%request_args%",
+    'track_task_package'            => "任务数据：%task_package%",
 
     //若干待配字段......
 ];

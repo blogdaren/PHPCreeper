@@ -55,6 +55,7 @@ return [
     'logger_prefix_parser'          => "Parser     | %worker_name% | Process %worker_id%",
     'logger_prefix_server'          => "Server     | %worker_name% | Process %worker_id%",
     'track_request_args'            => "Request Arguments：%request_args%",
+    'track_task_package'            => "Task Package：%task_package%",
 
     //more fields to be configured......
 ];

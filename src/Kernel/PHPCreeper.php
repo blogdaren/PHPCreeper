@@ -39,7 +39,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const CURRENT_VERSION = '1.5.5';
+    const CURRENT_VERSION = '1.5.6';
 
     /**
      * valid assemble package methods
@@ -135,7 +135,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    static public $hasCheckedEnvironment= false;
+    static public $hasCheckedEnvironment = false;
 
     /**
      * flag indicates whether has shown GUI or not 
@@ -184,21 +184,21 @@ class PHPCreeper extends Worker
      *
      * @var array
      */
-    protected   $_clientSocketAddress = [];
+    protected $_clientSocketAddress = [];
 
     /**
      * server socket address
      *
      * @var string
      */
-    protected   $_serverSocketAddress = '';
+    protected $_serverSocketAddress = '';
 
     /**
      * server socket context
      *
      * @var array
      */
-    protected   $_serverSocketContext = [];
+    protected $_serverSocketContext = [];
 
     /**
      * redeclare worker status
@@ -327,7 +327,7 @@ class PHPCreeper extends Worker
     }
 
     /**
-     * @brief    attention!! boot() must be called after app worker initialized
+     * @brief    attention!! boot() must be called ealier than app worker initialized
      *
      * @return   void
      */
@@ -1631,6 +1631,7 @@ EOT;
         //set default timezone
         self::setDefaultTimezone(self::$_defaultTimezone);
 
+        //try to boot all phpcreeper instances
         foreach(self::$_phpcreeperInstances as $creeper)
         {
             $creeper->boot();

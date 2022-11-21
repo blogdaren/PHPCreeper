@@ -265,6 +265,7 @@ class Task
             'create_time' => Tool::getNowTime(true),
         ];
 
+        //try to push into queue
         $rs = $this->phpcreeper->queueClient->push('task', $task_data);
 
         //unlock
@@ -276,6 +277,14 @@ class Task
                 'task_id'   => $task_id,
                 'task_url'  => $url,
             ]));
+
+            //try to track task package
+            if(isset($context['track_task_package']) && true === $context['track_task_package'])
+            {
+                Logger::crazy(Tool::replacePlaceHolder($this->phpcreeper->langConfig['track_task_package'], [
+                    'task_package' => str_replace("\\/", "/", json_encode($task_data)),
+                ]));
+            }
         }
 
         return !empty($rs) ? $task_id : 0;

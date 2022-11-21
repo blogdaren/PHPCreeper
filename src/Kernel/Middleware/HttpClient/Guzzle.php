@@ -247,7 +247,7 @@ class Guzzle implements HttpClientInterface
         if(isset($options['track_request_args']) && true === $options['track_request_args'] && is_object($this->getWorker()))
         {
             $full_args = ['url' => $url, 'method' => $method] + $options;
-            Logger::info(Tool::replacePlaceHolder($this->getWorker()->langConfig['track_request_args'], [
+            Logger::crazy(Tool::replacePlaceHolder($this->getWorker()->langConfig['track_request_args'], [
                 'request_args' => str_replace("\\/", "/", json_encode($full_args)),
             ]));
         }
