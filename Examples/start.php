@@ -45,16 +45,16 @@ $config['redis'] = [
         'port'      =>  6379,
         'auth'      =>  false,
         'pass'      =>  'guest',
-        'prefix'    =>  'sohu', 
+        'prefix'    =>  'PHPCreeper', 
         'database'  =>  '0',
         'connection_timeout' => 5,
     ],
     /*[
         'host'      =>  '192.168.1.234',
         'port'      =>  6380,
-        'auth'      =>  true,
+        'auth'      =>  false,
         'pass'      =>  'guest',
-        'prefix'    =>  '', 
+        'prefix'    =>  'PHPCreeper', 
         'database'  =>  '0',
         'connection_timeout' => 5,
     ],*/
@@ -104,10 +104,10 @@ startAppServer();
  * and can also mask the log of the corresponding log level.
  * 根据组件保存相应的应用日志，也可以屏蔽掉相应日志级别的日志。
  */
-//PHPCreeper::setLogFile('/tmp/data.log');
-//PHPCreeper::setLogFile('/tmp/data.log', 'producer');
-//PHPCreeper::setLogFile('/tmp/data.log', 'downloader');
-//PHPCreeper::setLogFile('/tmp/data.log', 'parser');
+//PHPCreeper::setLogFile('/tmp/runtime.log');
+//PHPCreeper::setLogFile('/tmp/runtime.log', 'producer');
+//PHPCreeper::setLogFile('/tmp/runtime.log', 'downloader');
+//PHPCreeper::setLogFile('/tmp/runtime.log', 'parser');
 //PHPCreeper::disableLogLevel(['crazy','debug','info']);
 //PHPCreeper::disableLogLevel(['crazy','debug','info'], 'producer');
 //PHPCreeper::disableLogLevel(['crazy','debug','info', 'warn'], 'downloader');
@@ -158,7 +158,7 @@ function startAppProducer()
             //在特定的生命周期内是否允许重复抓取同一个URL资源 [默认false]
             'allow_url_repeat' => false,
             //要不要跟踪完整的HTTP请求参数，开启后终端会显示完整的请求参数 [默认false]
-            'track_request_args' => false,
+            'track_request_args' => true,
             //cookies成员的配置格式和guzzle官方不大一样，屏蔽了cookieJar，取值[false|array]
             /*
              *'cookies' => [
