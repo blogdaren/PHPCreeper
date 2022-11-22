@@ -111,11 +111,11 @@ class Task
      * @param    array   $options
      *
      * 
-     * >> pay attention to the runtime priority of global task option:   
-     * setXXX() -> __construct() --> default_global_config
+     * >> pay attention to the runtime priority of global task options:   
+     * __construct() > setXXX() > default_global_config
      *
-     * >> the priority only applies to the options listed below:
-     * type | method | context
+     * >> the priority only applies to the options listed as below:
+     * type | url | method | context | rule | rule_name | refer
      *
      *
      * @return   void
@@ -169,7 +169,7 @@ class Task
      *
      * @param    array  $input
      *
-     * @return   string | int
+     * @return   boolean | int
      */
     public function createTask($input = [])
     {
@@ -293,50 +293,43 @@ class Task
     /**
      * @brief   create multi task 
      *
+     * @param   string | 1D-array | 2D-array    $task
+     *
      * @return  boolean
      */
     public function createMultiTask($task = [])
     {
+        $new_task = [];
+
         //important!!!
-        if(is_string($task))
-        {
+        if(is_string($task)){
             $tmp_url = $task;
             $task = [];
             $task['url'] = $tmp_url;
+            $new_task[] = $task;
+        }elseif(is_array($task) && isset($task['url'])){
+            $new_task[] = $task;
         }
 
-        empty($task['url']) && $task['url'] = $this->getUrl();
-        $urls    = !is_array($task['url']) ? array($task['url']) : $task['url'];
-        $type    = (empty($task['type']) || !is_string($task['type'])) ? $this->getType() : $task['type'];
-        $method  = (empty($task['method']) || !is_string($task['method'])) ? $this->getMethod() : $task['method'];
-        $referer = (empty($task['referer']) || !is_string($task['referer'])) ? $this->getReferer() : $task['referer'];
-        $context = $this->getContext($task['context'] ?? []);
-        $rules   = (empty($task['rule']) || !is_array($task['rule'])) ? $this->getRule() : $task['rule'];
-        $rule_depth = Tool::getArrayDepth($rules);
-        3 <> $rule_depth && $rules = [];
 
-        foreach($urls as $rule_name => $url) 
+        foreach($new_task as $k => $task) 
         {
-            if(empty(Tool::checkUrl($url))) 
-            {
-                unset($urls[$rule_name]);
-                continue;
-            }
+            $result = self::rebuildMultiTaskParams($task);
+            if(false == $result) continue;
 
-            $_rule_name = !is_string($rule_name) ? md5($url) : $rule_name;
-            $rule = $rules[$rule_name] ?? [];
+            @extract($task);
             $taskObject = self::newInstance($this->phpcreeper);
             $task_id = $taskObject->setUrl($url)
                             ->setType($type)
                             ->setMethod($method)
                             ->setReferer($referer)
-                            ->setRuleName($_rule_name)
+                            ->setRuleName($rule_name)
                             ->setRule($rule)
                             ->setContext($context)
                             ->createTask();
         }
 
-        if(empty($urls)) 
+        if(empty($new_task)) 
         {
             Logger::error(Tool::replacePlaceHolder($this->phpcreeper->langConfig['queue_url_invalid']));
             return false;
@@ -367,6 +360,52 @@ class Task
         }
 
         empty($args['depth']) && $args['depth'] = 0;
+
+        return true;
+    }
+
+    /**
+     * @brief    rebuild multi task params     
+     *
+     * @param    array  $task
+     *
+     * @return   boolean
+     */
+    static public function rebuildMultiTaskParams(&$task = [])
+    {
+        if(empty($task) || !is_array($task)) return false;
+
+        if(true !== Tool::checkUrl($task['url'] ?? '')) return false;
+
+        if(empty($task['type']) || !is_string($task['type'])) 
+        {
+            $task['type'] = 'unknown';
+        }
+
+        if(empty($task['method']) || !is_string($task['method'])) 
+        {
+            $task['method'] = 'get';
+        }
+
+        if(empty($task['referer']) || !is_string($task['referer'])) 
+        {
+            $task['referer'] = $task['url'];
+        }
+
+        if(empty($task['rule']) || !is_array($task['rule'])) 
+        {
+            $task['rule'] = [];
+        }
+
+        if(empty($task['rule_name']) || !is_string($task['rule_name'])) 
+        {
+            $task['rule_name'] = '';
+        }
+
+        if(empty($task['context']) || !is_array($task['context'])) 
+        {
+            $task['context'] = [];
+        }
 
         return true;
     }
