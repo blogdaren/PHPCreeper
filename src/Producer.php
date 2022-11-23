@@ -111,52 +111,29 @@ class Producer extends PHPCreeper
      */
     public function initTask()
     {
-        $type       = Configurator::get('globalConfig/main/task/type');
-        $method     = Configurator::get('globalConfig/main/task/method');
-        $context    = Configurator::get('globalConfig/main/task/context');
-        $start_urls = Configurator::get('globalConfig/main/task/url');
-        Configurator::remove('globalConfig/main/task/url');
-        !is_array($start_urls) && $start_urls = [$start_urls];
+        $init_task = [];
+        $init_task['url']       = Configurator::get('globalConfig/main/task/url') ?? '';
 
-        foreach($start_urls as $rule_name => $start_url) 
-        {
-            if(empty(Tool::checkUrl($start_url))) 
-            {
-                unset($start_urls[$rule_name]);
-                continue;
-            }
-
-            $_rule_name = !is_string($rule_name) ? md5($start_url) : $rule_name;
-            $rule = self::getInitTaskRule($rule_name);
-
-            $task_id = $this->newTaskMan()
-                ->setType($type)
-                ->setUrl($start_url)
-                ->setMethod($method)
-                ->setContext($context)
-                ->setRuleName($_rule_name)
-                ->setRule($rule)
-                ->createTask();
-
-            if(!empty($task_id))
-            {
-                Logger::info(Tool::replacePlaceHolder($this->langConfig['queue_push_task'], [
-                    'task_url'  => $start_url,
-                ]));
-            }
-        }
-
-        if(empty($start_urls)) 
+        if(!Tool::checkUrl($init_task['url'])) 
         {
             Logger::warn(Tool::replacePlaceHolder($this->langConfig['queue_start_url_invalid']));
             return false;
         }
 
-        return true;
+        $init_task['type']      = Configurator::get('globalConfig/main/task/type') ?? 'unknown';
+        $init_task['method']    = Configurator::get('globalConfig/main/task/method') ?? 'get';
+        $init_task['rule']      = Configurator::get('globalConfig/main/task/rule') ?? [];
+        $init_task['rule_name'] = Configurator::get('globalConfig/main/task/rule_name') ?? '';
+        $init_task['referer']   = Configurator::get('globalConfig/main/task/referer') ?? '';
+        $init_task['context']   = Configurator::get('globalConfig/main/task/context') ?? [];
+
+        return  $this->createMultiTask($init_task);
     }
 
     /**
      * @brief    get task rule 
+     *
+     * !!! deprecated already !!!
      *
      * @param    string  $rule_name
      *

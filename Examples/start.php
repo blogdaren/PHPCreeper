@@ -147,6 +147,8 @@ function startAppProducer()
 
     //模拟抓取未来7天内北京的天气预报
     $producer->onProducerStart = function($producer){
+        //首先我们可以针对每个任务单独设置独立的context上下文成员，具体请参考爬山虎官方手册:
+        //http://www.phpcreeper.com/docs/DevelopmentGuide/ApplicationConfig.html
         //context上下文成员主要是针对任务设置的，但同时拥有很大灵活性，可以间接影响依赖性服务，
         //比如可以通过设置context上下文成员来影响HTTP请求时的各种上下文参数 (可选项，默认为空)
         //HTTP引擎默认采用Guzzle客户端，兼容支持Guzzle所有的请求参数选项，具体参考Guzzle手册。
@@ -187,6 +189,7 @@ function startAppProducer()
         //$producer->newTaskMan()->setXXX()->setXXX()->createMultiTask()
         //$producer->newTaskMan()->setXXX()->setXXX()->createMultiTask($task)
 
+
         //自v1.5.6开始，爬山虎提供了更加短小便捷的API来创建任务, 而且参数类型更加丰富：
         //注意：仅仅只是扩展，原有的API依然可以正常使用，提倡扩展就是为了保持向下兼容。
         //1. 单任务API：$task参数类型可支持：[字符串 | 一维数组]
@@ -204,7 +207,7 @@ function startAppProducer()
         //使用一维数组：推荐使用，配置丰富，引擎内置处理抓取结果
         $task = $_task = array(
             'url' => "http://www.weather.com.cn/weather/101010100.shtml",
-            "rule" => array(
+            "rule" => array(        //如果留空默认将返回原始下载数据
                 'time' => ['div#7d ul.t.clearfix h1',      'text'],
                 'wea'  => ['div#7d ul.t.clearfix p.wea',   'text'],
                 'tem'  => ['div#7d ul.t.clearfix p.tem',   'text'],
@@ -230,7 +233,7 @@ function startAppProducer()
                     'tem'  => ['div#7d ul.t.clearfix p.tem',   'text'],
                     'wind' => ['div#7d ul.t.clearfix p.win i', 'text'],
                 ), 
-                //'rule_name' => 'r1', //如果留空将使用md5($task_id)作为规则名
+                'rule_name' => 'r1', //如果留空将使用md5($task_id)作为规则名
                 "context" => $context,
             ),
             array(
@@ -241,7 +244,7 @@ function startAppProducer()
                     'tem'  => ['div#7d ul.t.clearfix p.tem',   'text'],
                     'wind' => ['div#7d ul.t.clearfix p.win i', 'text'],
                 ), 
-                //'rule_name' => 'r2', //如果留空将使用md5($task_id)作为规则名
+                'rule_name' => 'r2', //如果留空将使用md5($task_id)作为规则名
                 "context" => $context,
             ),
         );

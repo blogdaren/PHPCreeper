@@ -233,7 +233,6 @@ class Task
         $context    = $this->getContext($input['context'] ?? []);
         $task_id    = $this->createTaskId();
 
-        $this->setRuleName($input['rule_name'] ?? '');
         $rule_name = $this->getRuleName();
         if(empty($rule_name) || !is_string($rule_name)) 
         {
