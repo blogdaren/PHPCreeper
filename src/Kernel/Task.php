@@ -167,12 +167,20 @@ class Task
     /**
      * @brief    create one task
      *
-     * @param    array  $input
+     * @param    string | array  $input
      *
      * @return   boolean | int
      */
     public function createTask($input = [])
     {
+        //not only support array, but also string
+        if(is_string($input))
+        {
+            $tmp_url = $input;
+            $input = [];
+            $input['url'] = $tmp_url;
+        }
+
         //check task params
         $check_result = self::checkTaskParams($input);
         if(true !== $check_result) 
@@ -214,9 +222,6 @@ class Task
         };
 
         //rewash params
-        if(isset($input['rule_name'])) $this->setRuleName($input['rule_name']);
-        $rule_name = $this->getRuleName();
-        if(empty($rule_name) || !is_string($rule_name)) $rule_name = md5($input['url']);
         $url     = $input['url'];
         $type    = (empty($input['type']) || !is_string($input['type'])) ? $this->getType() : $input['type'];
         $method  = (empty($input['method']) || !is_string($input['method'])) ? $this->getMethod() : $input['method'];
@@ -227,6 +232,17 @@ class Task
         $depth      = $input['depth'];
         $context    = $this->getContext($input['context'] ?? []);
         $task_id    = $this->createTaskId();
+
+        $this->setRuleName($input['rule_name'] ?? '');
+        $rule_name = $this->getRuleName();
+        if(empty($rule_name) || !is_string($rule_name)) 
+        {
+            if(isset($context['force_use_md5url_if_rulename_empty']) && true === $context['force_use_md5url_if_rulename_empty']){
+                $rule_name = md5($url);
+            }else{
+                $rule_name = md5($task_id);
+            }
+        }
 
         //check task url allowed to repeat or not
         $allow_url_repeat = false;
@@ -291,7 +307,68 @@ class Task
     }
 
     /**
+     * @brief   create multi task less than v1.5.6
+     *
+     * !!! Old-Style-API not recommended to use !!!
+     *
+     * @param   string | 1D-array | 2D-array    $task
+     *
+     * @return  boolean
+     */
+    public function createMultiTaskLessThanV156($task = [])
+    {
+        //important!!!
+        if(is_string($task))
+        {
+            $tmp_url = $task;
+            $task = [];
+            $task['url'] = $tmp_url;
+        }
+
+        empty($task['url']) && $task['url'] = $this->getUrl();
+        $urls    = !is_array($task['url']) ? array($task['url']) : $task['url'];
+        $type    = (empty($task['type']) || !is_string($task['type'])) ? $this->getType() : $task['type'];
+        $method  = (empty($task['method']) || !is_string($task['method'])) ? $this->getMethod() : $task['method'];
+        $referer = (empty($task['referer']) || !is_string($task['referer'])) ? $this->getReferer() : $task['referer'];
+        $context = $this->getContext($task['context'] ?? []);
+        $rules   = (empty($task['rule']) || !is_array($task['rule'])) ? $this->getRule() : $task['rule'];
+        $rule_depth = Tool::getArrayDepth($rules);
+        3 <> $rule_depth && $rules = [];
+
+        foreach($urls as $rule_name => $url) 
+        {
+            if(empty(Tool::checkUrl($url))) 
+            {
+                unset($urls[$rule_name]);
+                continue;
+            }
+
+            $_rule_name = !is_string($rule_name) ? md5($url) : $rule_name;
+            $rule = $rules[$rule_name] ?? [];
+            $taskObject = self::newInstance($this->phpcreeper);
+            $task_id = $taskObject->setUrl($url)
+                            ->setType($type)
+                            ->setMethod($method)
+                            ->setReferer($referer)
+                            ->setRuleName($_rule_name)
+                            ->setRule($rule)
+                            ->setContext($context)
+                            ->createTask();
+        }
+
+        if(empty($urls)) 
+        {
+            Logger::error(Tool::replacePlaceHolder($this->phpcreeper->langConfig['queue_url_invalid']));
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * @brief   create multi task 
+     *
+     * !!! New-Style-API recommended to use !!!
      *
      * @param   string | 1D-array | 2D-array    $task
      *
@@ -299,9 +376,15 @@ class Task
      */
     public function createMultiTask($task = [])
     {
-        $new_task = [];
+        //backward compatible with older versions( < v1.5.6) of this API
+        if(isset($task['context']['force_use_old_style_multitask_args']) 
+            && true === $task['context']['force_use_old_style_multitask_args'])
+        {
+            return $this->createMultiTaskLessThanV156($task);
+        }
 
-        //important!!!
+        //new version implementation
+        $new_task = [];
         if(is_string($task)){
             $tmp_url = $task;
             $task = [];
@@ -309,8 +392,9 @@ class Task
             $new_task[] = $task;
         }elseif(is_array($task) && isset($task['url'])){
             $new_task[] = $task;
+        }elseif(is_array($task) && isset(array_values($task)[0]['url'])){
+            $new_task = $task;
         }
-
 
         foreach($new_task as $k => $task) 
         {

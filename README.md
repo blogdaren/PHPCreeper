@@ -132,41 +132,93 @@ function startAppProducer()
 
     $producer->setName('AppProducer')->setCount(1);
     $producer->onProducerStart = function($producer){
-        //various context settings
+        //free to customize various context settings, including user-defined
+        //see: http://www.phpcreeper.com/docs/DevelopmentGuide/ApplicationConfig.html
         $context = array(
             //'cache_enabled'    => true,                              
             //'cache_directory'  => '/tmp/DownloadCache4PHPCreeper/',
             //'allow_url_repeat' => true,
-            //..........................
+            //'track_request_args' => true,
+            //'track_task_package' => true,
+            //'force_use_md5url_if_rulename_empty' => false,
+            //'force_use_old_style_multitask_args' => false,
+            //.........................................
+            //'user_define_arg1' => 'user_define_value1',
+            //'user_define_arg2' => 'user_define_value2',
         );
 
-        //task can be configured like this, here the rule name like `r1` should be given:
-        //note that we need to call `createMultiTask()` API for multi tasks: 
-        $task = array(
-            'url' => array(
-                "r1" => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
-            ),
-            'rule' => array(
-                "r1" => array(
-                    'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
-                    'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
-                ),  
-            ),
-        );
-        $producer->newTaskMan()->setContext($context)->createMultiTask($task);
 
-        //task can also be configured like this, here `md5($url)` will be the rule name:
-        //note that we need to call `createTask()` API for single task: 
-        $task = array(
+        //【version < 1.5.6】: we mainly use an OOP style API to create tasks     
+        //$producer->newTaskMan()->setXXX()->setXXX()->createTask()
+        //$producer->newTaskMan()->setXXX()->setXXX()->createTask($task)
+        //$producer->newTaskMan()->setXXX()->setXXX()->createMultiTask()
+        //$producer->newTaskMan()->setXXX()->setXXX()->createMultiTask($task)
+
+
+        //【version >= 1.5.6】, we provide a shorter and easier API to create tasks    
+        //with more rich parameter types, and the old OOP style API can still be used,    
+        //and extension jobs are promoted just to maintain backward compatibility
+        //1. Single-Task-API: $task parameter types supported: [string | 1D-array]    
+        //1. Single-Task-API：$producer->createTask($task);   
+        //2. Multi-Task-API:  $task parameter types supported: [string | 1D-array | 2D-array]   
+        //2. Multi-Task-API： $producer->createMultiTask($task);
+
+
+        //use string: not recommended to use because the configuration is limited.    
+        //so the question is that you need to process the fetching result by yourself     
+        $task = "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories";
+        //$producer->createTask($task);
+        //$producer->createMultiTask($task);
+
+
+        //use 1D-array：recommeded to use, rich configuration, engine helps to deal with all    
+        $task = $_task = array(
             'url' => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
-            'rule' => array(
+            "rule" => array(
                 'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
                 'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
+            ), 
+            'rule_name' =>  '',     //it will use md5($task_id) as rule_name if leave empty  
+            'refer'     =>  '',
+            'type'      =>  'text', //you can set the type freely on your own
+            'method'    =>  'get',
+            "context"   =>  $context,
+        );
+        $producer->createTask($task);
+        $producer->createMultiTask($task);
+
+        //use 2D-array: recommed to use, rich configuration，
+        //since it is multitasking, only the createMultiTask() interface can be called
+        $task = array(
+            array(
+                'url' => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
+                "rule" => array(
+                    'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
+                    'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
+                ), 
+                //'rule_name' => 'r1', //it will use md5($task_id) as rule_name if leave empty
+                "context" => $context,
+            ),
+            array(
+                'url' => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
+                "rule" => array(
+                    'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
+                    'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
+                ), 
+                //'rule_name' => 'r2', //it will use md5($task_id) as rule_name if leave empty
+                "context" => $context,
             ),
         );
-        $producer->newTaskMan()->setContext($context)->createTask($task);
-        $producer->newTaskMan()->setUrl($task['url'])->setRule($task['rule'])->createTask();
-    };
+        $producer->createMultiTask($task);
+
+        //here is the old OOP style single-task-create API which you can continue to use
+        $_task['url'] = "http://www.demo5.com";
+        $producer->newTaskMan()->setUrl($_task['url'])->setRule($_task['rule'])
+                 ->setContext($context)->createTask();
+
+        //here is the old OOP style multi-task-create API which is not recommended to use
+        $_task['url'] = "http://www.demo6.com";
+        $producer->newTaskMan()->createMultiTask($_task);
 }
 
 function startAppDownloader()

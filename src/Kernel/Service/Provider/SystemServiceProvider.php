@@ -46,5 +46,13 @@ class SystemServiceProvider
         $service->inject('newDbo', function($options = []){
             return Database::newInstance($options);
         });
+
+        $service->inject('createTask', function($options = []){
+            return Task::newInstance($this, [])->createTask($options);
+        });
+
+        $service->inject('createMultiTask', function($options = []){
+            return Task::newInstance($this, [])->createMultiTask($options);
+        });
     }
 }
