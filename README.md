@@ -119,7 +119,7 @@ startAppDownloader();
 startAppParser();
 
 //we could configure many config items such as redis item here as we needed,
-//configure redis with array value of One-dimension or Two-dimension support, 
+//configure redis with array value of One-Dimension or Two-Dimension support, 
 //for details on how to configure the value, refer to the Follow-Up sections
 //$config['redis'] = [];
 
@@ -132,30 +132,23 @@ function startAppProducer()
 
     $producer->setName('AppProducer')->setCount(1);
     $producer->onProducerStart = function($producer){
-        //free to customize various context settings, including user-defined
-        //see: http://www.phpcreeper.com/docs/DevelopmentGuide/ApplicationConfig.html
+        //free to customize various context settings, including user-defined,
+        //for details on how to configure, refer to the Follow-Up sections.
         $context = array(
             //'cache_enabled'    => true,                              
             //'cache_directory'  => '/tmp/DownloadCache4PHPCreeper/',
-            //'allow_url_repeat' => true,
-            //'track_request_args' => true,
-            //'track_task_package' => true,
-            //'force_use_md5url_if_rulename_empty' => false,
-            //'force_use_old_style_multitask_args' => false,
             //.........................................
-            //'user_define_arg1' => 'user_define_value1',
-            //'user_define_arg2' => 'user_define_value2',
         );
 
 
-        //【version < 1.5.6】: we mainly use an OOP style API to create tasks     
+        //【version <  1.6.0】: we mainly use an OOP style API to create tasks     
         //$producer->newTaskMan()->setXXX()->setXXX()->createTask()
         //$producer->newTaskMan()->setXXX()->setXXX()->createTask($task)
         //$producer->newTaskMan()->setXXX()->setXXX()->createMultiTask()
         //$producer->newTaskMan()->setXXX()->setXXX()->createMultiTask($task)
 
 
-        //【version >= 1.5.6】, we provide a shorter and easier API to create tasks    
+        //【version >= 1.6.0】: we provide a shorter and easier API to create tasks    
         //with more rich parameter types, and the old OOP style API can still be used,    
         //and extension jobs are promoted just to maintain backward compatibility
         //1. Single-Task-API: $task parameter types supported: [string | 1D-array]    
@@ -178,17 +171,17 @@ function startAppProducer()
                 'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
                 'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
             ), 
-            'rule_name' =>  '',     //it will use md5($task_id) as rule_name if leave empty  
+            'rule_name' =>  '',       //it will use md5($task_id) as rule_name if leave empty  
             'refer'     =>  '',
-            'type'      =>  'text', //you can set the type freely on your own
+            'type'      =>  'text',   //you can set the type freely on your demand
             'method'    =>  'get',
-            "context"   =>  $context,
+            "context"   =>  $context, //we can set a separate context for each task individually
         );
         $producer->createTask($task);
         $producer->createMultiTask($task);
 
-        //use 2D-array: recommed to use, rich configuration，
-        //since it is multitasking, only the createMultiTask() interface can be called
+        //use 2D-array: recommed to use, rich configuration，engine helps to deal with all
+        //since it is multitasking, only the createMultiTask() API can be called
         $task = array(
             array(
                 'url' => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
@@ -398,29 +391,69 @@ return array(
         'limit_domains' => array(
         ),
 
-        //set the initialized task url to crawl,  the value can be `string` or `array`, 
-        //if configured to array, the `key` indicates the name of the rule, which is
-        //corresponding to the key of the filed of `rule`, mainly used to quickly 
-        //index the target data set, and we can omit the key, then phpcreeper will use
-        //the `mdt($task_url)` as the default rule name
-        'url' => array(
-            "r1" => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
-        ),
+        //set the initialized task url, note that it can only be a single task, 
+        //to implement multi-task, we can call the multi-task API in the script.
+        'url' => 'https://github.com/search?q=stars:%3E1&s=stars&type=Repositories',
 
         //please refer to the "How to set extractor rule" section for details
         'rule' => array(
-            //well, don't worry, just keep empty, we will append the rule after a while
-            //"r1" => [set the business rule here], 
+            //here just keep empty, we will append the rule after a while
         ),
 
-        //set the context params which is compatible to guzzle for http request, because 
-        //`guzzle` is the default http client, so refer to the guzzle manual if any trouble
+        //NOTE: we can set a separate context for each task individually
+        //context members are set primarily for tasks, meanwhile it gives 
+        //a lot of flexibility to indirectly affect dependent services,
+        //For example, various context parameters of HTTP requests can be affected 
+        //by setting context members (optional, default `null`).
+        //the default HTTP engine is the Guzzle client, which supports all request 
+        //parameters for Guzzle. See the Guzzle Manual for details.
+        //SPECIAL NOTE: there are very few members which is not inconsistent with
+        //Guzzle Official, so the inconsistencies will be annotated specifically.
         'context' => array(
             //whether to enable the downlod cache or not (optional, default `false`)
             'cache_enabled'   => false,                               
 
-            //set the download cache directory (optional, default is the system tmp directory)
+            //set the download cache directory (optional, default `sys_get_temp_dir()`)
             'cache_directory' => '/tmp/DownloadCache4PHPCreeper/', 
+
+            //whether to allow capture the same URL resource repeatedly within a particular life cycle
+            'allow_url_repeat' => true,
+
+            //whether to trace the full HTTP request parameters not,  
+            //the terminal will display the full request parameters if enabled
+            'track_request_args' => true,
+
+            //whether to trace the full task packet or not,  
+            //the terminal will display the full task packet if enabled
+            'track_task_package' => true,
+
+            //before v1.6.0, it use md5($task_url) as rule_name if leave empty  
+            //since v1.6.0, it will use md5($task_id) as rule_name if leave empty  
+            //so this configuration parameter is only for backward compatibility, 
+            //but it is not recommended because of the potential pitfalls.
+            //in other words, if you are using an earlier version than v1.6.0, 
+            //then you may need to enable this parameter.
+            'force_use_md5url_if_rulename_empty' => false,
+
+            //force to use the older version of the multi-task creation API parameter style 
+            //to maintain backward compatibility, but it is not recommendeded to use.
+            'force_use_old_style_multitask_args' => false,
+
+            //the format of cookies member is not different with the Guzzle Official, 
+            //we shield up the cookieJar, the value maybe [false | array]
+            'cookies' => [
+                //'domain' => 'domain.com',
+                //'k1' => 'v1',
+                //'k2' => 'v2',
+            ],  
+
+            //set guzzle config membere here  
+            //..............................
+
+            //in addition to the built-in parameters, you can also configure user-defined parameters,
+            //which are very useful in the upstream and downstream service chain application scenarios.
+            'user_define_key1' => 'user_define_value1',
+            'user_define_key2' => 'user_define_value2',
         ),
     ),
 );
@@ -476,17 +509,12 @@ cd Application/Spider/Github/Config/
 ```php
 <?php
 return array(
-    'task' => array(
-        'url' => array(
-            "r1" => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
-        ),
-        'rule' => array(
-            "r1" => array(
-                'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
-                'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
-            ), 
-        ),
-    ),
+    'url' => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
+    "rule" => array(
+        'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
+        'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
+    ),  
+    'rule_name' => 'r1',
 );
 ```
 #### *Step-7：Write Business Callback*
@@ -608,12 +636,46 @@ php Application/Spider/Github/AppParser.php start
 ```
 
 ## How to set extractor rule
+```php
+//NOTE: this is new usage for【version >= v1.6.0】, strongly recommended to use.
+$rule = array( 
+    'field1' => ['selector', 'flag', 'range', 'callback'],
+    .....................................................,
+    'fieldN' => ['selector', 'flag', 'range', 'callback'],
+);
+
+//Single-Task
+$task = array(
+    'url'  => "http://www.weather.com.cn/weather/101010100.shtml",
+    "rule" => $rule,
+    'rule_name' =>  'r1',   
+); 
+
+//Multi-Task
+$task = array(
+    array(
+        "url" => "http://www.weather.com.cn/weather/101010100.shtml",
+        "rule" => $rule,
+        'rule_name' => 'r1', 
+        "context" => $context,
+    ),
+    array(
+        "url" => "http://www.weather.com.cn/weather/201010100.shtml",
+        "rule" => $rule,
+        'rule_name' => 'r2', 
+        "context" => $context,
+    ),
+);
+
+```
+
 * Per URL config item match a unique rule config item, and the ***rule_name*** must be one-to-one correspondence
 * The type of rule value must be ***Array***
 * For a single task, the depth of the corresponding rule item, that is, the depth of the array, can only be 2
 * For multi tasks, the depth of the corresponding rule item, that is, the depth of the array, can only be 3
 
 ```php
+//NOTE: this is outdated usage for【version < v1.6.0】, not recommended to use.
 <?php
 $urls = array(
     'rule_name1' => 'http://www.blogdaren.com';
@@ -638,8 +700,8 @@ $rule = array(
 
 + **rule_name**  
 you should give an unique rule name for each task, so that we can easily 
-extract the index data that we want, if you keep it empty, then `md5($task_url)` 
-will be the unique rule name.
+extract the index data that we want, if you leave it empty, it will use 
+`md5($task_id)` not `md5($task_url)` which has potential pitfalls as the unique rule name since v1.6.0
 
 + **selector**  
 just like jQuery selector, its value can be like `#idName` or `.className` or `Html Element` 

@@ -306,7 +306,7 @@ class Task
     }
 
     /**
-     * @brief   create multi task less than v1.5.6
+     * @brief   create multi task less than v1.6.0
      *
      * !!! Old-Style-API not recommended to use !!!
      *
@@ -314,7 +314,7 @@ class Task
      *
      * @return  boolean
      */
-    public function createMultiTaskLessThanV156($task = [])
+    public function createMultiTaskLessThanV160($task = [])
     {
         //important!!!
         if(is_string($task))
@@ -375,11 +375,11 @@ class Task
      */
     public function createMultiTask($task = [])
     {
-        //backward compatible with older versions( < v1.5.6) of this API
+        //backward compatible with API version less than( < v1.6.0)
         if(isset($task['context']['force_use_old_style_multitask_args']) 
             && true === $task['context']['force_use_old_style_multitask_args'])
         {
-            return $this->createMultiTaskLessThanV156($task);
+            return $this->createMultiTaskLessThanV160($task);
         }
 
         //new version implementation

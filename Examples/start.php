@@ -156,7 +156,7 @@ function startAppProducer()
         //另一方面面向开发者来说，关注点主要是能进行简单的配置即可，所以不一致的会注释特别说明。
         $context = [
             //要不要缓存下载文件 [默认false]
-            'cache_enabled'   => true,
+            'cache_enabled'   => false,
             'cache_directory' => '/tmp/task/download/' . date('Ymd'), 
             //在特定的生命周期内是否允许重复抓取同一个URL资源 [默认false]
             'allow_url_repeat' => true,
@@ -164,10 +164,10 @@ function startAppProducer()
             'track_request_args' => true,
             //要不要跟踪完整的TASK数据包，开启后终端会显示完整的任务数据包 [默认false]
             'track_task_package' => true,
-            //在v1.5.6之前，如果rulename留空，默认会使用 md5($task_url)作为rulename
-            //自v1.5.6开始，如果rulename留空，默认会使用 md5($task_id) 作为rulename
+            //在v1.6.0之前，如果rulename留空，默认会使用 md5($task_url)作为rulename
+            //自v1.6.0开始，如果rulename留空，默认会使用 md5($task_id) 作为rulename
             //所以这个配置参数是仅仅为了保持向下兼容，但是不推荐使用，因为有潜在隐患
-            //换句话如果使用的是v1.5.6之前旧版本，那么才有可能需要激活本参数 [默认false]
+            //换句话如果使用的是v1.6.0之前旧版本，那么才有可能需要激活本参数 [默认false]
             'force_use_md5url_if_rulename_empty' => false,
             //强制使用多任务创建API的旧版本参数风格，保持向下兼容，不再推荐使用 [默认false]
             'force_use_old_style_multitask_args' => false,
@@ -178,19 +178,19 @@ function startAppProducer()
                 //'k2' => 'v2',
             ],
             //除了内置参数之外，还可以自由配置自定义参数，在上下游业务链应用场景中十分有用
-            'user_define_arg1' => 'user_define_value1',
-            'user_define_arg2' => 'user_define_value2',
+            'user_define_key1' => 'user_define_value1',
+            'user_define_key2' => 'user_define_value2',
         ];
 
 
-        //在v1.5.6之前，爬山虎主要使用OOP风格的API来创建任务：
+        //在v1.6.0之前，爬山虎主要使用OOP风格的API来创建任务：
         //$producer->newTaskMan()->setXXX()->setXXX()->createTask()
         //$producer->newTaskMan()->setXXX()->setXXX()->createTask($task)
         //$producer->newTaskMan()->setXXX()->setXXX()->createMultiTask()
         //$producer->newTaskMan()->setXXX()->setXXX()->createMultiTask($task)
 
 
-        //自v1.5.6开始，爬山虎提供了更加短小便捷的API来创建任务, 而且参数类型更加丰富：
+        //自v1.6.0开始，爬山虎提供了更加短小便捷的API来创建任务, 而且参数类型更加丰富：
         //注意：仅仅只是扩展，原有的API依然可以正常使用，提倡扩展就是为了保持向下兼容。
         //1. 单任务API：$task参数类型可支持：[字符串 | 一维数组]
         //1. 单任务API：$producer->createTask($task);
