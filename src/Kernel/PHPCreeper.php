@@ -39,7 +39,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const CURRENT_VERSION = '1.6.1';
+    const CURRENT_VERSION = '1.6.2';
 
     /**
      * valid assemble package methods
@@ -1531,6 +1531,9 @@ EOT;
      */
     public function serve()
     {
+        //avoid displaying GUI repeatly in the 3rd envrionment
+        self::$hasShownGui = true;
+
         $this->boot();
         $this->listen();
     }

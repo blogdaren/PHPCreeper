@@ -212,6 +212,17 @@ function startAppProducer()
         //here is the old OOP style multi-task-create API which is not recommended to use
         $_task['url'] = "http://www.demo6.com";
         $producer->newTaskMan()->createMultiTask($_task);
+
+        //we can also create tasks by opening an internal port 
+        //for external communication with third-party applications
+        /*
+         *$server = new Server();
+         *$server->setServerSocketAddress("text://0.0.0.0:3333");
+         *$server->serve();
+         *$server->onMessage = function($connection, $task)use($producer){
+         *    $producer->createTask($task);
+         *};
+         */
 }
 
 function startAppDownloader()

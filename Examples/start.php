@@ -258,6 +258,16 @@ function startAppProducer()
         //以下是旧版本OOP风格的多任务创建API：不推荐使用
         $_task['url'] = "http://www.demo6.com";
         $producer->newTaskMan()->createMultiTask($_task);
+
+        //也可以通过开启一个内部端口与第三方应用进行外部通信来创建任务
+        /*
+         *$server = new Server();
+         *$server->setServerSocketAddress("text://0.0.0.0:3333");
+         *$server->serve();
+         *$server->onMessage = function($connection, $task)use($producer){
+         *    $producer->createTask($task);
+         *};
+         */
     };
 }
 
@@ -276,10 +286,13 @@ function startAppDownloader()
         'ws://192.168.1.234:8888',
     ]);
 
+    $downloader->onBeforeDownload = function($downloader, $task){
+        //disable http ssl verify in any of the following two ways 
+        //$downloader->httpClient->disableSSL();
+        //$downloader->httpClient->setOptions(['verify' => false]);
+    }; 
+
     $downloader->onDownloaderStart = function($downloader){
-        //$worker = new Downloader();
-        //$worker->setServerSocketAddress("text://0.0.0.0:3333");
-        //$worker->serve();
     };
 
     $downloader->onAfterDownload = function($downloader, $data, $task){
