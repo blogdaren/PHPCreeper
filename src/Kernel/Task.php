@@ -227,13 +227,11 @@ class Task
         $method  = (empty($input['method']) || !is_string($input['method'])) ? $this->getMethod() : $input['method'];
         $referer = (empty($input['referer']) || !is_string($input['referer'])) ? $this->getReferer() : $input['referer'];
         $rule    = (empty($input['rule']) || !is_array($input['rule'])) ? $this->getRule() : $input['rule'];
-        $rule_depth = Tool::getArrayDepth($rule);
-        2 <> $rule_depth && $rule = [];
-        $depth      = $input['depth'];
-        $context    = $this->getContext($input['context'] ?? []);
-        $task_id    = $this->createTaskId();
-
+        $depth     = $input['depth'];
+        $context   = $this->getContext($input['context'] ?? []);
+        $task_id   = $this->createTaskId();
         $rule_name = $this->getRuleName();
+
         if(empty($rule_name) || !is_string($rule_name)) 
         {
             if(isset($context['force_use_md5url_if_rulename_empty']) && true === $context['force_use_md5url_if_rulename_empty']){
