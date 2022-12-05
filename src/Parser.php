@@ -354,7 +354,13 @@ class Parser extends PHPCreeper
             if(!empty($this->task['rule_name'])){
                 $rule_name = $this->task['rule_name'];
             }elseif(!empty($this->task['url'])){
-                $rule_name = md5($this->task['url']);
+                //just to keep back compatible
+                $context = $this->task['context'] ?? [];
+                if(isset($context['force_use_md5url_if_rulename_empty']) && true === $context['force_use_md5url_if_rulename_empty']){
+                    $rule_name = md5($this->task['url']);
+                }else{
+                    $rule_name = md5($this->task['id']);
+                }
             }else{
                 $rule_name = 'default';
             }

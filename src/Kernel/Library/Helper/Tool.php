@@ -1033,7 +1033,6 @@ class Tool
             case 'json':
                 $content = json_decode($data, $option);
                 //$content = self::convertEncoding($content, 'UTF-8', 'GBK');
-
                 break;
             case 'serialize':
                 $content = unserialize($data);
@@ -1042,7 +1041,7 @@ class Tool
                 $content = msgpack_unpack($data);
                 break;
             default:
-                $content = json_encode($data, $option);
+                $content = json_decode($data, $option);
                 break;
         }
 
