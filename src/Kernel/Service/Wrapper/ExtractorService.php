@@ -12,6 +12,7 @@ namespace PHPCreeper\Kernel\Service\Wrapper;
 require_once dirname(dirname(dirname(__FILE__))) . '/Library/phpQuery/phpQuery.php';
 
 use PHPCreeper\Kernel\PHPCreeper;
+use PHPCreeper\Kernel\Library\Helper\Tool;
 use \phpQuery as phpQuery;
 
 class ExtractorService
@@ -257,7 +258,8 @@ class ExtractorService
             $action   = $rule[1] ?? 'text';
             $range    = $rule[2] ?? '';
             $callback = $rule[3] ?? '';
-            in_array($action, ['preg', 'pregs']) && $selector = '';
+            //in_array($action, ['preg', 'pregs']) && $selector = '';
+            if(empty($selector)) continue;
             $nodes = $this->setRange($range)->find($selector);
 
             foreach($nodes as $node) 
@@ -270,16 +272,28 @@ class ExtractorService
                 }elseif(0 === strpos($action, 'css')) {
                     $data = pq($node, $this->document)->css(substr($action, 3));
                 }elseif('preg' == $action) {
-                    $source = pq($node, $this->document)->html();
-                    !empty($rule[0]) && preg_match($rule[0], $source, $data);
+                    //$source = pq($node, $this->document)->html();
+                    //!empty($rule[0]) && preg_match($rule[0], $source, $data);
+                    $data = pq($node, $this->document)->text();
                 }elseif('pregs' == $action) {
-                    $source = pq($node, $this->document)->html();
-                    !empty($rule[0]) && preg_match_all($rule[0], $source, $data);
+                    //$source = pq($node, $this->document)->html();
+                    //!empty($rule[0]) && preg_match_all($rule[0], $source, $data);
+                    $data = pq($node, $this->document)->text();
                 }else{
                     $data = pq($node, $this->document)->attr($action);
                 }
 
-                is_callable($callback) && $data = call_user_func($callback, $name, $data);
+                //important!!! ensure that the 4th argument is a valid callback string
+                $_callback = Tool::getCallbackString($callback);
+                if(!empty($_callback)){
+                    $command  = '$func =' . $_callback . ';';
+                    $command .= 'return call_user_func($func, $name, $data);';
+                    $data = eval($command);
+                }elseif(is_callable($callback)){
+                    $data = call_user_func($callback, $name, $data);
+                }else{
+                }
+
                 $result[$i][$name] = is_string($data) ? trim($data) : $data;
                 $i++;
             }

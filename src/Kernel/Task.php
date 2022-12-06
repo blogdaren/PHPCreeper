@@ -227,6 +227,16 @@ class Task
         $method  = (empty($input['method']) || !is_string($input['method'])) ? $this->getMethod() : $input['method'];
         $referer = (empty($input['referer']) || !is_string($input['referer'])) ? $this->getReferer() : $input['referer'];
         $rule    = (empty($input['rule']) || !is_array($input['rule'])) ? $this->getRule() : $input['rule'];
+
+
+        //important!!! ensure that the 4th argument of rule is a valid callback string
+        foreach($rule as $k => &$v)
+        {
+            $v[3] = Tool::getCallbackString($v[3] ?? '');
+        }
+        //important!!! ensure that the 4th argument of rule is a valid callback string
+
+
         $depth     = $input['depth'];
         $context   = $this->getContext($input['context'] ?? []);
         $task_id   = $this->createTaskId();
@@ -617,6 +627,8 @@ class Task
      */
     public function setRule($rule = [])
     {
+        !is_array($rule) && $rule = [];
+
         $this->rule = $rule;
 
         return $this;

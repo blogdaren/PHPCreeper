@@ -1313,6 +1313,32 @@ class Tool
         return $prefix . $new_path. $suffix;
     }
 
+    /**
+     * @brief    get a valid callback string
+     *
+     * @param    string  $script
+     *
+     * @return   string
+     */
+    static public function getCallbackString($script = '')
+    {
+        if(!is_string($script)) return '';
+
+        preg_match("/^[\n\r\s]*function[\n\r\s]*\(.*\)[\n\r\s]*\{.*\}[\n\r\s]*$/is", $script, $func);
+
+        if(empty($func) || empty($func[0])) return '';
+
+        try{
+            eval($func[0].';');
+            return $func[0];
+        }catch(\Exception $e){
+            return '';
+        }catch(\Throwable $e){
+            return '';
+        }
+    }
+
+
 }
 
 

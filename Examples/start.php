@@ -157,7 +157,7 @@ function startAppProducer()
         $context = [
             //要不要缓存下载文件 [默认false]
             'cache_enabled'   => false,
-            'cache_directory' => '/tmp/task/download/' . date('Ymd'), 
+            'cache_directory' => '/tmp/DownloadCache4PHPCreeper/',
             //在特定的生命周期内是否允许重复抓取同一个URL资源 [默认false]
             'allow_url_repeat' => true,
             //要不要跟踪完整的HTTP请求参数，开启后终端会显示完整的请求参数 [默认false]
@@ -207,8 +207,10 @@ function startAppProducer()
         //使用一维数组：推荐使用，配置丰富，引擎内置处理抓取结果
         $task = $_task = array(
             'url' => "http://www.weather.com.cn/weather/101010100.shtml",
-            "rule" => array(        //如果留空默认将返回原始下载数据
-                'time' => ['div#7d ul.t.clearfix h1',      'text'],
+            "rule" => array(        //如果该字段留空默认将返回原始下载数据
+                'time' => ['div#7d ul.t.clearfix h1',      'text', [], 'function($field_name, $data){
+                    return "具体日子: " . $data;
+                }'],                //关于回调字符串的用法务必详看官方手册
                 'wea'  => ['div#7d ul.t.clearfix p.wea',   'text'],
                 'tem'  => ['div#7d ul.t.clearfix p.tem',   'text'],
                 'wind' => ['div#7d ul.t.clearfix p.win i', 'text'],

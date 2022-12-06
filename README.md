@@ -711,30 +711,32 @@ $rule = array(
 
 + **rule_name**  
 you should give an unique rule name for each task, so that we can easily 
-extract the index data that we want, if you leave it empty, it will use 
+index the data that we want, if you leave it empty, it will use 
 `md5($task_id)` not `md5($task_url)` which has potential pitfalls as the unique rule name since v1.6.0
 
 + **selector**  
-just like jQuery selector, its value can be like `#idName` or `.className` or `Html Element` 
-and so on, besides, it also can be a regular expression depending on the value of ***flag***.
+selector must be provided, or it will be ignored, just like jQuery selector, its value can be like `#idName` or `.className` or `Html Element` 
+and so on.
 
 + **flag**  
-indicates what action we should take, the value can be one of the following:    
+default value is `text`, indicates what action we should take, the value can be one of the following:    
+`text`： used to get the text of html element    
+`html`： used to get the html code snippets    
 `attr`： used to get the attrbute value of html element     
 　　　　【**Attention: the real value shoud be the attribute like `src`、`href` etc, NOT `attr` itself**】   
-`html`： used to get the html code snippets    
-`text`： used to get the text of html element    
 `css` ： &nbsp;used specially to get the style attribute of html element, and return as an array form   
 　　　　【**Attention: support also more variant format like `css:*`、`css:prop1,prop2,...propN`**】   
-`preg`： &nbsp;just a wrapper for ***preg_match()***  
-`pregs`：just a wrapper for ***preg_match_all()***   
 
 + **range**  
 used to narrow down the entries to only those that match, just like jQuery selector, 
 the value can be like `#idName` or `.className` or `Html Element` and so on.
 
 + **callback**  
-you can trigger a callback here, but remember to return the data expected.
+you can trigger a `callback string` or `callback function` here, but remember to return the data expected.
+
+    `callback string:`  it is semantically equivalent to the callback function, but it can only be of type string, **recommended to use**.   
+    ~~`callback function:` PHP native callback function which may work unexpectedly in communication across multi-process environments, supported currently but **strongly NOT recommended to use and may be deprecated in the near future**.~~   
+
 
 ```php   
 <?php
@@ -746,9 +748,9 @@ $rule = array(
     'link_address'  => ['a',        'href'],
     'link_css1'     => ['a',        'css'],
     'link_css2'     => ['div>a',    'css:font-size'],
-    'callback_data' => ['/<a .*?>(.*)<\/a>/is', 'preg', [], function($field_name, $data){
-        return 'Hello ' . $data[1];
-    }], 
+    'callback_data' => ['#site',    'text', [], 'function($field_name, $data){
+        return "Hello " . $data;
+    }'], 
 );  
 $data = $parser->extractField($html, $rule, 'rule1');
 pprint($data['rule1']);
