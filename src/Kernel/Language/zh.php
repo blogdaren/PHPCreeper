@@ -9,12 +9,13 @@
 
 return [
     'queue_start_url_invalid'       => "初始任务: 检测到初始任务URL配置无效, 请检查配置确保正确设置初始任务URL.......",
-    'queue_url_invalid'             => "生产任务: 检测到次生任务URL配置无效, 请确认是否已经正确设置次生任务URL.......",
+    'queue_url_invalid'             => "生产任务: 检测到任务URL配置无效, 请确认是否已经正确设置任务URL.......",
     'queue_full'                    => "队列监控: Task 队列任务已经达到阀值%max_number%, 当前任务总量为: %task_number%",
     'queue_empty'                   => "队列监控: Task 队列任务已被消费一空, 间隔 %crawl_interval% 秒后继续消费任务.................",
     'queue_push_task'               => "生产任务: 检测到新建任务并压入队: %task_url%",
     'queue_push_exception_task'     => "生产任务: 检测到异常任务并压入队: %task_url%",
     'queue_duplicate_task'          => "生产任务: 检测到重复任务直接丢弃: %task_url%",
+    'queue_inactive_task'           => "生产任务: 检测到冻结任务直接丢弃: %task_url%",
     //'network_connect_success'       => "网络巡检：检测到本机至远程Parser的异步连接建立成功, 继续从 Task 队列提取任务.",
     'downloader_connect_success'    => "网络巡检：检测到本机至远程解析器的异步连接建立成功: %downloader_client_address%",
     'downloader_connect_failed'     => "网络异常：检测到本机至远程解析器异步连接已断开: %parser_socket%, %reconnect_time%秒后尝试重连",

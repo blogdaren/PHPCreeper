@@ -118,27 +118,47 @@ startAppDownloader();
 //start parser instance
 startAppParser();
 
-//we could configure many config items such as redis item here as we needed,
-//configure redis with array value of One-Dimension or Two-Dimension support, 
-//for details on how to configure the value, refer to the Follow-Up sections
-//$config['redis'] = [];
+//Global-Redis-Config: support array value with One-Dimension or Two-Dimension, 
+//for details on how to configure the value, refer to the Follow-Up sections.
+$config['redis'] = [
+    [
+        'host'      =>  '127.0.0.1',
+        'port'      =>  6379,
+        'auth'      =>  false,
+        'pass'      =>  'guest',
+        'prefix'    =>  'PHPCreeper', 
+        'database'  =>  '0',
+        'connection_timeout' => 5,
+    ],
+];
+
+//Global-Task-Config: the context member configured here is a global context,
+//we can also set a private context for each task, finally the global context 
+//and task private context will adopt the strategy of merging and covering.
+//free to customize various context settings, including user-defined,
+//for details on how to configure it, refer to the Follow-Up sections.
+$config['task'] = array( 
+    //'max_depth'       => 1,
+    //'max_number'      => 1000,
+    //'max_request'     => 1000,
+    //'crawl_interval'  => 1,
+    //'limit_domains'   => [],
+    'context' => [
+        'cache_enabled'   => false,
+        'cache_directory' => '/tmp/DownloadCache4PHPCreeper/',
+        //..................................................
+    ],
+); 
 
 function startAppProducer()
 {
-    $producer = new Producer();
-
-    //maybe need to set config 
-    //global $config; $producer->setConfig($config);
+    global $config;
+    $producer = new Producer($config);
 
     $producer->setName('AppProducer')->setCount(1);
     $producer->onProducerStart = function($producer){
-        //free to customize various context settings, including user-defined,
-        //for details on how to configure, refer to the Follow-Up sections.
-        $context = array(
-            //'cache_enabled'    => true,                              
-            //'cache_directory'  => '/tmp/DownloadCache4PHPCreeper/',
-            //.........................................
-        );
+        //task private context
+        $context = [];
 
 
         //【version <  1.6.0】: we mainly use an OOP style API to create tasks     
@@ -159,7 +179,7 @@ function startAppProducer()
 
         //use string: not recommended to use because the configuration is limited.    
         //so the question is that you need to process the fetching result by yourself     
-        $task = "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories";
+        //$task = "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories";
         //$producer->createTask($task);
         //$producer->createMultiTask($task);
 
@@ -175,7 +195,7 @@ function startAppProducer()
             'refer'     =>  '',
             'type'      =>  'text',   //you can set the type freely on your demand
             'method'    =>  'get',
-            "context"   =>  $context, //we can set a separate context for each task individually
+            "context"   =>  $context, //we can set a private context for each task individually
         );
         $producer->createTask($task);
         $producer->createMultiTask($task);
@@ -227,10 +247,8 @@ function startAppProducer()
 
 function startAppDownloader()
 {
-    $downloader = new Downloader();
-
-    //maybe need to set config 
-    //global $config; $downloader->setConfig($config);
+    global $config;
+    $downloader = new Downloader($config);
 
     //set the client socket address based on the listening parser server 
     $downloader->setName('AppDownloader')->setCount(2)->setClientSocketAddress([
@@ -372,9 +390,6 @@ return array(
     ),
 
     'task' => array(
-        //set http request method (optional, default `get`)
-        'method'          => 'get', 
-
         //set the task crawl interval, the minimum 0.001 second (optional, default `1`)
         'crawl_interval'  => 1,
 
@@ -390,6 +405,7 @@ return array(
         //0 indicates no limit (optional, default `0`)
         'max_request'     => 1000,
 
+        //compression algorithm
         'compress'  => array(
             //whether to enable the data compress method (optional, default `true`)
             'enabled'   =>  true,
@@ -402,20 +418,11 @@ return array(
         'limit_domains' => array(
         ),
 
-        //set the initialized task url, note that it can only be a single task, 
-        //to implement multi-task, we can call the multi-task API in the script.
-        'url' => 'https://github.com/search?q=stars:%3E1&s=stars&type=Repositories',
-
-        //please refer to the "How to set extractor rule" section for details
-        'rule' => array(
-            //here just keep empty, we will append the rule after a while
-        ),
-
-        //NOTE: we can set a separate context for each task individually
-        //context members are set primarily for tasks, meanwhile it gives 
-        //a lot of flexibility to indirectly affect dependent services,
-        //For example, various context parameters of HTTP requests can be affected 
-        //by setting context members (optional, default `null`).
+        //SPECIAL NOTE: the context member configured here is a global context,
+        //we can also set a private context for each task individually,
+        //it gives us a lot of flexibility to indirectly affect dependent services,
+        //for example, various context parameters of HTTP requests can be affected 
+        //by setting those context members (optional, default `null`).
         //the default HTTP engine is the Guzzle client, which supports all request 
         //parameters for Guzzle. See the Guzzle Manual for details.
         //SPECIAL NOTE: there are very few members which is not inconsistent with
@@ -467,6 +474,20 @@ return array(
             'user_define_key2' => 'user_define_value2',
         ),
     ),
+
+    //set the initialized task, support both Single-Task and Multi-Task
+    'task_init' => array(
+        'url' => 'https://github.com/search?q=stars:%3E1&s=stars&type=Repositories',
+
+        //please refer to the "How to set extractor rule" section for details
+        "rule" => array(
+            'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
+            'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
+        ),  
+
+        //set rule name which will be set to `md5($task_id)` if leave it empty
+        'rule_name' => 'r1',
+    ),
 );
 ```
 5、Edit the business worker config file named **AppProducer.php**：
@@ -511,24 +532,7 @@ return array(
     ),
 );
 ```
-#### *Step-6：Set Business Rule*
-1、Switch to the application config directory again:
-```
-cd Application/Spider/Github/Config/
-```
-2、Edit **main.php** to append the business rules:
-```php
-<?php
-return array(
-    'url' => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
-    "rule" => array(
-        'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
-        'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
-    ),  
-    'rule_name' => 'r1',
-);
-```
-#### *Step-7：Write Business Callback*
+#### *Step-6：Write Business Callback*
 1、Write business callback for AppProducer:
 ```php
 <?php
@@ -626,7 +630,7 @@ public function onParserExtractField($parser, $download_data, $fields)
     //DB::save($fields);
 }
 ```
-#### *Step-8：Start Application Instance*
+#### *Step-7：Start Application Instance*
 There are two ways to start an application instance, one is `Global Startup`, 
 and the other is `Single Startup`, we just need to choose one of them.
 `Global Startup` means that all workers run in the same group of processes under the same application,
@@ -883,7 +887,7 @@ I'm willing to accept donations from all sides. Thanks a lot.
 
 ## DISCLAIMER
 Please **DON'T** use PHPCreeper for businesses which are **NOT PERMITTED BY LAW** in your country. 
-If you break the law, you need to take responsibility for that.
+I take no warranty or responsibility for this code. Use at your own risk.
 
 ## 友情链接
 * 致谢workerman官方：[workerman](https://www.workerman.net)

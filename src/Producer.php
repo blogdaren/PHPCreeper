@@ -111,23 +111,9 @@ class Producer extends PHPCreeper
      */
     public function initTask()
     {
-        $init_task = [];
-        $init_task['url']       = Configurator::get('globalConfig/main/task/url') ?? '';
+        $init_task = Configurator::get('globalConfig/main/task_init') ?? [];
 
-        if(!Tool::checkUrl($init_task['url'])) 
-        {
-            Logger::warn(Tool::replacePlaceHolder($this->langConfig['queue_start_url_invalid']));
-            return false;
-        }
-
-        $init_task['type']      = Configurator::get('globalConfig/main/task/type') ?? 'unknown';
-        $init_task['method']    = Configurator::get('globalConfig/main/task/method') ?? 'get';
-        $init_task['rule']      = Configurator::get('globalConfig/main/task/rule') ?? [];
-        $init_task['rule_name'] = Configurator::get('globalConfig/main/task/rule_name') ?? '';
-        $init_task['referer']   = Configurator::get('globalConfig/main/task/referer') ?? '';
-        $init_task['context']   = Configurator::get('globalConfig/main/task/context') ?? [];
-
-        return  $this->createMultiTask($init_task);
+        return $this->createMultiTask($init_task);
     }
 
     /**

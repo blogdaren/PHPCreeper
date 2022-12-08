@@ -804,11 +804,11 @@ class Downloader extends PHPCreeper
         }
 
         //connect timeout 
-        $args['connect_timeout'] = $args['connect_timeout'] ?? Configurator::get('globalConfig/main/task/connect_timeout');
+        $args['connect_timeout'] = $args['connect_timeout'] ?? Configurator::get('globalConfig/main/task/context/connect_timeout');
         $args['connect_timeout'] <= 0 && $args['connect_timeout'] = 2;
 
         //transfer timeout
-        $args['timeout'] = $args['timeout'] ?? Configurator::get('globalConfig/main/task/transfer_timeout');
+        $args['timeout'] = $args['timeout'] ?? Configurator::get('globalConfig/main/task/context/transfer_timeout');
         $args['timeout'] <= 0 && $args['timeout'] = 5;
 
         //task context

@@ -39,7 +39,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const CURRENT_VERSION = '1.6.2';
+    const CURRENT_VERSION = '1.6.3';
 
     /**
      * valid assemble package methods
@@ -703,7 +703,12 @@ class PHPCreeper extends Worker
             if(isset($config[$key])) unset($config[$key]);
         }, ['redis', 'mysql', 'lang']);
 
-        Configurator::reset('globalConfig', $config);
+        //兼容不同工作环境下的配置：未来可能会考虑重新设定一套统一的配置规格
+        if(!defined('USE_PHPCREEPER_APPLICATION_FRAMEWORK')){
+            Configurator::set('globalConfig/main', $config);
+        }else{
+            Configurator::reset('globalConfig', $config);
+        }
 
         if(!empty($this->_config['redis']))
         {

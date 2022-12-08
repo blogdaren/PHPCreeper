@@ -105,6 +105,13 @@ class Task
     static private $_instance = null;
 
     /**
+     * whether enable task or not
+     *
+     * @var boolean
+     */
+    public $active = true;
+
+    /**
      * @brief    __construct    
      *
      * @param    object  $phpcreeper
@@ -186,7 +193,17 @@ class Task
         if(true !== $check_result) 
         {
             Logger::error(Tool::replacePlaceHolder($this->phpcreeper->langConfig['queue_url_invalid']));
-            return $check_result;
+            return false;
+        }
+
+        //check whether task is active or not
+        $check_result = $this->checkTaskActiveState($input);
+        if(true !== $check_result) 
+        {
+            Logger::warn(Tool::replacePlaceHolder($this->phpcreeper->langConfig['queue_inactive_task'], [
+                'task_url' => $input['url'],
+            ]));
+            return false;
         }
 
         //check task number
@@ -406,11 +423,16 @@ class Task
         foreach($new_task as $k => $task) 
         {
             $result = self::rebuildMultiTaskParams($task);
-            if(false == $result) continue;
+            if(false == $result) 
+            {
+                Logger::error(Tool::replacePlaceHolder($this->phpcreeper->langConfig['queue_url_invalid']));
+                continue;
+            }
 
             @extract($task);
             $taskObject = self::newInstance($this->phpcreeper);
             $task_id = $taskObject->setUrl($url)
+                            ->setActiveState($active)
                             ->setType($type)
                             ->setMethod($method)
                             ->setReferer($referer)
@@ -467,6 +489,11 @@ class Task
         if(empty($task) || !is_array($task)) return false;
 
         if(true !== Tool::checkUrl($task['url'] ?? '')) return false;
+
+        if(!isset($task['active']) || !is_bool($task['active'])) 
+        {
+            $task['active'] = true;
+        }
 
         if(empty($task['type']) || !is_string($task['type'])) 
         {
@@ -765,4 +792,51 @@ class Task
         return $this->context;
     }
 
+    /**
+     * @brief    set task active state     
+     *
+     * @param    boolean    $active
+     *
+     * @return   object
+     */
+    public function setActiveState($active = true)
+    {
+        !is_bool($active) && $active = true;
+
+        $this->active = $active;
+
+        return $this;
+    }
+
+    /**
+     * @brief    get task active state     
+     *
+     * @return   boolean
+     */
+    public function getActiveState()
+    {
+        return $this->active;
+    }
+
+    /**
+     * @brief    check task active state   
+     *
+     * @param    array  $input
+     *
+     * @return   boolean
+     */
+    public function checkTaskActiveState($input)
+    {
+        if(!isset($input['active']))
+        {
+            $input['active'] = $this->getActiveState();
+        }
+
+        if(false === $input['active'])
+        {
+            return false;
+        }
+
+        return true;
+    }
 }
