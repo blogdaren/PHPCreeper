@@ -112,6 +112,13 @@ class Task
     public $active = true;
 
     /**
+     * key used to lock push task
+     *
+     * @var string
+     */
+    static private $_lockKey = 'lock_push_task';
+
+    /**
      * @brief    __construct    
      *
      * @param    object  $phpcreeper
@@ -215,11 +222,11 @@ class Task
             ]));
             usleep(500000);
             return false;
-        };
+        }
 
         if($this->phpcreeper->count > 1)
         {
-            $gold_key = $this->phpcreeper->lockHelper->lock('pushtask');
+            $gold_key = $this->phpcreeper->lockHelper->lock(self::$_lockKey);
             if(!$gold_key) return false;
         }
 
@@ -232,11 +239,11 @@ class Task
             ]));
 
             //unlock
-            $this->phpcreeper->count > 1 && $this->phpcreeper->lockHelper->unlock('pushtask', $gold_key);
+            $this->phpcreeper->count > 1 && $this->phpcreeper->lockHelper->unlock(self::$_lockKey, $gold_key);
 
             sleep(1);
             return false;
-        };
+        }
 
         //rewash params
         $url     = $input['url'];
@@ -284,7 +291,7 @@ class Task
                 ]));
 
                 //unlock
-                $this->phpcreeper->count > 1 && $this->phpcreeper->lockHelper->unlock('pushtask', $gold_key);
+                $this->phpcreeper->count > 1 && $this->phpcreeper->lockHelper->unlock(self::$_lockKey, $gold_key);
 
                 return false;
             }
@@ -309,7 +316,7 @@ class Task
         $rs = $this->phpcreeper->queueClient->push('task', $task_data);
 
         //unlock
-        $this->phpcreeper->count > 1 && $this->phpcreeper->lockHelper->unlock('pushtask', $gold_key);
+        $this->phpcreeper->count > 1 && $this->phpcreeper->lockHelper->unlock(self::$_lockKey, $gold_key);
 
         if(!empty($rs))
         {

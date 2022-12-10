@@ -404,7 +404,7 @@ class PredisClient implements BrokerInterface
     {
         $text = json_encode($text);
         $skey = $this->getStandardKey($key);
-        $rs = $this->getConnection($key)->lpush($skey, $text);
+        $rs = $this->getConnection($skey)->lpush($skey, $text);
 
         return $rs;
     }
@@ -420,7 +420,7 @@ class PredisClient implements BrokerInterface
     public function pop($key, $wait = false)
     {
         $skey = $this->getStandardKey($key);
-        $message = $this->getConnection($key)->rpop($skey);
+        $message = $this->getConnection($skey)->rpop($skey);
 
         if(!$message) return false;
 
@@ -439,7 +439,7 @@ class PredisClient implements BrokerInterface
     public function llen($key)
     {
         $skey = $this->getStandardKey($key);
-        return $this->getConnection($key)->llen($skey);
+        return $this->getConnection($skey)->llen($skey);
     }
 
     /**
@@ -464,7 +464,7 @@ class PredisClient implements BrokerInterface
     public function purge($key)
     {
         $skey = $this->getStandardKey($key);
-        $this->getConnection($key)->del($skey);
+        $this->getConnection($skey)->del($skey);
 
         return true;
     }
@@ -480,9 +480,9 @@ class PredisClient implements BrokerInterface
 
         $skey = $this->getStandardKey($key);
 
-        if(!empty($this->getConnection($key)) && $this->getConnection($key)->isConnected()) 
+        if(!empty($this->getConnection($skey)) && $this->getConnection($skey)->isConnected()) 
         {
-            $this->getConnection($key)->close();
+            $this->getConnection($skey)->close();
         }
     }
 
@@ -540,7 +540,7 @@ class PredisClient implements BrokerInterface
         //important: rewrite $args[0];
         $skey && $args[0] = $skey;
 
-        return $this->getConnection($key)->{$function_name}(...$args);
+        return $this->getConnection($skey)->{$function_name}(...$args);
     }
 
 }

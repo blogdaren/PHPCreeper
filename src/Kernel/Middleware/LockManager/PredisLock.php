@@ -11,6 +11,7 @@ namespace PHPCreeper\Kernel\Middleware\LockManager;
 
 use PHPCreeper\Kernel\Slot\LockInterface;
 use PHPCreeper\Kernel\Middleware\MessageQueue\PredisClient;
+use PHPCreeper\Kernel\Library\Helper\Tool;
 
 class PredisLock implements LockInterface
 {
@@ -36,12 +37,11 @@ class PredisLock implements LockInterface
     protected $sleepTime = 10;
 
     /**
-     * lock prefix
+     * whether to use red lock or not
      *
-     * @var string
+     * @var boolean
      */
-    public $lockPrefix = '';
-
+    private $_useRedLock = false;
 
     /**
      * @brief    __construct    
@@ -57,32 +57,77 @@ class PredisLock implements LockInterface
         }elseif($entity instanceof PredisClient) {
             $this->_predis = $entity;
         }elseif(is_array($entity)){
-            $this->_predis = new PredisClient($entity);
+            //check whether to use red lock or not
+            $this->_useRedLock = self::whetherToUseRedLock($entity);
+            $this->_predis = $this->_useRedLock ? new DistributedRedLock($entity, 'predis') : new PredisClient($entity);
         }else{
             throw new \Exception("invalid predis client instance provided with \$entity = " . var_export($entity, true));
         }
 
+
+        //upgrade to use red lock and keep compatible
+        if($this->_useRedLock) return;
+        //upgrade to use red lock and keep compatible
+
+
         //force to route to 0 partion
         $this->_predis->setPartionId(0);
+        $this->setExpiryTime(1)->setSleepTime(1);
+    }
 
-        if(is_object($entity) && method_exists($entity, 'getConfig'))
+    /**
+     * @brief    whether to use red lock 
+     *
+     * @param    array  $config
+     *
+     * @return   boolean
+     */
+    static public function whetherToUseRedLock(&$config)
+    {
+        $orig_config = $config;
+        empty($config) && $config = []; 
+        !is_array($config) && $config = [$config];
+
+        //如果是一维数组，那么强制转换为二维数组
+        if(empty($config) || Tool::getArrayDepth($config) == 1)
+        {   
+            $config = [$config];
+        }   
+
+        //如果是多维数组，筛选出只支持使用red lock的redis实例
+        foreach($config as $k => $v)
         {
-            $entity_config = $entity->getConfig();
-            !empty($entity_config['redis']['prefix']) && $this->lockPrefix = $entity_config['redis']['prefix'] . ':';
+            if(isset($v['use_red_lock']) && $v['use_red_lock'] == false)
+            {
+                unset($config[$k]);
+            }
         }
 
-        $this->setExpiryTime()->setSleepTime();
+        //如果没有筛选到有效redis实例，则回滚为旧有的锁机制
+        if(empty($config)) {
+            $config = Tool::getArrayDepth($orig_config) === 1 ? [$orig_config] : $orig_config;
+            $use = false;
+        }else{
+            $use = true;
+        }
+
+        return $use;
     }
 
     /**
      * @brief    set expiry time  
      *
-     * @param    int  $time
+     * @param    int  $time (单位：秒)
      *
      * @return   object
      */
     public function setExpiryTime($time = 1)
     {
+        //upgrade to use red lock and keep compatible
+        if($this->_useRedLock) return $this->_predis->setExpiryTime($time);
+        //upgrade to use red lock and keep compatible
+
+
         $this->expiryTime = $time;
 
         return $this;
@@ -91,15 +136,34 @@ class PredisLock implements LockInterface
     /**
      * @brief    set sleep time   
      *
-     * @param    int  $time
+     * @param    int  $time (单位：毫秒)
      *
      * @return   object
      */
     public function setSleepTime($time = 10)
     {
+        //upgrade to use red lock and keep compatible
+        if($this->_useRedLock) return $this->_predis->setSleepTime($time);
+        //upgrade to use red lock and keep compatible
+
+
         $this->sleepTime = $time;
 
         return $this;
+    }
+
+    /**
+     * @brief    set retry times
+     *
+     * @param    int    $times
+     *
+     * @return   object
+     */
+    public function setRetryTimes($times)
+    {
+        //upgrade to use red lock and keep compatible
+        if($this->_useRedLock) return $this->_predis->setRetryTimes($time);
+        //upgrade to use red lock and keep compatible
     }
 
     /**
@@ -111,6 +175,11 @@ class PredisLock implements LockInterface
      */
     public function lock($key)
     {
+        //upgrade to use red lock and keep compatible
+        if($this->_useRedLock) return $this->_predis->lock($this->getLockKey($key));
+        //upgrade to use red lock and keep compatible
+
+
         $lock_key = $this->getLockKey($key);
         $timeout = time() + $this->expiryTime;
         $result = (bool)$this->_predis->setnx($lock_key, $timeout);
@@ -118,7 +187,7 @@ class PredisLock implements LockInterface
 
         while(true) 
         {
-            usleep($this->sleepTime);
+            usleep($this->sleepTime * 1000);
             $now_time = time();
             $old_timeout = $this->_predis->get($lock_key);
             if($now_time <= $old_timeout) continue;
@@ -143,6 +212,11 @@ class PredisLock implements LockInterface
      */
     public function unlock($key, $timeout = 0)
     {
+        //upgrade to use red lock and keep compatible
+        if($this->_useRedLock) return $this->_predis->unlock($this->getLockKey($key));
+        //upgrade to use red lock and keep compatible
+
+
         $lock_key = $this->getLockKey($key);
 
         if($timeout >= time()) 
@@ -162,12 +236,8 @@ class PredisLock implements LockInterface
      */
     public function getLockKey($key)
     {
-        return $this->lockPrefix . "lock_{$key}";
+        return $key;
     }
 }
-
-
-
-
 
 

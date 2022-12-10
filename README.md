@@ -119,6 +119,10 @@ startAppDownloader();
 startAppParser();
 
 //Global-Redis-Config: support array value with One-Dimension or Two-Dimension, 
+//SPECIAL NOTE: since v1.6.4, it's been upgraded to use a more secure and officially
+//recommended distributed red lock mechanism by default, but it will use the
+//old version of the lock mechanism degenerate only when all the redis instances 
+//are explicitly configured with the option [use_red_lock === false] as below.
 //for details on how to configure the value, refer to the Follow-Up sections.
 $config['redis'] = [
     [
@@ -129,6 +133,8 @@ $config['redis'] = [
         'prefix'    =>  'PHPCreeper', 
         'database'  =>  '0',
         'connection_timeout' => 5,
+        'read_write_timeout' => 0,
+        //'use_red_lock'     => true,   //default to true since v1.6.4
     ],
 ];
 
@@ -389,6 +395,7 @@ return array(
         'GithubParser'        => true,
     ),
 
+    //global task config
     'task' => array(
         //set the task crawl interval, the minimum 0.001 second (optional, default `1`)
         'crawl_interval'  => 1,
@@ -450,7 +457,7 @@ return array(
             //so this configuration parameter is only for backward compatibility, 
             //but it is not recommended because of the potential pitfalls.
             //in other words, if you are using an earlier version than v1.6.0, 
-            //then you may need to enable this parameter.
+            //then you may need to enable this parameter. 
             'force_use_md5url_if_rulename_empty' => false,
 
             //force to use the older version of the multi-task creation API parameter style 
@@ -487,6 +494,9 @@ return array(
 
         //set rule name which will be set to `md5($task_id)` if leave it empty
         'rule_name' => 'r1',
+
+        //set task private context
+        'context'   => [],
     ),
 );
 ```

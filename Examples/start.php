@@ -36,8 +36,10 @@ use Logger\Logger;
 
 
 /**
- * global redis config: just leave it alone when run as Single-Worker mode
- * 仅单worker运作模式下不依赖redis，所以此时redis的配置可以忽略不管
+ * Global-Redis-Config: just leave it alone when run as Single-Worker mode
+ * 仅单worker运作模式下不依赖redis，所以此时redis的配置可以忽略不管.
+ * 特别注意：自v1.6.4起，redis锁机制已升级并默认使用官方推荐的更安全的分布式红锁，
+ * 只有当所有的redis实例都显式的配置[use_red_lock === false]才会退化为旧版的锁机制.
  */
 $config['redis'] = [
     [
@@ -48,6 +50,8 @@ $config['redis'] = [
         'prefix'    =>  'PHPCreeper', 
         'database'  =>  '0',
         'connection_timeout' => 5,
+        'read_write_timeout' => 0,
+        //'use_red_lock'     => true,   //默认使用更安全的分布式红锁 
     ],
     /*[
         'host'      =>  '127.0.0.1',
@@ -57,14 +61,19 @@ $config['redis'] = [
         'prefix'    =>  'PHPCreeper', 
         'database'  =>  '0',
         'connection_timeout' => 5,
+        'read_write_timeout' => 0,
+        //'use_red_lock'     => true,   //默认使用更安全的分布式红锁 
     ],*/
 ];
 
 
 /**
- * global task config
+ * Global-Task-Config: the context member configured here is a global context,
+ * we can also set a private context for each task, finally the global context 
+ * and task private context will adopt the strategy of merging and covering.
+ * free to customize various context settings, including user-defined,
  *
- * 特别注意: 此处配置的context是全局context，我们也可以为每条任务设置私有context，
+ * 注意: 此处配置的context是全局context上下文，我们也可以为每条任务设置私有context上下文，
  * 其上下文成员完全相同，全局context与任务私有context最终采用合并覆盖的策略，具体参考手册。
  * http://www.phpcreeper.com/docs/DevelopmentGuide/ApplicationConfig.html
  * context上下文成员主要是针对任务设置的，但同时拥有很大灵活性，可以间接影响依赖性服务，
@@ -72,7 +81,6 @@ $config['redis'] = [
  * HTTP引擎默认采用Guzzle客户端，兼容支持Guzzle所有的请求参数选项，具体参考Guzzle手册。
  * 特别注意：个别上下文成员的用法是和Guzzle官方不一致的，一方面主要就是屏蔽其技术性概念，
  * 另一方面面向开发者来说，关注点主要是能进行简单的配置即可，所以不一致的会注释特别说明。
- * 
  */
 $config['task'] = array( 
     //任务爬取间隔，单位秒，最小支持0.001秒 (可选项，默认1秒)
@@ -93,7 +101,7 @@ $config['task'] = array(
         'cache_enabled'   => true,
         'cache_directory' => '/tmp/DownloadCache4PHPCreeper/',
         //在特定的生命周期内是否允许重复抓取同一个URL资源 [默认false]
-        'allow_url_repeat' => true,
+        'allow_url_repeat'   => true,
         //要不要跟踪完整的HTTP请求参数，开启后终端会显示完整的请求参数 [默认false]
         'track_request_args' => true,
         //要不要跟踪完整的TASK数据包，开启后终端会显示完整的任务数据包 [默认false]

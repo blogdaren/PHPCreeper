@@ -39,21 +39,21 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const CURRENT_VERSION = '1.6.3';
+    public const CURRENT_VERSION = '1.6.4';
 
     /**
      * valid assemble package methods
      *
      * @var array
      */
-    const ALLOWED_ASSEMBLE_PACKAGE_METHODS = ['json', 'serialize', 'msgpack'];
+    public const ALLOWED_ASSEMBLE_PACKAGE_METHODS = ['json', 'serialize', 'msgpack'];
 
     /**
      * built-in middle classes 
      *
      * @var array
      */
-    const PHPCREEPER_BUILTIN_MIDDLE_CLASSES = [
+    public const PHPCREEPER_BUILTIN_MIDDLE_CLASSES = [
         'producer'   => 'PHPCreeper\Producer',
         'downloader' => 'PHPCreeper\Downloader',
         'parser'     => 'PHPCreeper\Parser',
@@ -65,14 +65,14 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    const PSEUDO_WORKER = 'phpcreeper';
+    public const PSEUDO_WORKER = 'phpcreeper';
 
     /**
      * log level
      *
      * @var array 
      */
-    const ALLOWED_LOG_LEVEL = ['info', 'debug', 'warn', 'error', 'crazy'];
+    public const ALLOWED_LOG_LEVEL = ['info', 'debug', 'warn', 'error', 'crazy'];
 
     /**
      * http client

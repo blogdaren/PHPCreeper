@@ -10,7 +10,7 @@
 return [
     'queue_start_url_invalid'       => "Task Init: detect initial task url invalid, please make sure it configured correctly.",
     'queue_url_invalid'             => "Task Make: detect the task url invalid, please make sure it configured correctly",
-    'queue_full'                    => "Task Monitor: task queue length has exceeded the max number given, the current queue length is %task_number%",
+    'queue_full'                    => "Task Monitor: task queue length has exceeded the max number given, the total backlog of task is %task_number%",
     'queue_empty'                   => "Task Monitor: task queue is empty, continue to consume task in %crawl_interval% seconds at intervals.",
     'queue_push_task'               => "Task Make: detect there comes a new task and push it into the task queue: %task_url%.",
     'queue_push_exception_task'     => "Task Make: detect there comes the task abnormal and drop it: %task_url%.",

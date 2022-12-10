@@ -10,7 +10,7 @@
 return [
     'queue_start_url_invalid'       => "初始任务: 检测到初始任务URL配置无效, 请检查配置确保正确设置初始任务URL.......",
     'queue_url_invalid'             => "生产任务: 检测到任务URL配置无效, 请确认是否已经正确设置任务URL.......",
-    'queue_full'                    => "队列监控: Task 队列任务已经达到阀值%max_number%, 当前任务总量为: %task_number%",
+    'queue_full'                    => "队列监控: Task 队列任务已经达到阀值%max_number%, 当前积压任务总量为: %task_number%",
     'queue_empty'                   => "队列监控: Task 队列任务已被消费一空, 间隔 %crawl_interval% 秒后继续消费任务.................",
     'queue_push_task'               => "生产任务: 检测到新建任务并压入队: %task_url%",
     'queue_push_exception_task'     => "生产任务: 检测到异常任务并压入队: %task_url%",
