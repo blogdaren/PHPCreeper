@@ -36,114 +36,6 @@ use Logger\Logger;
 
 
 /**
- * Global-Redis-Config: just leave it alone when run as Single-Worker mode
- * 仅单worker运作模式下不依赖redis，所以此时redis的配置可以忽略不管.
- * 特别注意：自v1.6.4起，redis锁机制已升级并默认使用官方推荐的更安全的分布式红锁，
- * 只有当所有的redis实例都显式的配置[use_red_lock === false]才会退化为旧版的锁机制.
- */
-$config['redis'] = [
-    [
-        'host'      =>  '127.0.0.1',
-        'port'      =>  6379,
-        'auth'      =>  false,
-        'pass'      =>  'guest',
-        'prefix'    =>  'PHPCreeper', 
-        'database'  =>  '0',
-        'connection_timeout' => 5,
-        'read_write_timeout' => 0,
-        //'use_red_lock'     => true,   //默认使用更安全的分布式红锁 
-    ],
-    /*[
-        'host'      =>  '127.0.0.1',
-        'port'      =>  6380,
-        'auth'      =>  false,
-        'pass'      =>  'guest',
-        'prefix'    =>  'PHPCreeper', 
-        'database'  =>  '0',
-        'connection_timeout' => 5,
-        'read_write_timeout' => 0,
-        //'use_red_lock'     => true,   //默认使用更安全的分布式红锁 
-    ],*/
-];
-
-
-/**
- * Global-Task-Config: the context member configured here is a global context,
- * we can also set a private context for each task, finally the global context 
- * and task private context will adopt the strategy of merging and covering.
- * free to customize various context settings, including user-defined,
- *
- * 注意: 此处配置的context是全局context上下文，我们也可以为每条任务设置私有context上下文，
- * 其上下文成员完全相同，全局context与任务私有context最终采用合并覆盖的策略，具体参考手册。
- * http://www.phpcreeper.com/docs/DevelopmentGuide/ApplicationConfig.html
- * context上下文成员主要是针对任务设置的，但同时拥有很大灵活性，可以间接影响依赖性服务，
- * 比如可以通过设置context上下文成员来影响HTTP请求时的各种上下文参数 (可选项，默认为空)
- * HTTP引擎默认采用Guzzle客户端，兼容支持Guzzle所有的请求参数选项，具体参考Guzzle手册。
- * 特别注意：个别上下文成员的用法是和Guzzle官方不一致的，一方面主要就是屏蔽其技术性概念，
- * 另一方面面向开发者来说，关注点主要是能进行简单的配置即可，所以不一致的会注释特别说明。
- */
-$config['task'] = array( 
-    //任务爬取间隔，单位秒，最小支持0.001秒 (可选项，默认1秒)
-    //'crawl_interval'  => 1,
-    //最大爬取深度, 0代表爬取深度无限制 (可选项，默认1)
-    //'max_depth'       => 1,
-    //任务队列最大task数量, 0代表无限制 (可选项，默认0)
-    //'max_number'      => 1000,
-    //当前Socket连接累计最大请求数，0代表无限制 (可选项，默认0)
-    //如果当前Socket连接的累计请求数超过最大请求数时，
-    //parser端会主动关闭连接，同时客户端会自动尝试重连
-    //'max_request'     => 1000,
-    //限定爬取站点域，留空表示不受限
-    'limit_domains' => [],
-    //全局任务context上下文
-    'context' => [
-        //要不要缓存下载文件 [默认false]
-        'cache_enabled'   => true,
-        'cache_directory' => '/tmp/DownloadCache4PHPCreeper/',
-        //在特定的生命周期内是否允许重复抓取同一个URL资源 [默认false]
-        'allow_url_repeat'   => true,
-        //要不要跟踪完整的HTTP请求参数，开启后终端会显示完整的请求参数 [默认false]
-        'track_request_args' => true,
-        //要不要跟踪完整的TASK数据包，开启后终端会显示完整的任务数据包 [默认false]
-        'track_task_package' => true,
-        //在v1.6.0之前，如果rulename留空，默认会使用 md5($task_url)作为rulename
-        //自v1.6.0开始，如果rulename留空，默认会使用 md5($task_id) 作为rulename
-        //所以这个配置参数是仅仅为了保持向下兼容，但是不推荐使用，因为有潜在隐患
-        //换句话如果使用的是v1.6.0之前旧版本，那么才有可能需要激活本参数 [默认false]
-        'force_use_md5url_if_rulename_empty' => false,
-        //强制使用多任务创建API的旧版本参数风格，保持向下兼容，不再推荐使用 [默认false]
-        'force_use_old_style_multitask_args' => false,
-        //cookies成员的配置格式和guzzle官方不大一样，屏蔽了cookieJar，取值[false|array]
-        'cookies' => [
-            //'domain' => 'domain.com',
-            //'k1' => 'v1',
-            //'k2' => 'v2',
-        ],
-        //除了内置参数之外，还可以自由配置自定义参数，在上下游业务链应用场景中十分有用
-        'user_define_key1' => 'user_define_value1',
-        'user_define_key2' => 'user_define_value2',
-    ],
-); 
-
-
-//启动生产器组件
-startAppProducer();
-
-//启动下载器组件
-startAppDownloader();
-
-//启动解析器组件
-startAppParser();
-
-/**
- * 启动通用型服务器组件，项目较少使用，可以按需自由定制一些服务，完全独立于 [Producer|Downloader|Parser] 组件
- * start the general server component，seldom to use in project，can customize some services freely as needed，
- * and fully indepent on those components like [Producer|Downloader|Parser]
- */
-//startAppServer();
-
-
-/**
  * enable the single worker mode so that we can run without redis, however, you should note 
  * it will be limited to run only all the downloader workers in this case【version >= 1.3.2】
  * and the default is Multi-Worker run mode.
@@ -198,6 +90,98 @@ startAppParser();
  * 设置默认时区，默认为 Asia/Shanghai
  */
 //PHPCreeper::setDefaultTimezone('Asia/Shanghai');
+
+
+/**
+ * Global-Redis-Config: just leave it alone when run as Single-Worker mode
+ * 仅单worker运作模式下不依赖redis，所以此时redis的配置可以忽略不管.
+ * 特别注意：自v1.6.4起，redis锁机制已升级并默认使用官方推荐的更安全的分布式红锁，
+ * 只有当所有的redis实例都显式的配置[use_red_lock === false]才会退化为旧版的锁机制.
+ */
+$config['redis'] = [
+    [
+        'host'      =>  '127.0.0.1',
+        'port'      =>  6379,
+        'auth'      =>  false,
+        'pass'      =>  'guest',
+        'prefix'    =>  'PHPCreeper', 
+        'database'  =>  '0',
+        'connection_timeout' => 5,
+        'read_write_timeout' => 0,
+        //'use_red_lock'     => true,   //默认使用更安全的分布式红锁 
+    ],
+    /*[
+        'host'      =>  '127.0.0.1',
+        'port'      =>  6380,
+        'auth'      =>  false,
+        'pass'      =>  'guest',
+        'prefix'    =>  'PHPCreeper', 
+        'database'  =>  '0',
+        'connection_timeout' => 5,
+        'read_write_timeout' => 0,
+        //'use_red_lock'     => true,   //默认使用更安全的分布式红锁 
+    ],*/
+];
+
+
+/**
+ * Global-Task-Config: the context member configured here is a global context,
+ * we can also set a private context for each task, finally the global context 
+ * and task private context will adopt the strategy of merging and covering.
+ * free to customize various context settings, including user-defined.
+ *
+ * 注意: 此处配置的context是全局context上下文，我们也可以为每条任务设置私有context上下文，
+ * 其上下文成员完全相同，全局context与任务私有context最终采用合并覆盖的策略，具体参考手册。
+ * http://www.phpcreeper.com/docs/DevelopmentGuide/ApplicationConfig.html
+ * context上下文成员主要是针对任务设置的，但同时拥有很大灵活性，可以间接影响依赖性服务，
+ * 比如可以通过设置context上下文成员来影响HTTP请求时的各种上下文参数 (可选项，默认为空)
+ * HTTP引擎默认采用Guzzle客户端，兼容支持Guzzle所有的请求参数选项，具体参考Guzzle手册。
+ * 特别注意：个别上下文成员的用法是和Guzzle官方不一致的，一方面主要就是屏蔽其技术性概念，
+ * 另一方面面向开发者来说，关注点主要是能进行简单的配置即可，所以不一致的会注释特别说明。
+ */
+$config['task'] = array( 
+    //任务爬取间隔，单位秒，最小支持0.001秒 (可选项，默认1秒)
+    //'crawl_interval'  => 1,
+    //最大爬取深度, 0代表爬取深度无限制 (可选项，默认1)
+    //'max_depth'       => 1,
+    //任务队列最大task数量, 0代表无限制 (可选项，默认0)
+    //'max_number'      => 1000,
+    //当前Socket连接累计最大请求数，0代表无限制 (可选项，默认0)
+    //如果当前Socket连接的累计请求数超过最大请求数时，
+    //parser端会主动关闭连接，同时客户端会自动尝试重连
+    //'max_request'     => 1000,
+    //限定爬取站点域，留空表示不受限
+    'limit_domains' => [],
+    //全局任务context上下文
+    'context' => [
+        //要不要缓存下载文件 [默认false]
+        'cache_enabled'   => true,
+        'cache_directory' => '/tmp/DownloadCache4PHPCreeper/',
+        //在特定的生命周期内是否允许重复抓取同一个URL资源 [默认false]
+        'allow_url_repeat'   => true,
+        //要不要跟踪完整的HTTP请求参数，开启后终端会显示完整的请求参数 [默认false]
+        'track_request_args' => true,
+        //要不要跟踪完整的TASK数据包，开启后终端会显示完整的任务数据包 [默认false]
+        'track_task_package' => true,
+        //在v1.6.0之前，如果rulename留空，默认会使用 md5($task_url)作为rulename
+        //自v1.6.0开始，如果rulename留空，默认会使用 md5($task_id) 作为rulename
+        //所以这个配置参数是仅仅为了保持向下兼容，但是不推荐使用，因为有潜在隐患
+        //换句话如果使用的是v1.6.0之前旧版本，那么才有可能需要激活本参数 [默认false]
+        'force_use_md5url_if_rulename_empty' => false,
+        //强制使用多任务创建API的旧版本参数风格，保持向下兼容，不再推荐使用 [默认false]
+        'force_use_old_style_multitask_args' => false,
+        //cookies成员的配置格式和guzzle官方不大一样，屏蔽了cookieJar，取值[false|array]
+        'cookies' => [
+            //'domain' => 'domain.com',
+            //'k1' => 'v1',
+            //'k2' => 'v2',
+        ],
+        //除了内置参数之外，还可以自由配置自定义参数，在上下游业务链应用场景中十分有用
+        'user_define_key1' => 'user_define_value1',
+        'user_define_key2' => 'user_define_value2',
+    ],
+); 
+
 
 
 /**
@@ -395,5 +379,20 @@ function startAppServer()
     };
 }
 
-PHPCreeper::runAll();
+
+//启动生产器组件
+startAppProducer();
+
+//启动下载器组件
+startAppDownloader();
+
+//启动解析器组件
+startAppParser();
+
+//启动通用型服务器组件，可按需自由定制一些服务，
+//完全独立于 [Producer|Downloader|Parser] 组件.
+//startAppServer();
+
+
+PHPCreeper::start();
 

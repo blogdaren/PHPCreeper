@@ -42,12 +42,10 @@ The chinese document is relatively complete, and the english document will be ke
 
 ## Features
 * Inherit almost all features from [workerman](https://www.workerman.net)
-* Free to customize various plugins and callbacks
-* Free to customize the third-party middleware
 * Support Crontab-Jobs similar to Linux-Crontab
 * Support distributed and separated deployment
-* Support for multi-language environment
-* Support for agile development with [PHPCreeper-Application](https://github.com/blogdaren/PHPCreeper-Application)
+* Support agile development with [PHPCreeper-Application](https://github.com/blogdaren/PHPCreeper-Application)
+* Free to customize various callbacks and 3rd middleware
 * Use PHPQuery as the elegant content extractor
 * With high performance and strong scalability
 
@@ -109,14 +107,6 @@ PHPCreeper::setLang('en');
 //it will be limited to run only all the downloader workers in this case【version >= 1.3.2】
 //PHPCreeper::enableMultiWorkerMode(false);
 
-//start producer instance
-startAppProducer();
-
-//start downloader instance
-startAppDownloader();
-
-//start parser instance
-startAppParser();
 
 //Global-Redis-Config: support array value with One-Dimension or Two-Dimension, 
 //SPECIAL NOTE: since v1.6.4, it's been upgraded to use a more secure and officially
@@ -167,14 +157,14 @@ function startAppProducer()
         $context = [];
 
 
-        //【version <  1.6.0】: we mainly use an OOP style API to create tasks     
+        //【version <  1.6.0】: we mainly use an OOP style API to create task     
         //$producer->newTaskMan()->setXXX()->setXXX()->createTask()
         //$producer->newTaskMan()->setXXX()->setXXX()->createTask($task)
         //$producer->newTaskMan()->setXXX()->setXXX()->createMultiTask()
         //$producer->newTaskMan()->setXXX()->setXXX()->createMultiTask($task)
 
 
-        //【version >= 1.6.0】: we provide a shorter and easier API to create tasks    
+        //【version >= 1.6.0】: we provide a shorter and easier API to create task    
         //with more rich parameter types, and the old OOP style API can still be used,    
         //and extension jobs are promoted just to maintain backward compatibility
         //1. Single-Task-API: $task parameter types supported: [string | 1D-array]    
@@ -239,7 +229,7 @@ function startAppProducer()
         $_task['url'] = "http://www.demo6.com";
         $producer->newTaskMan()->createMultiTask($_task);
 
-        //we can also create tasks by opening an internal port 
+        //we can also create task by opening an internal port 
         //for external communication with third-party applications
         /*
          *$server = new Server();
@@ -249,6 +239,7 @@ function startAppProducer()
          *    $producer->createTask($task);
          *};
          */
+    };
 }
 
 function startAppDownloader()
@@ -289,6 +280,15 @@ function startAppParser()
     //$parser->onParserMessage = function($parser, $connection, $download_data){};
     //$parser->onParserFindUrl = function($parser, $sub_url){};
 }
+
+//start producer instance
+startAppProducer();
+
+//start downloader instance
+startAppDownloader();
+
+//start parser instance
+startAppParser();
 
 //start phpcreeper
 PHPCreeper::start();
@@ -548,9 +548,9 @@ return array(
 <?php
 public function onProducerStart($producer)
 {
-    //here we can add another new task 
-    //$producer->newTaskMan()->createTask($task);
-    //$producer->newTaskMan()->createMultiTask($tasks);
+    //here we can add more new task(s) 
+    //$producer->createTask($task);
+    //$producer->createMultiTask($task);
 }
 
 public function onProducerStop($producer)
@@ -697,7 +697,7 @@ $task = array(
 * Per URL config item match a unique rule config item, and the ***rule_name*** must be one-to-one correspondence
 * The type of rule value must be ***Array***
 * For a single task, the depth of the corresponding rule item, that is, the depth of the array, can only be 2
-* For multi tasks, the depth of the corresponding rule item, that is, the depth of the array, can only be 3
+* For multi task, the depth of the corresponding rule item, that is, the depth of the array, can only be 3
 
 ```php
 //NOTE: this is outdated usage for【version < v1.6.0】, not recommended to use.
