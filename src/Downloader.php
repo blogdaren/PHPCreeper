@@ -905,16 +905,16 @@ class Downloader extends PHPCreeper
         //now we have got download data successfully
         $download_data = $result['extra_msg']['content'];
 
-        //try to cache download data in any of the following scenarios:
-        //1. or cache is enabled 
-        //2. or sizeof($old_download_data) <> sizeof($new_download_data) 
+        //try to cache download data as both of the following conditions are met
+        //1. cache is enabled 
+        //2. sizeof($old_download_data) <> sizeof($new_download_data) 
         $cache_by_size = false;
         if(!file_exists($cache_path) || strlen($download_data) <> strlen(file_get_contents($cache_path)))
         {
             $cache_by_size = true;
         }
 
-        if(true === $enabled || true === $cache_by_size)
+        if(true === $enabled && true === $cache_by_size)
         {
             $rs = Tool::createMultiDirectory($cache_dir);
             if(true !== $rs) return Logger::warn($this->langConfig['downloader_create_cache_failed']);
