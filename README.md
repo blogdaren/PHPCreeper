@@ -27,6 +27,7 @@ The chinese document is relatively complete, and the english document will be ke
 * 中文开发文档主节点：[http://www.blogdaren.com/docs/](http://www.blogadren.com/docs/)
 * 中文开发文档备节点：[http://www.phpcreeper.com/docs/](http://www.phpcreeper.com/docs/)
 * **作者未涉足任何商业性资源和平台，全靠兴趣和热爱支撑，感谢小星星Star支持。**
+* **爬山虎是一个佛系随缘项目，业余玩玩也许还凑合吧，生产环境表现未知请慎用。**
 
 ## 技术交流
 * 下方绿色二维码为VX交流群：&nbsp;phpcreeper 【群主热心、有问必答、进微信群需先加此专属微信并备注：爬山虎】  

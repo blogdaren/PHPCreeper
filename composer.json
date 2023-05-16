@@ -21,7 +21,7 @@
         "blogdaren/configurator": "^1.0",
         "blogdaren/logger": "^1.1.2",
         "guzzlehttp/guzzle": "^6.4 || ^7.0",
-        "predis/predis": "^2.0"
+        "predis/predis": "2.0.*"
     },
     "suggest": {
         "ext-event": "For better performance"
