@@ -35,7 +35,10 @@ The chinese document is relatively complete, and the english document will be ke
 和 [深入PHP内核源码](https://www.bilibili.com/video/BV1pP4y1G7ae) 
 开展技术交流，观看PHP内核系列视频请移步[B站](https://www.bilibili.com/video/BV1pP4y1G7ae)
 
-![qrcode-phpcreeper](./Image/QRCodePHPCreeperForWechat.png)
+<p align="center">
+  <img src="./Image/QRCodePHPCreeperForWechat.png" />
+</p>
+
 
 ## Screenshot
 ![EnglishVersion1](./Image/EnglishVersion1.png)
