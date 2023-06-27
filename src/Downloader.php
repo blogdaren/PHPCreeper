@@ -781,7 +781,6 @@ class Downloader extends PHPCreeper
         array_walk($headers, function($v, $k)use(&$headers){
             if(!is_string($k)) unset($headers[$k]);
         });
-        !empty($args['referer']) && $headers['referer'] = $args['referer'];
         !empty($headers) && $args['headers'] = $headers;
 
         //cookies

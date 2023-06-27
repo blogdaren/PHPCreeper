@@ -235,10 +235,17 @@ class Guzzle implements HttpClientInterface
             $options['headers']['User-Agent'] = self::getRandUserAgent($args['type'] ?? 'pc');
         }
 
-        if(!isset($options['headers']['referer']))
-        {
-            $options['headers']['referer'] = self::$_config['referer'] ?? '';
-        }
+        if(!empty(self::$_config['referer']))
+        {   
+            $referer = self::$_config['referer'];
+        }elseif(!empty($options['headers']['referer'])){
+            $referer = $options['headers']['referer'];
+        }else{
+            $referer = $url;
+        }   
+
+        //set referer
+        $options['headers']['referer'] = $referer;
 
         //set cookies
         $options['cookies'] = self::setCookies($options['cookies'] ?? []);
