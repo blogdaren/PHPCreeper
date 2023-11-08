@@ -15,6 +15,7 @@ use PHPCreeper\Kernel\Middleware\MessageQueue\Base\Exchange;
 use PHPCreeper\Kernel\Middleware\MessageQueue\Base\Queue;
 use PHPCreeper\Kernel\Middleware\MessageQueue\Base\Message;
 
+#[\AllowDynamicProperties]
 class AmqpExtension implements BrokerInterface
 {
     /**

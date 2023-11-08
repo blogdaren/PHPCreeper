@@ -13,6 +13,7 @@ use PHPCreeper\Kernel\Slot\BrokerInterface;
 use PHPCreeper\Kernel\Library\Helper\Tool;
 use PHPCreeper\Timer;
 
+#[\AllowDynamicProperties]
 class RedisExtension implements BrokerInterface
 {
     /**
