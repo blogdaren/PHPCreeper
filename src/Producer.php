@@ -17,6 +17,9 @@ use Configurator\Configurator;
 use Logger\Logger;
 use Workerman\Worker;
 
+/**
+ * @property callable $onProducerStart
+ */
 class Producer extends PHPCreeper
 {
     /**
