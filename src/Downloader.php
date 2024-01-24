@@ -897,14 +897,25 @@ class Downloader extends PHPCreeper
         $result = $this->download($task);
         if(0 <> $result['error_code'])
         {
-            Logger::error(Tool::replacePlaceHolder($result['error_msg'], $result['extra_msg']));
+            $error_msg = Tool::replacePlaceHolder($result['error_msg'], $result['extra_msg']);
+            Logger::error($error_msg);
+
+            //trigger user callback
+            $error = [
+                'error_code' => $result['error_code'],
+                'error_msg'  => $error_msg,
+                'extra_msg'  => $result['extra_msg'],
+            ];
+            $returning = $this->triggerUserCallback('onFailDownload', $this, $error, $task);
+            if(false === $returning) return false;
+
             return false;
         }
 
         //now we have got download data successfully
         $download_data = $result['extra_msg']['content'];
 
-        //try to cache download data as both of the following conditions are met
+        //try to cache download data when both of the following conditions are met simultaneously
         //1. cache is enabled 
         //2. sizeof($old_download_data) <> sizeof($new_download_data) 
         $cache_by_size = false;

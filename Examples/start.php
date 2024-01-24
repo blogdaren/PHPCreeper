@@ -299,24 +299,36 @@ function startAppProducer()
 function startAppDownloader()
 {
     global $config;
+
     $downloader = new Downloader($config);
     //$downloader->setTaskCrawlInterval(5);
     $downloader->setName('AppDownloader')->setCount(1)->setClientSocketAddress([
         'ws://127.0.0.1:8888',
     ]);
 
-    $downloader->onBeforeDownload = function($downloader, $task){
+    $downloader->onDownloaderStart = function($downloader){
+    };
+
+    //回调【onBeforeDownload】的新增别名是【onDownloadBefore】
+    $downloader->onDownloadBefore = function($downloader, $task){
         //disable http ssl verify in any of the following two ways 
         //$downloader->httpClient->disableSSL();
         //$downloader->httpClient->setOptions(['verify' => false]);
     }; 
 
-    $downloader->onDownloaderStart = function($downloader){
+    //回调【onStartDownload】的新增别名是【onDownloadStart】
+    $downloader->onDownloadStart = function($downloader, $task){
     };
 
-    $downloader->onAfterDownload = function($downloader, $data, $task){
+    //回调【onAfterDownload】的新增别名是【onDownloadAfter】
+    $downloader->onDownloadAfter = function($downloader, $data, $task){
         //Tool::debug($content, $json = true, $append = true, $filename = "debug", $base_dir = "/tmp/")
         //Tool::debug($task);
+    };
+
+    //回调【onFailDownload】的新增别名是【onDownloadFail】
+    $downloader->onDownloadFail = function($downloader, $error, $task){
+        //pprint($error, $task);
     };
 }
 

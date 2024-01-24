@@ -39,7 +39,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    public const CURRENT_VERSION = '1.6.8';
+    public const CURRENT_VERSION = '1.6.9';
 
     /**
      * valid assemble package methods
@@ -286,6 +286,7 @@ class PHPCreeper extends Worker
         'onBeforeDownload'     => null,
         'onStartDownload'      => null,
         'onAfterDownload'      => null,
+        'onFailDownload'       => null,
         'onParserStart'        => null,
         'onParserStop'         => null,
         'onParserReload'       => null,
@@ -301,6 +302,24 @@ class PHPCreeper extends Worker
         'onServerBufferFull'   => null,
         'onServerBufferDrain'  => null,
         'onServerError'        => null,
+    );
+
+    /**
+     * user callbacks for alias
+     *
+     * [
+     *    'callback1' => ['alias1', 'alias2', ......],
+     *    'callback2' => ['alias1', 'alias2', ......],
+     *    ...........................................
+     * ]
+     *
+     * @var array
+     */
+    static public $callbacks_alias= array(
+        'onBeforeDownload'  => ['onDownloadBefore'],
+        'onStartDownload'   => ['onDownloadStart'],
+        'onAfterDownload'   => ['onDownloadAfter'],
+        'onFailDownload'    => ['onDownloadFail'],
     );
 
     /**
@@ -960,6 +979,8 @@ class PHPCreeper extends Worker
     public function __set($k, $v)
     {
         //$k == 'whenStart' && $k = 'onStart'; 
+        $k = self::getCallbackAlias($k);
+
         if(array_key_exists($k, self::$callbacks) && is_callable($v))
         {
             self::$callbacks[$k][] = $v;
@@ -970,6 +991,27 @@ class PHPCreeper extends Worker
         }
 
         return false;
+    }
+
+    /**
+     * @brief    get user callbacks for alias
+     *
+     * @param    string  $name
+     *
+     * @return   
+     */
+    static public function getCallbackAlias($name)
+    {
+        foreach(self::$callbacks_alias as $callback => $alias)
+        {
+            if(in_array($name, $alias))
+            {
+                $name = $callback;
+                break;
+            }
+        }
+
+        return $name;
     }
 
     /**
