@@ -57,6 +57,14 @@ use Logger\Logger;
 
 
 /**
+ * redirect all stdandard out to file when run as daemonize【version >= 1.7.0】
+ * 如果以守护进程方式运行，则所有向终端的输出(echo var_dump等)将会被重定向到指定的文件中;
+ * 如果以守护进程方式运行并且不设置，则所有终端输出将被重定向到/dev/null，即丢弃所有输出;
+ */
+//PHPCreeper::setStdoutFile("/tmp/stdout.log");
+
+
+/**
  * set the corresponding app log according to the component, 
  * and can also mask the log of the corresponding log level.
  * 根据组件保存相应的应用日志，也可以屏蔽掉相应日志级别的日志。

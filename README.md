@@ -14,10 +14,12 @@ asynchronous event-driven spider engine based on [workerman](https://www.workerm
 
 * Focus on efficient agile development, and make the crawler job become more easy   
 * Solve the performance and scalability bottlenecks of traditional crawler frameworks
+* Take full advantage of crawling in Multi-Process + Distributed + Separated deployment environment
 
 爬山虎是基于workerman开发的全新一代多进程异步事件驱动型PHP爬虫引擎, 它有助于：
 * 专注于高效敏捷开发，让爬取工作变得更加简单.
 * 解决传统型PHP爬虫框架的性能和扩展瓶颈问题.
+* 充分发挥多进程+分布式+分离式部署环境下的爬取优势.
 
 ## Documentation
 The chinese document is relatively complete, and the english document will be kept up-to-date constantly here.   
@@ -30,8 +32,8 @@ The chinese document is relatively complete, and the english document will be ke
 * **爬山虎是一个佛系随缘项目，业余应用应该没有问题，但生产环境表现未知请慎用。**
 
 ## 技术交流
-* 下方绿色二维码为VX交流群：&nbsp;phpcreeper 【群主热心、有问必答、进微信群需先加此专属微信并备注：爬山虎】  
-* 微信群均围绕 [爬山虎引擎](http://www.phpcreeper.com) 和 [workerman](https://www.workerman.net/)
+* 下方绿色二维码为VX交流群：&nbsp;phpcreeper 【群主热心、进微信群需先添加此专属微信并备注来意或备注：爬山虎】  
+* 微信群主要围绕 [爬山虎引擎](http://www.phpcreeper.com) 和 [workerman](https://www.workerman.net/)
 和 [深入PHP内核源码](https://www.bilibili.com/video/BV1pP4y1G7ae) 
 开展技术交流，观看PHP内核系列视频请移步[B站](https://www.bilibili.com/video/BV1pP4y1G7ae)
 
@@ -41,8 +43,7 @@ The chinese document is relatively complete, and the english document will be ke
 
 
 ## Screenshot
-![EnglishVersion1](./Image/EnglishVersion1.png)
-![EnglishVersion2](./Image/EnglishVersion2.png)
+![DemoShow](./Image/DemoShow.png)
 
 ## Features
 * Inherit almost all features from [workerman](https://www.workerman.net)
@@ -106,6 +107,9 @@ PHPCreeper::setLang('en');
 
 //set worker log file when start as daemon mode as needed【version >= 1.3.8】
 //PHPCreeper::setLogFile('/path/to/phpcreeper.log');
+
+//redirect all stdandard out to file when run as daemonize【version >= 1.7.0】
+//PHPCreeper::setStdoutFile("/tmp/stdout.log");
 
 //enable the single worker mode so that we can run without redis, however, you should note 
 //it will be limited to run only all the downloader workers in this case【version >= 1.3.2】
@@ -265,9 +269,10 @@ function startAppDownloader()
     //some more downloader callbacks commonly used
     //$downloader->onDownloaderStart = function($downloader){};
     //$downloader->onDownloaderStop  = function($downloader){};
-    //$downloader->onStartDownload = function($downloader, $task){};
-    //$downloader->onAfterDownload = function($downloader, $download_data, $task){};
     //$downloader->onDownloaderMessage = function($downloader, $parser_reply){};
+    //$downloader->onDownloadStart = function($downloader, $task){};
+    //$downloader->onDownloadAfter = function($downloader, $download_data, $task){};
+    //$downloader->onDownloadFail  = function($downloader, $error, $task){};
 }
 
 function startAppParser()
@@ -285,384 +290,46 @@ function startAppParser()
     //$parser->onParserFindUrl = function($parser, $sub_url){};
 }
 
-//start producer instance
+function startAppServer()
+{
+    $server = new Server();
+    $server->onServerStart = function(){
+        //execute the task every 1 second
+        new Crontab('*/1 * * * * *', function(){
+            pprint("print the current time every 1 second" . time());
+        });
+
+        //execute the task every 2 minutes 
+        new Crontab('*/2 * * * *', function(){
+            pprint("print the current time every 2 minutes" . time());
+        });
+    };
+}
+
+
+//start producer component
 startAppProducer();
 
-//start downloader instance
+//start downloader component
 startAppDownloader();
 
-//start parser instance
+//start parser component 
 startAppParser();
 
-//start phpcreeper
+//start server component
+//startAppServer();
+
+//start phpcreeper engine
 PHPCreeper::start();
 ```
 
+Now, save the example code above to a file and name it to be `github.php` as a startup script, then run it like this:
+```
+/path/to/php github.php start
+```
+
 ## Usage: Depend On The PHPCreeper Application Framework
-Now, let's do the same job based on the Application Framework:    
-
-
-#### *Step-1：Download PHPCreeper-Application Framework*
-```
-git clone https://github.com/blogdaren/PHPCreeper-Application /path/to/myproject
-```
-
-#### *Step-2：Load the PHPCreeper Core Engine*
-
-1、Switch to the application base directory:
-```
-cd /path/to/myproject
-```
-
-2、Load the PHPCreeper core engine:
-```
-composer require blogdaren/phpcreeper
-```
-
-#### *Step-3：Run PHPCreeper-Application Assistant*
-
-1、Run PHPCreeper-Application assistant:
-```
-php  Application/Sbin/Creeper
-```
-2、The terminal output will look like this:    
-
-![AppAssistant](./Image/AppAssistantEnglish.png)
-
-#### *Step-4：Create One Application*
-
-1、Create one spider application named **github**:
-```
-php Application/Sbin/Creeper make github --en
-```
-
-2、The complete execution process looks like this:   
-![AppAssistant](./Image/AppGithubEnglish.png)
-
-As matter of fact, we have accomplished all the jobs at this point,
-you just need to run `php github.php start` to see what has happened, 
-but you still need to finish the rest step of the work if you wanna
-do some elaborate work or jobs.
-
-#### *Step-5：Business Configuration*
-1、Switch to the application config direcory:
-```
-cd Application/Spider/Github/Config/
-```
-2、Edit the global config file named **global.php**:   
-```
-Normally, there is no need to change this file unless you wanna create a new global sub-config file
-```
-3、Edit the global sub-config file named **database.php**:
-```php
-<?php
-return [
-    'redis' => [
-        'prefix' => 'Github',
-        'host'   => '127.0.0.1',
-        'port'   => 6379,
-        'database' => 0,
-    ],
-];
-```
-or 
-```php
-<?php
-return [
-    'redis' => [[
-        'prefix' => 'Github',
-        'host'   => '127.0.0.1',
-        'port'   => 6379,
-        'database' => 0,
-    ]],
-];
-```
-4、Edit the global sub-config file named **main.php**:
-```php
-<?php
-return array(
-    //set the locale, currently support Chinese and English (optional, default `zh`)
-    'language' => 'en',
-
-    //PHPCreeper has two modes to work: single worker mode and multi workers mode,   
-    //the former is seldomly to use, the only advantage is that you can play it   
-    //without redis-server, because it uses the PHP built-in queue service, so it    
-    //only applys to some simple jobs ; the latter is frequently used to handle    
-    //many more complex jobs, especially for distributed or separated work or jobs,    
-    //in this way, you must enable the redis server (optional, default `true`)
-    'multi_worker'  => true,
-
-    //whether to start the given worker(s) instance or not(optional, default `true`)
-    'start' => array(
-        'GithubProducer'      => true,
-        'GithubDownloader'    => true,
-        'GithubParser'        => true,
-    ),
-
-    //global task config
-    'task' => array(
-        //set the task crawl interval, the minimum 0.001 second (optional, default `1`)
-        'crawl_interval'  => 1,
-
-        //set the max crawl depth, 0 indicates no limit (optional, default `1`)
-        'max_depth'       => 1,
-
-        //set the max number of the task queue, 0 indicates no limit (optional, default `0`)
-        'max_number'      => 1000,
-
-        //set the max number of the request for each socket connection,  
-        //if the cumulative number of socket requests exceeds the max number of requests,
-        //the parser will close the connection and try to reconect automatically.
-        //0 indicates no limit (optional, default `0`)
-        'max_request'     => 1000,
-
-        //compression algorithm
-        'compress'  => array(
-            //whether to enable the data compress method (optional, default `true`)
-            'enabled'   =>  true,
-
-            //compress algorithm, support `gzip` and `deflate` (optional, default `gzip`)
-            'algorithm' => 'gzip',
-        ),
-
-        //limit domains which are allowed to crawl, no limit if leave empty
-        'limit_domains' => array(
-        ),
-
-        //SPECIAL NOTE: the context member configured here is a global context,
-        //we can also set a private context for each task individually,
-        //it gives us a lot of flexibility to indirectly affect dependent services,
-        //for example, various context parameters of HTTP requests can be affected 
-        //by setting those context members (optional, default `null`).
-        //the default HTTP engine is the Guzzle client, which supports all request 
-        //parameters for Guzzle. See the Guzzle Manual for details.
-        //SPECIAL NOTE: there are very few members which is not inconsistent with
-        //Guzzle Official, so the inconsistencies will be annotated specifically.
-        'context' => array(
-            //whether to enable the downlod cache or not (optional, default `false`)
-            'cache_enabled'   => false,                               
-
-            //set the download cache directory (optional, default `sys_get_temp_dir()`)
-            'cache_directory' => '/tmp/DownloadCache4PHPCreeper/', 
-
-            //whether to allow capture the same URL resource repeatedly within a particular life cycle
-            'allow_url_repeat' => true,
-
-            //whether to trace the full HTTP request parameters not,  
-            //the terminal will display the full request parameters if enabled
-            'track_request_args' => true,
-
-            //whether to trace the full task packet or not,  
-            //the terminal will display the full task packet if enabled
-            'track_task_package' => true,
-
-            //before v1.6.0, it use md5($task_url) as rule_name if leave empty  
-            //since v1.6.0, it will use md5($task_id) as rule_name if leave empty  
-            //so this configuration parameter is only for backward compatibility, 
-            //but it is not recommended because of the potential pitfalls.
-            //in other words, if you are using an earlier version than v1.6.0, 
-            //then you may need to enable this parameter. 
-            'force_use_md5url_if_rulename_empty' => false,
-
-            //force to use the older version of the multi-task creation API parameter style 
-            //to maintain backward compatibility, but it is not recommendeded to use.
-            'force_use_old_style_multitask_args' => false,
-
-            //the format of cookies member is not different with the Guzzle Official, 
-            //we shield up the cookieJar, the value maybe [false | array]
-            'cookies' => [
-                //'domain' => 'domain.com',
-                //'k1' => 'v1',
-                //'k2' => 'v2',
-            ],  
-
-            //set guzzle config membere here  
-            //..............................
-
-            //in addition to the built-in parameters, you can also configure user-defined parameters,
-            //which are very useful in the upstream and downstream service chain application scenarios.
-            'user_define_key1' => 'user_define_value1',
-            'user_define_key2' => 'user_define_value2',
-        ),
-    ),
-
-    //set the initialized task, support both Single-Task and Multi-Task
-    'task_init' => array(
-        'url' => 'https://github.com/search?q=stars:%3E1&s=stars&type=Repositories',
-
-        //please refer to the "How to set extractor rule" section for details
-        "rule" => array(
-            'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
-            'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
-        ),  
-
-        //set rule name which will be set to `md5($task_id)` if leave it empty
-        'rule_name' => 'r1',
-
-        //set task private context
-        'context'   => [],
-    ),
-);
-```
-5、Edit the business worker config file named **AppProducer.php**：
-```php
-<?php
-return array(
-    'name' => 'producer1',
-    'count' => 1,
-    'interval' => 1,
-);
-```
-
-6、Edit the business worker config file named **AppDownloader.php**：
-```php
-<?php
-return array(
-    'name' => 'downloader1',
-    'count' => 2,
-    'socket' => array(
-        'client' => array(
-            'parser' => array(
-                'scheme' => 'ws',
-                'host' => '127.0.0.1',
-                'port' => 8888,
-            ),
-        ),
-    ),
-);
-```
-7、Edit the business worker config file named **AppParser.php**：
-```php
-<?php
-return array(
-    'name'  => 'parser1',
-    'count' => 3,
-    'socket' => array(
-        'server' => array(
-            'scheme' => 'websocket',
-            'host' => '0.0.0.0',
-            'port' => 8888,
-        ),
-    ),
-);
-```
-#### *Step-6：Write Business Callback*
-1、Write business callback for AppProducer:
-```php
-<?php
-public function onProducerStart($producer)
-{
-    //here we can add more new task(s) 
-    //$producer->createTask($task);
-    //$producer->createMultiTask($task);
-}
-
-public function onProducerStop($producer)
-{
-}
-
-public function onProducerReload($producer)
-{
-}
-``` 
-2、Write business callback for AppDownloader:
-```php
-<?php
-public function onDownloaderStart($downloader)
-{
-}
-
-public function onDownloaderStop($downloader)
-{
-}
-
-public function onDownloaderReload($downloader)
-{
-}
-
-public function onDownloaderMessage($downloader, $parser_reply)
-{
-}
-
-public function onBeforeDownload($downloader, $task)
-{
-    //here we can reset the $task and be sure to return it
-    //$task = [...];
-    //return $task;
-
-    //here we can change the context parameters when creating a http request
-    //$downloader->httpClient->setConnectTimeout(3);
-    //$downloader->httpClient->setTransferTimeout(10);
-    //$downloader->httpClient->setProxy('http://180.153.144.138:8800');
-    //$downloader->httpClient->disableSSL();
-}
-
-public function onStartDownload($downloader, $task)
-{
-}
-
-public function onAfterDownload($downloader, $download_data, $task)
-{
-    //here we can save the downloaded source data to a file
-    //file_put_contents("/path/to/DownloadData.txt", $download_data);
-}
-```
-3、Write business callback for AppParser:
-```php
-<?php
-public function onParserStart($parser)
-{
-}
-
-public function onParserStop($parser)
-{
-}
-
-public function onParerReload($parser)
-{
-}
-
-public function onParerMessage($parser, $connection, $download_data)
-{
-    //here we can view the current task
-    //pprint($parser->task);
-}
-
-public function onParserFindUrl($parser, $url)
-{
-    //here we can check whether the sub url is valid or not
-    //if(!Tool::checkUrl($url)) return false;
-}
-
-public function onParserExtractField($parser, $download_data, $fields)
-{
-    //here we got the expected data successfully extracted by rule
-    //!empty($fields) && pprint($fields, __METHOD__);
-    pprint($fields['r1']);
-
-    //here we can save the business data into database like mysql、redis and so on
-    //DB::save($fields);
-}
-```
-#### *Step-7：Start Application Instance*
-There are two ways to start an application instance, one is `Global Startup`, 
-and the other is `Single Startup`, we just need to choose one of them.
-`Global Startup` means that all workers run in the same group of processes under the same application,
-it can be deployed in a distributed way, but it can't be deployed separately,
-`Single Startup` means that different workers run in different groups of processes under the same application,
-it can be distributed or deployed separately.
-
-1、Or Global Startup:
-```
-php github.php start
-```
-
-2、Or Single Startup:
-```
-php Application/Spider/Github/AppProducer.php start
-php Application/Spider/Github/AppDownloader.php start
-php Application/Spider/Github/AppParser.php start
-```
+If you want to develop based on the PHPCreeper Application Framework, [click here](/Docs/)
 
 ## How to set extractor rule
 ```php
@@ -844,40 +511,40 @@ $downloader->onAfterDownloader = function($downloader){
 ## Available commands
 Note that all the commands in `PHPCreeper` can only run on the command line, 
 and you must write a global entry startup script whose name
-assumed to be `AppWorker.php` before you start any crawling jobs, but if you use the 
+assumed to be `start.php` before you start any crawling jobs, but if you use the 
 `PHPCreeper-Application` framework for your development, it will automatically 
 help you generate all the startup scripts including global we need.
 
 ```
-php AppWorker.php start
+php start.php start
 ```
 
 ```
-php AppWorker.php start -d
+php start.php start -d
 ```
 
 ```
-php AppWorker.php stop
+php start.php stop
 ```
 
 ```
-php AppWorker.php restart
+php start.php restart
 ```
 
 ```
-php AppWorker.php reload
+php start.php reload
 ```
 
 ```
-php AppWorker.php reload -g
+php start.php reload -g
 ```
 
 ```
-php AppWorker.php status
+php start.php status
 ```
 
 ```
-php AppWorker.php connections
+php start.php connections
 ```
 
 ## Related links and thanks

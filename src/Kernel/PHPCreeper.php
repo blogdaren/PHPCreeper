@@ -39,7 +39,14 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    public const CURRENT_VERSION = '1.6.9';
+    public const CURRENT_VERSION = '1.7.0';
+
+    /**
+     * engine name
+     *
+     * @var string
+     */
+    public const ENGINE_NAME = 'PHPCreeper';
 
     /**
      * valid assemble package methods
@@ -1331,7 +1338,7 @@ class PHPCreeper extends Worker
      */
     static public function showBanner()
     {
-        self::showSplitLine('PHPCreeper');
+        self::showSplitLine(self::ENGINE_NAME);
 
         print <<<EOT
     ____  __  ______  ______                              
@@ -1669,6 +1676,23 @@ EOT;
     }
 
     /**
+     * @brief    redirect all standard output to file 
+     *
+     * @param    string  $file
+     *
+     * @return   void
+     */
+    static public function setStdoutFile($file = '/dev/null')
+    {
+        if(empty($file) || !is_string($file))
+        {
+            $file = '/dev/null';
+        }
+
+        Worker::$stdoutFile = $file;
+    }
+
+    /**
      * @brief    rewrite method runAll
      *
      * @return   void
@@ -1680,6 +1704,12 @@ EOT;
 
         //set default timezone
         self::setDefaultTimezone(self::$_defaultTimezone);
+
+        //reset process title
+        if(property_exists(__CLASS__, 'processTitle'))
+        {
+            Worker::$processTitle = self::ENGINE_NAME;
+        }
 
         //try to boot all phpcreeper instances
         foreach(self::$_phpcreeperInstances as $creeper)
