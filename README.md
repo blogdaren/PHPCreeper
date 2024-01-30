@@ -32,7 +32,7 @@ The chinese document is relatively complete, and the english document will be ke
 * **爬山虎是一个佛系随缘项目，业余应用应该没有问题，但生产环境表现未知请慎用。**
 
 ## 技术交流
-* 下方绿色二维码为VX交流群：&nbsp;phpcreeper 【群主热心、进微信群需先添加此专属微信并备注来意或备注：爬山虎】  
+* 下方绿色二维码为VX交流群：&nbsp;phpcreeper 【群主热心、进微信群需先加此专属微信并备注来意或备注：爬山虎】  
 * 微信群主要围绕 [爬山虎引擎](http://www.phpcreeper.com) 和 [workerman](https://www.workerman.net/)
 和 [深入PHP内核源码](https://www.bilibili.com/video/BV1pP4y1G7ae) 
 开展技术交流，观看PHP内核系列视频请移步[B站](https://www.bilibili.com/video/BV1pP4y1G7ae)
@@ -86,10 +86,12 @@ Next let's take an example to show how to capture the `github top 10 repos ranke
 <?php 
 require "./vendor/autoload.php";
 
-use PHPCreeper\Kernel\PHPCreeper;
+use PHPCreeper\PHPCreeper;
 use PHPCreeper\Producer;
 use PHPCreeper\Downloader;
 use PHPCreeper\Parser;
+use PHPCreeper\Server;
+use PHPCreeper\Crontab;
 use PHPCreeper\Timer;
 
 //switch runtime language between `zh` and `en`, default is `zh`【version >= 1.3.7】
@@ -296,12 +298,12 @@ function startAppServer()
     $server->onServerStart = function(){
         //execute the task every 1 second
         new Crontab('*/1 * * * * *', function(){
-            pprint("print the current time every 1 second" . time());
+            pprint("print the current time every 1 second: " . time());
         });
 
         //execute the task every 2 minutes 
         new Crontab('*/2 * * * *', function(){
-            pprint("print the current time every 2 minutes" . time());
+            pprint("print the current time every 2 minutes: " . time());
         });
     };
 }
@@ -317,7 +319,7 @@ startAppDownloader();
 startAppParser();
 
 //start server component
-//startAppServer();
+startAppServer();
 
 //start phpcreeper engine
 PHPCreeper::start();
