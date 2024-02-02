@@ -24,7 +24,7 @@ require dirname(__FILE__, 2) . "/vendor/autoload.php";
 //require_once dirname(__FILE__, 2) . "/src/Kernel/Library/Common/Functions.php";
 
 
-use PHPCreeper\Kernel\PHPCreeper;
+use PHPCreeper\PHPCreeper;
 use PHPCreeper\Producer;
 use PHPCreeper\Downloader;
 use PHPCreeper\Parser;

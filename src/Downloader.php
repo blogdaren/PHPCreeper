@@ -833,7 +833,7 @@ class Downloader extends PHPCreeper
      * @param    array|string   $task
      * @param    boolean|null   $from_cache
      *
-     * @return   string
+     * @return   string | false
      */
     public function readDownloadData($task, $from_cache = null)
     {
@@ -927,7 +927,15 @@ class Downloader extends PHPCreeper
         if(true === $enabled && true === $cache_by_size)
         {
             $rs = Tool::createMultiDirectory($cache_dir);
-            if(true !== $rs) return Logger::warn($this->langConfig['downloader_create_cache_failed']);
+
+            if(true !== $rs){
+                Logger::warn(Tool::replacePlaceHolder($this->langConfig['downloader_create_cache_failed'], [
+                    'task_id' => $task['id'],
+                    'cache_path'  => $cache_dir,
+                ]));
+                return false;
+            } 
+
             file_put_contents($cache_path, $download_data, LOCK_EX);
             Logger::warn(Tool::replacePlaceHolder($this->langConfig['downloader_write_into_cache'], [
                 'task_id' => $task['id'],

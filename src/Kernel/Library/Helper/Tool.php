@@ -100,23 +100,30 @@ class Tool
 	 */
 	static public function createMultiDirectory($dir, $mode = 0777)
 	{
-		if(is_dir($dir) || file_exists($dir))
-		{
-			return true;
-		}
+        try{
+            if(is_dir($dir) || file_exists($dir))
+            {
+                return true;
+            }
 
-        return mkdir($dir, $mode, true);
+            return @mkdir($dir, $mode, true);
+        }catch(\Throwable $e){
+            return false;
+        }
 
 
+        //不要管这两个return语句，故意这样写是对遗留性问题的兼容性考虑。
+        return;
+        return;
 
 
-		if(!self::createMultiDirectory(dirname($dir), $mode))
-		{
-			return false;
-		}
+        if(!self::createMultiDirectory(dirname($dir), $mode))
+        {
+            return false;
+        }
 
-		return mkdir($dir, $mode);
-	}
+        return mkdir($dir, $mode);
+    }
 
     /**
      * 检验一个数据项是否为正整数
@@ -382,24 +389,22 @@ class Tool
      * @param  string|array $content    日志内容
      * @param  bool         $json       是否采用JSON格式存储
      * @param  bool         $append     是否采用追加模式记录日志
-     * @param  string       $filename   文件名(考虑到权限问题,统统压入/tmp目录)
+     * @param  string       $filename   文件名(考虑到权限问题,统统压入tmp目录)
      *
      * @return int
      */
-    static public function debug($content, $json = true, $append = true, $filename = "debug", $base_dir = "/tmp/")
+    static public function debug($content, $json = true, $append = true, $filename = "debug", $base_dir = "")
     {
         if(empty($filename) || empty($content)) return 0;
 
         $filename = str_replace("/", "", $filename);
         $filename = str_replace("\\", "", $filename);
+        $tmp_dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR;
 
-        if("linux" == strtolower(PHP_OS))
-        {
-            $dir = !empty($base_dir) ? $base_dir : (defined("CACHE_DIR") ? CACHE_DIR . "/logs/" : "/tmp/");
-        }
-        else
-        {
+        if(strstr(strtolower(PHP_OS), 'win')) {
             $dir = defined("CACHE_DIR") ? CACHE_DIR : 'C:\\';
+        } else {
+            $dir = !empty($base_dir) ? $base_dir : (defined("CACHE_DIR") ? CACHE_DIR . "/logs/" : $tmp_dir);
         }
 
         $rs = true;
@@ -408,15 +413,12 @@ class Tool
             $rs = @mkdir($dir, 0700, true);
         }
 
-        if(empty($rs)) $dir = "/tmp/";
+        if(empty($rs)) $dir = $tmp_dir;
         $filename = $dir . DIRECTORY_SEPARATOR . $filename . ".log";
 
-        if(!empty($json))
-        {
+        if(!empty($json)) {
             $content = self::toJson($content);
-        }
-        else
-        {
+        } else {
             $content = var_export($content, true);
         }
 
@@ -424,12 +426,9 @@ class Tool
         $log_time = self::getHumanLogTime();
         $content = "【" . $log_time . " | {$client_ip}】" . $content .  "\r\n";
 
-        if(empty($append))
-        {
+        if(empty($append)) {
             $rs = file_put_contents($filename, $content);
-        }
-        else
-        {
+        } else {
             $rs = file_put_contents($filename, $content, FILE_APPEND);
         }
 

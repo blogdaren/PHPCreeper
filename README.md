@@ -17,9 +17,9 @@ asynchronous event-driven spider engine based on [workerman](https://www.workerm
 * Take full advantage of crawling in Multi-Process + Distributed + Separated deployment environment
 
 爬山虎是基于workerman开发的全新一代多进程异步事件驱动型PHP爬虫引擎, 它有助于：
-* 专注于高效敏捷开发，让爬取工作变得更加简单.
-* 解决传统型PHP爬虫框架的性能和扩展瓶颈问题.
-* 充分发挥多进程+分布式+分离式部署环境下的爬取优势.
+* 专注于高效敏捷开发，让爬取工作变得更加简单。
+* 解决传统型PHP爬虫框架的性能和扩展瓶颈问题。
+* 充分发挥多进程+分布式+分离式部署环境下的爬取优势。
 
 ## Documentation
 The chinese document is relatively complete, and the english document will be kept up-to-date constantly here.   
@@ -331,7 +331,7 @@ Now, save the example code above to a file and name it to be `github.php` as a s
 ```
 
 ## Usage: Depend On The PHPCreeper Application Framework
-If you want to develop based on the PHPCreeper Application Framework, [click here](/Docs/)
+If you want to develop the app based on the `PHPCreeper Application Framework`，[just click here](/Docs/)
 
 ## How to set extractor rule
 ```php
