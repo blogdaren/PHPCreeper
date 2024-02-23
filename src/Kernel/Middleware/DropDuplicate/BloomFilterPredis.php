@@ -23,7 +23,7 @@ class BloomFilterPredis implements DropDuplicateInterface
     private $_predis = null;
 
     /**
-     * bit array size 
+     * bit array size (单位：bit)
      *
      * @var object
      */
@@ -34,26 +34,38 @@ class BloomFilterPredis implements DropDuplicateInterface
      *
      * @var int
      */
-    public $hashTimes = 1;
+    public $hashTimes = 3;
 
     /**
      * bucket name
      *
      * @var string
      */
-    public $bucket = 'default';
+    public $bucket = 'bucket';
+
+    /**
+     * expected insertions 
+     *
+     * @var int
+     */
+    public $expected_insertions  = 10000;
+
+    /**
+     * expected falseratio
+     *
+     * @var float
+     */
+    public $expected_falseratio = 0.01;
 
     /**
      * @brief    __construct    
      *
-     * @param    object  $entity
-     * @param    string  $bucket
-     * @param    int     $bit_size
-     * @param    int     $hash_times
+     * @param    mixed  $entity
+     * @param    array  $bloom_filter_config
      *
      * @return   void 
      */
-    public function __construct($entity, $bucket = 'bucket', $bit_size = 10000, $hash_times = 3) 
+    public function __construct($entity, $bloom_filter_config = array()) 
     {
         if($entity instanceof \Predis) {
             $this->_predis = $entity;
@@ -68,9 +80,65 @@ class BloomFilterPredis implements DropDuplicateInterface
         //force to route to 0 partion
         $this->_predis->setPartionId(0);
 
-        $this->setBucket($bucket);
-        $this->setBitSize($bit_size);
-        $this->setHashTimes($hash_times);
+        //set expected insertions and probablity
+        $this->initExpectedInsertionsAndProbablity($bloom_filter_config)->computeOptimalBitSizeAndHashTimes();
+
+        //$this->setBucket($bucket);
+        //$this->setBitSize($bit_size);
+        //$this->setHashTimes($hash_times);
+    }
+
+    /**
+     * @brief    init expected insertions and falseratio
+     *
+     * @param    array  $config
+     *
+     * @return   object
+     */
+    public function initExpectedInsertionsAndProbablity($config)
+    {
+        if(empty($config) 
+            || !is_array($config) 
+            || !isset($config['expected_insertions']) 
+            || !isset($config['expected_falseratio'])) return $this;
+
+        if(!is_int($config['expected_insertions']) || $config['expected_insertions'] < 0) return $this;
+        if(!is_float($config['expected_falseratio'])) return;
+        if($config['expected_falseratio'] <= 0.0 || $config['expected_falseratio'] >= 1.0)  return $this;
+
+        $this->expected_insertions = $config['expected_insertions'];
+        $this->expected_falseratio = $config['expected_falseratio'];
+
+        return $this;
+    }
+
+    /**
+     * @brief    compute the optimal bitmap size and hash times
+     *
+     * @return   object
+     */
+    public function computeOptimalBitSizeAndHashTimes()
+    {
+        $this->bitSize = -(($this->expected_insertions * log($this->expected_falseratio)) / (log(2) * log(2)));
+        $this->bitSize = ceil($this->bitSize);
+
+        $this->hashTimes = ($this->bitSize / $this->expected_insertions) * log(2);
+        $this->hashTimes = ceil($this->hashTimes);
+
+        return $this;
+    }
+
+    /**
+     * @brief    compute expected false ratio  
+     *
+     * @return   float
+     */
+    public function computeExpectedFalseRatio() 
+    {
+        $exp = (-1 * $this->hashTimes * $this->expected_insertions) / $this->bitSize;
+        $false_ratio = pow(1 - exp($exp), $this->hashTimes);
+
+        return round($false_ratio, 3);
     }
 
     /**
@@ -97,6 +165,8 @@ class BloomFilterPredis implements DropDuplicateInterface
      */
     public function setBitSize($size = 10000)
     {
+        if(!is_int($size) || $size <= 0) return $this;
+
         $this->bitSize = $size;
 
         return $this;
@@ -111,6 +181,8 @@ class BloomFilterPredis implements DropDuplicateInterface
      */
     public function setHashTimes($times = 3)
     {
+        if(!is_int($times) || $times <= 0) return $this;
+
         $this->hashTimes = $times;
 
         return $this;

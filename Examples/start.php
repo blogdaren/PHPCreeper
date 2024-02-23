@@ -110,10 +110,10 @@ $config['redis'] = [
     [
         'host'      =>  '127.0.0.1',
         'port'      =>  6379,
+        'database'  =>  '0',
         'auth'      =>  false,
         'pass'      =>  'guest',
         'prefix'    =>  'PHPCreeper', 
-        'database'  =>  '0',
         'connection_timeout' => 5,
         'read_write_timeout' => 0,
         //'use_red_lock'     => true,   //默认使用更安全的分布式红锁 
@@ -121,10 +121,10 @@ $config['redis'] = [
     /*[
         'host'      =>  '127.0.0.1',
         'port'      =>  6380,
+        'database'  =>  '0',
         'auth'      =>  false,
         'pass'      =>  'guest',
         'prefix'    =>  'PHPCreeper', 
-        'database'  =>  '0',
         'connection_timeout' => 5,
         'read_write_timeout' => 0,
         //'use_red_lock'     => true,   //默认使用更安全的分布式红锁 
@@ -160,11 +160,16 @@ $config['task'] = array(
     //'max_request'     => 1000,
     //限定爬取站点域，留空表示不受限
     'limit_domains' => [],
+    //根据预期任务总量和误判率引擎会自动计算布隆过滤器最优的bitmap长度以及hash函数的个数
+    //'bloomfilter' => [
+        //'expected_insertions' => 10000,  //预期任务总量
+        //'expected_falseratio' => 0.01,   //预期误判率
+    //],
     //全局任务context上下文
     'context' => [
         //要不要缓存下载文件 [默认false]
         'cache_enabled'   => true,
-        'cache_directory' => '/tmp/DownloadCache4PHPCreeper/',
+        'cache_directory' => sys_get_temp_dir() . '/DownloadCache4PHPCreeper/',
         //在特定的生命周期内是否允许重复抓取同一个URL资源 [默认false]
         'allow_url_repeat'   => true,
         //要不要跟踪完整的HTTP请求参数，开启后终端会显示完整的请求参数 [默认false]
@@ -239,7 +244,6 @@ function startAppProducer()
                 }'],                //关于回调字符串的用法务必详看官方手册
                 'wea'  => ['div#7d ul.t.clearfix p.wea',   'text'],
                 'tem'  => ['div#7d ul.t.clearfix p.tem',   'text'],
-                'wind' => ['div#7d ul.t.clearfix p.win i', 'text'],
             ), 
             'rule_name' =>  '',     //如果留空将使用md5($task_id)作为规则名
             'refer'     =>  '',
@@ -259,7 +263,6 @@ function startAppProducer()
                     'time' => ['div#7d ul.t.clearfix h1',      'text'],
                     'wea'  => ['div#7d ul.t.clearfix p.wea',   'text'],
                     'tem'  => ['div#7d ul.t.clearfix p.tem',   'text'],
-                    'wind' => ['div#7d ul.t.clearfix p.win i', 'text'],
                 ), 
                 'rule_name' => 'r1', //如果留空将使用md5($task_id)作为规则名
                 "context" => $context,
@@ -270,7 +273,6 @@ function startAppProducer()
                     'time' => ['div#7d ul.t.clearfix h1',      'text'],
                     'wea'  => ['div#7d ul.t.clearfix p.wea',   'text'],
                     'tem'  => ['div#7d ul.t.clearfix p.tem',   'text'],
-                    'wind' => ['div#7d ul.t.clearfix p.win i', 'text'],
                 ), 
                 'rule_name' => 'r2', //如果留空将使用md5($task_id)作为规则名
                 "context" => $context,
@@ -330,7 +332,7 @@ function startAppDownloader()
 
     //回调【onAfterDownload】的新增别名是【onDownloadAfter】
     $downloader->onDownloadAfter = function($downloader, $data, $task){
-        //Tool::debug($content, $json = true, $append = true, $filename = "debug", $base_dir = "/tmp/")
+        //Tool::debug($content, $json = true, $append = true, $filename = "debug", $base_dir = "")
         //Tool::debug($task);
     };
 

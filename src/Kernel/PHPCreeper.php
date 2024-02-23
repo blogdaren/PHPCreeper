@@ -39,7 +39,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    public const CURRENT_VERSION = '1.7.1';
+    public const CURRENT_VERSION = '1.7.2';
 
     /**
      * engine name
@@ -479,10 +479,11 @@ class PHPCreeper extends Worker
         {
             $rdbclient = self::getDefaultRedisClient();
             $rdbconfig = (array)Configurator::get('globalConfig/database/redis');
+            $bloomconfig = (array)Configurator::get('globalConfig/main/task/bloomfilter');
             $this->bindQueueClient($rdbclient, $rdbconfig);
             $this->bindRedisClient($rdbclient, $rdbconfig);
             $this->bindLockHelper($rdbclient,  $rdbconfig);
-            $this->bindDropDuplicateFilter($rdbclient, $rdbconfig);
+            $this->bindDropDuplicateFilter($rdbclient, $rdbconfig, $bloomconfig);
         }
 
         return $this;

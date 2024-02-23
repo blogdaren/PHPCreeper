@@ -343,6 +343,7 @@ class DistributedRedLock
     private function _initAllPredisInstances()
     {
         $all_prefixs = [];
+        $tmp_instance = '';
 
         //注意：$this->config要求是二维数组
         foreach($this->config as $config) 
@@ -351,9 +352,15 @@ class DistributedRedLock
             $params['scheme'] = $config['scheme'] ?? 'tcp';
             $params['host']   = $config['host'] ?? '127.0.0.1';
             $params['port']   = $config['port'] ?? 6379;
+            $params['database']  = $config['database'] ?? 0;
             $params['prefix'] = $config['prefix'] ?? self::$_defaultPrefix;
             $params['persistent'] = !empty($config['persisted']) ? true : null;
             $params['timeout'] = 5;
+
+            //跳过相同的实例
+            $current_instance = $params['host'] . '|' . $params['port'] . '|' . $params['database'];
+            if($current_instance == $tmp_instance) continue;
+            $tmp_instance = $current_instance;
 
             //临时收集所有的前缀
             $all_prefixs[] = $params['prefix'];
