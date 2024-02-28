@@ -111,7 +111,7 @@ PHPCreeper::setLang('en');
 //PHPCreeper::setLogFile('/path/to/phpcreeper.log');
 
 //redirect all stdandard out to file when run as daemonize【version >= 1.7.0】
-//PHPCreeper::setStdoutFile("/tmp/stdout.log");
+//PHPCreeper::setStdoutFile("/path/to/stdout.log");
 
 //enable the single worker mode so that we can run without redis, however, you should note 
 //it will be limited to run only all the downloader workers in this case【version >= 1.3.2】
@@ -128,10 +128,10 @@ $config['redis'] = [
     [
         'host'      =>  '127.0.0.1',
         'port'      =>  6379,
+        'database'  =>  '0',
         'auth'      =>  false,
         'pass'      =>  'guest',
         'prefix'    =>  'PHPCreeper', 
-        'database'  =>  '0',
         'connection_timeout' => 5,
         'read_write_timeout' => 0,
         //'use_red_lock'     => true,   //default to true since v1.6.4
@@ -141,8 +141,8 @@ $config['redis'] = [
 //Global-Task-Config: the context member configured here is a global context,
 //we can also set a private context for each task, finally the global context 
 //and task private context will adopt the strategy of merging and covering.
-//free to customize various context settings, including user-defined,
-//for details on how to configure it, refer to the Follow-Up sections.
+//you can free to customize various context settings, including user-defined,
+//for details on how to configure it, please refer to the Follow-Up sections.
 $config['task'] = array( 
     //'max_depth'       => 1,
     //'max_number'      => 1000,
@@ -151,7 +151,7 @@ $config['task'] = array(
     //'limit_domains'   => [],
     'context' => [
         'cache_enabled'   => false,
-        'cache_directory' => '/tmp/DownloadCache4PHPCreeper/',
+        'cache_directory' => sys_get_temp_dir() . '/DownloadCache4PHPCreeper/',
         //..................................................
     ],
 ); 
@@ -262,13 +262,13 @@ function startAppDownloader()
         'ws://127.0.0.1:8888',
     ]);
 
-    $downloader->onBeforeDownload = function($downloader, $task){
+    $downloader->onDownloadBefore = function($downloader, $task){
         //disable http ssl verify in any of the following two ways 
         //$downloader->httpClient->disableSSL();
         //$downloader->httpClient->setOptions(['verify' => false]);
     }; 
 
-    //some more downloader callbacks commonly used
+    //some more downloader or download callbacks commonly used
     //$downloader->onDownloaderStart = function($downloader){};
     //$downloader->onDownloaderStop  = function($downloader){};
     //$downloader->onDownloaderMessage = function($downloader, $parser_reply){};
@@ -331,7 +331,7 @@ Now, save the example code above to a file and name it to be `github.php` as a s
 ```
 
 ## Usage: Depend On The PHPCreeper Application Framework
-If you want to develop the app based on the `PHPCreeper Application Framework`，[just click here](/Docs/)
+If u wanna develop the app based on the `PHPCreeper Application Framework` or `see more configuration`，[click here](/Docs/)
 
 ## How to set extractor rule
 ```php
@@ -421,8 +421,8 @@ the value can be like `#idName` or `.className` or `Html Element` and so on.
 + **callback**  
 you can trigger a `callback string` or `callback function` here, but remember to return the data expected.
 
-    `callback string:`  it is semantically equivalent to the callback function, but it can only be of type string, **recommended to use**.   
-    ~~`callback function:` PHP native callback function which may work unexpectedly in communication across multi-process environments, supported currently but **strongly NOT recommended to use and may be deprecated in the near future**.~~   
+    `callback string:`  it is semantically equivalent to the callback function, but it can only be type of string, **recommended to use**.   
+    `callback function:` ~~PHP native callback function which may work unexpectedly in communication across multi-process environments, supported currently but **strongly NOT recommended to use and may be deprecated in the near future**.~~   
 
 
 ```php   

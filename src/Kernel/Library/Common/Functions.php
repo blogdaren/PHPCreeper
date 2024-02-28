@@ -8,6 +8,11 @@
  * @modify   2018-10-13
  */
 
+
+//定义默认的下载文件缓存目录
+!defined("DEFAULT_DOWNLOAD_CACHE_DIR") && define("DEFAULT_DOWNLOAD_CACHE_DIR", sys_get_temp_dir() . '/DownloadCache4PHPCreeper/');
+
+
 /**
  * 打印可能要用到的<pre>开始标签
  */

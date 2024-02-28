@@ -59,10 +59,10 @@ Normally, there is no need to change this file unless you wanna create a new glo
 <?php
 return [
     'redis' => [
-        'prefix' => 'Github',
         'host'   => '127.0.0.1',
         'port'   => 6379,
         'database' => 0,
+        'prefix' => 'Github',
     ],
 ];
 ```
@@ -71,10 +71,10 @@ or
 <?php
 return [
     'redis' => [[
-        'prefix' => 'Github',
         'host'   => '127.0.0.1',
         'port'   => 6379,
         'database' => 0,
+        'prefix' => 'Github',
     ]],
 ];
 ```
@@ -130,6 +130,12 @@ return array(
         'limit_domains' => array(
         ),
 
+        //automatically compute the optimal bitmap size and hash functions count by given expected insertions and falseratio
+        'bloomfilter' => [
+            'expected_insertions' => 10000,  //expected insertions
+            'expected_falseratio' => 0.01,   //expected falseratio
+        ],
+
         //SPECIAL NOTE: the context member configured here is a global context,
         //we can also set a private context for each task individually,
         //it gives us a lot of flexibility to indirectly affect dependent services,
@@ -144,7 +150,7 @@ return array(
             'cache_enabled'   => false,                               
 
             //set the download cache directory (optional, default `sys_get_temp_dir()`)
-            'cache_directory' => '/tmp/DownloadCache4PHPCreeper/', 
+            'cache_directory' => sys_get_temp_dir() . '/DownloadCache4PHPCreeper/',
 
             //whether to allow capture the same URL resource repeatedly within a particular life cycle
             'allow_url_repeat' => true,
@@ -285,7 +291,7 @@ public function onDownloaderMessage($downloader, $parser_reply)
 {
 }
 
-public function onBeforeDownload($downloader, $task)
+public function onDownloadBefore($downloader, $task)
 {
     //here we can reset the $task and be sure to return it
     //$task = [...];
@@ -298,14 +304,18 @@ public function onBeforeDownload($downloader, $task)
     //$downloader->httpClient->disableSSL();
 }
 
-public function onStartDownload($downloader, $task)
+public function onDownloadStart($downloader, $task)
 {
 }
 
-public function onAfterDownload($downloader, $download_data, $task)
+public function onDownloadAfter($downloader, $download_data, $task)
 {
     //here we can save the downloaded source data to a file
     //file_put_contents("/path/to/DownloadData.txt", $download_data);
+}
+
+public function onDownloadFail($downloader, $error, $task)
+{
 }
 ```
 3、Write business callback for AppParser:
