@@ -16,6 +16,9 @@ use Configurator\Configurator;
 use Logger\Logger;
 use Workerman\Connection\AsyncTcpConnection;
 
+/**
+ * @property callable|null $onDownloaderStart 用户回调函数，如果想跳过该数据可以返回false
+ */
 class Downloader extends PHPCreeper
 {
     /**
