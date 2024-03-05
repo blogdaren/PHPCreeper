@@ -482,10 +482,11 @@ class Downloader extends PHPCreeper
         if(empty($download_data)) return false;
 
         //forward download result
-        'text' <> $task['type'] && $download_data = base64_encode($download_data);
+        //'text' <> $task['type'] && $download_data = base64_encode($download_data);
         $result = [
             'task'          => $task,
             'download_data' => $download_data,
+            'binary_type'   => PHPCreeper::BINARY_TYPE_ARRAYBUFFER, //indicates to pack|unpack the input data
         ];
         $this->_forward($result);
     }

@@ -39,7 +39,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    public const CURRENT_VERSION = '1.7.3';
+    public const CURRENT_VERSION = '1.8.0';
 
     /**
      * engine name
@@ -54,6 +54,13 @@ class PHPCreeper extends Worker
      * @var array
      */
     public const ALLOWED_ASSEMBLE_PACKAGE_METHODS = ['json', 'serialize', 'msgpack'];
+
+    /**
+     * binary type ArrayBuffer
+     *
+     * @var string
+     */
+    public const BINARY_TYPE_ARRAYBUFFER = 'ArrayBuffer';
 
     /**
      * built-in middle classes 
@@ -1130,8 +1137,18 @@ class PHPCreeper extends Worker
     {
         if(empty($data)) return '';
 
-        //encode
-        $content = Tool::encodeData($data, self::getAssemblePackageMethod());
+        if(!empty($data['binary_type']) && PHPCreeper::BINARY_TYPE_ARRAYBUFFER === $data['binary_type'])
+        {
+            $task = json_encode($data['task']);
+            $download_data = $data['download_data'];
+            $task_len = strlen($task); 
+            $download_data_len = strlen($download_data);
+            $content = pack('NN',  $task_len, $download_data_len) . $task . $download_data;
+        }
+        else
+        {
+            $content = Tool::encodeData($data, self::getAssemblePackageMethod());
+        }
 
         //compress
         if(true === self::checkWhetherDataCompressIsEnabled()) 
@@ -1154,7 +1171,7 @@ class PHPCreeper extends Worker
      * @param    minxed  $data
      * @param    int     $length
      *
-     * @return   string
+     * @return   string | array
      */
     public function disassemblePackage($data, $length = 0)
     {
@@ -1172,6 +1189,18 @@ class PHPCreeper extends Worker
 
         //decode
         $content = Tool::decodeData($data, self::getAssemblePackageMethod());
+
+        //failed to decode means the data contains binary
+        if(empty($content))
+        {
+            $content = @unpack('Ntask_len/Ndownload_data_len', $data);
+            if(empty($content)) return '';
+
+            $_task = substr($data, 8, $content['task_len']); 
+            $_download_data = substr($data, 8 + $content['task_len'], $content['download_data_len']); 
+            $content['task'] = json_decode($_task, true);
+            $content['download_data'] = $_download_data;
+        }
 
         return $content;
     }

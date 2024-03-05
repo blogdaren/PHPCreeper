@@ -153,6 +153,8 @@ class Parser extends PHPCreeper
 
         //try to disassemble data
         $message = $this->disassemblePackage($message);
+
+        //gettype($message) === [string|array]
         if(empty($message)) return false;
 
         //check ping from downloader
@@ -161,17 +163,19 @@ class Parser extends PHPCreeper
         //pprint(memory_get_usage(false)/1024/1024);
         $worker_id     = $connection->worker->id;
         $connection_id = $connection->id;
-        $task_id       = $message['task']['id'] ?? 0;
+        $task_id       = $message['task']['id']    ?? 0;
         $download_data = $message['download_data'] ?? '';
 
         //check task_id + download_data
         if(empty($task_id) || empty($download_data)) return false;
 
         //if type of $download_data is resource, then base64_decode it
-        if('text' <> $message['task']['type'])
-        {
-            $download_data = base64_decode($download_data);
-        }
+        /*
+         *if('text' <> $message['task']['type'])
+         *{
+         *    $download_data = base64_decode($download_data);
+         *}
+         */
 
         //set task + increase task depth
         $this->setTask($message['task'])->increaseTaskDepth();
