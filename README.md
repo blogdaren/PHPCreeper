@@ -28,8 +28,9 @@ The chinese document is relatively complete, and the english document will be ke
 * 爬山虎中文官方网站：[http://www.phpcreeper.com](http://www.phpcreeper.com)
 * 中文开发文档主节点：[http://www.blogdaren.com/docs/](http://www.blogadren.com/docs/)
 * 中文开发文档备节点：[http://www.phpcreeper.com/docs/](http://www.phpcreeper.com/docs/)
-* **爬山虎是一个开源自由项目，感谢小星星Star支持，让更多的人发现、使用并受益。**
+* **爬山虎是一个开源自由项目，欢迎小星星Star支持，让更多的人发现、使用并受益。**
 * **爬山虎是一个佛系随缘项目，业余应用应该没有问题，但生产环境表现未知请慎用。**
+* **爬山虎源码根目录下有一个`Examples/start.php`样例脚本，开发之前建议先看它而后运行它。**
 
 ## 技术交流
 * 下方绿色二维码为VX交流群：&nbsp;phpcreeper 【群主热心、进微信群需先加此专属微信并备注来意或备注：爬山虎】  
@@ -559,7 +560,6 @@ php start.php connections
 As a free worker, if you think [PHPCreeper](http://www.phpcreeper.com) is valuable to you and benefit from it, 
 I'm willing to accept donations from all sides. Thanks a lot.
 
-* By PayPal.me：[PHPCcreeper.paypal.me](https://paypal.me/phpcreeper)
 * By Alipay or Wechat：    
 ![alipay](./Image/alipay.png)
 &nbsp;&nbsp;&nbsp;&nbsp;
