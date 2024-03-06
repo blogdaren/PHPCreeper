@@ -38,6 +38,7 @@ return [
     'downloader_got_replay_null'    => "收到反馈: 检测到解析器响应为空：原因很可能是下载器和解析器socket通信协议设定不一致.",
     'downloader_lost_connections'   => "网络巡检：检测到下载器获取不到可用的任务连接对象.............................",
     'downloader_lost_channel'       => "网络巡检：检测到下载器获取不到可用的任务连接通道.............................",
+    'downloader_download_filesize_exceed' => "下载任务：预检到要下载的文件大小(%file_size%MB)超过了预设的最大值(%default_max_file_size%MB), 丢弃任务.....",
     'http_transfer_exception'       => "请求异常: %exception_msg% (exception_code: %exception_code%) (task_url: %url%)",
     'http_transfer_compress'        => "压缩传输: 检测到已启用压缩方式传输数据: 压缩算法%algorithm%...................",
     'http_assemble_method'          => "打包传输: 检测到已启用打包方式传输数据: 打包方式%assemble_method%...................",

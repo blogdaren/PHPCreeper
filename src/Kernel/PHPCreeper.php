@@ -39,7 +39,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    public const CURRENT_VERSION = '1.8.0';
+    public const CURRENT_VERSION = '1.8.1';
 
     /**
      * engine name
@@ -285,6 +285,15 @@ class PHPCreeper extends Worker
     static private $_defaultTimezone = 'Asia/Shanghai';
 
     /**
+     * default max file size to download: 
+     *
+     * 20(MB) = 20971520(Byte) = 20 * (1 << 20)
+     *
+     * @var int
+     */
+    static private $_defaultMaxFileSizeToDownload = 20971520;
+
+    /**
      * user callbacks
      *
      * @var array
@@ -304,6 +313,7 @@ class PHPCreeper extends Worker
         'onParserStart'        => null,
         'onParserStop'         => null,
         'onParserReload'       => null,
+        'onParserConnect'      => null,
         'onParserMessage'      => null,
         'onParserFindUrl'      => null,
         'onParserExtractField' => null,
@@ -1703,6 +1713,33 @@ EOT;
         }
 
         date_default_timezone_set(self::$_defaultTimezone);
+    }
+
+    /**
+     * @brief    set default max file size to download
+     *
+     * @param    int    $size
+     *
+     * @return   void
+     */
+    static public function setDefaultMaxFileSizeToDownload($size)
+    {
+        if(!Tool::checkIsInt($size))
+        {
+            return;
+        }
+
+        self::$_defaultMaxFileSizeToDownload = $size;
+    }
+
+    /**
+     * @brief    get default max file size to download
+     *
+     * @return   int
+     */
+    static public function getDefaultMaxFileSizeToDownload()
+    {
+        return self::$_defaultMaxFileSizeToDownload;
     }
 
     /**

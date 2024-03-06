@@ -33,7 +33,7 @@ class Parser extends PHPCreeper
     public $task = null;
 
     /**
-     * the send buffer size of connection from downloader to parser
+     * the send buffer size of connection from parser to downloader 
      *
      * @var int
      */
@@ -45,7 +45,7 @@ class Parser extends PHPCreeper
      *
      * @var int
      */
-    const MESSAGE_ALIVE_TIMEOUT = 300;
+    public const MESSAGE_ALIVE_TIMEOUT = 300;
 
     /**
      * @brief    __construct    
@@ -127,8 +127,12 @@ class Parser extends PHPCreeper
         ]));
 
         $connection->maxSendBufferSize = $this->getSendBufferSize();
-
+        $connection->maxPackageSize = PHPCreeper::getDefaultMaxFileSizeToDownload();
         empty($connection->lastMessageAliveTime) && $connection->lastMessageAliveTime = time();
+
+        //trigger user callback
+        $this->triggerUserCallback('onParserConnect', $connection);
+
         $connection->timerId = Timer::add(1, function()use($connection){
             if(time() - $connection->lastMessageAliveTime > self::MESSAGE_ALIVE_TIMEOUT)
             {

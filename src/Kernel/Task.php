@@ -407,6 +407,8 @@ class Task
      */
     public function createMultiTask($task = [])
     {
+        if(empty($task)) return false;
+
         //backward compatible with API version less than( < v1.6.0)
         if(isset($task['context']['force_use_old_style_multitask_args']) 
             && true === $task['context']['force_use_old_style_multitask_args'])

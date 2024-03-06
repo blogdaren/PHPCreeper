@@ -37,6 +37,7 @@ return [
     'downloader_got_replay_null'    => "Receive Feedback: detect that the parser response is empty, it seems to be a mismatch between the socket protocol settings of the Downloader and Parser.",
     'downloader_lost_connections'   => "Network Inspect: detect that the downloader does not get the task connection object available.",
     'downloader_lost_channel'       => "Network Inspect: detect that the downloader does not get the task connection channel available.",
+    'downloader_download_filesize_exceed'  => "Task Download: detect that the file size to be downloaded (%file size%MB) exceeds the preset maximum (%default max file size%MB), discard task.",
     'http_transfer_exception'       => "Request Anomaly: %exception_msg% (exception_code: %exception_code%) (task_url: %url%)",
     'http_transfer_compress'        => "Compress Transfer: detect that the compression algorithm is enabled: %algorithm%",
     'http_assemble_method'          => "Assemble Package: detect that the assemble package method is enabled: %assemble_method%",

@@ -718,6 +718,18 @@ class Downloader extends PHPCreeper
                 method_exists($this->httpClient, 'setWorker') && $this->httpClient->setWorker($this);
             }
 
+            //check whether large files are to be downloaded and the size exceeds the default max file size or not
+            $content_length = ceil($this->prefetchRemoteFileSizeToBeDownloaded($url, $args) / 1024 / 1024);
+            $defaut_max_file_size = ceil(PHPCreeper::getDefaultMaxFileSizeToDownload() / 1024 / 1024);
+            if($content_length > $defaut_max_file_size)
+            {
+                $extra = [
+                    'file_size'             => $content_length,
+                    'default_max_file_size' => $defaut_max_file_size,
+                ];
+                return Tool::throwback('-202', $this->langConfig['downloader_download_filesize_exceed'], $extra);
+            }
+
             $code = $this->httpClient->request($method, $url, $args)->getResponseStatusCode();
 
             if(in_array($code, [301, 302])){
@@ -755,6 +767,36 @@ class Downloader extends PHPCreeper
             return Tool::throwback('-205', $this->langConfig['http_transfer_exception'], $extra);
         }
     }
+
+    /**
+     * @brief    prefetch remote file size to be downloaded
+     *
+     * @param    string  $url
+     * @param    array   $args
+     *
+     * @return   int
+     */
+    public function prefetchRemoteFileSizeToBeDownloaded($url, $args)
+    {
+        $args['allow_redirects'] = true;
+        $args['headers']['Cache-Control'] = 'no-cache';
+        $code = $this->httpClient->request('head', $url, $args)->getResponseStatusCode();
+
+        if(in_array($code, [301, 302])){
+            $client = $this->httpClient->request($method, $url, $args);
+            $code = $this->httpClient->getResponseStatusCode();
+            $headers = 200 == $code ? $this->httpClient->getHeaders(): [];
+        }elseif(200 == $code){
+            $headers = $this->httpClient->getHeaders();
+        }else{
+            $headers = [];
+        }
+
+        $len = $headers['Content-Length'][0] ?? 0;
+        
+        return $len;
+    }
+
 
     /**
      * @brief    rebuild task arguments   
