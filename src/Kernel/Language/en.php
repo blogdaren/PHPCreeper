@@ -37,7 +37,7 @@ return [
     'downloader_got_replay_null'    => "Receive Feedback: detect that the parser response is empty, it seems to be a mismatch between the socket protocol settings of the Downloader and Parser.",
     'downloader_lost_connections'   => "Network Inspect: detect that the downloader does not get the task connection object available.",
     'downloader_lost_channel'       => "Network Inspect: detect that the downloader does not get the task connection channel available.",
-    'downloader_download_filesize_exceed'  => "Task Download: detect that the file size to be downloaded (%file size%MB) exceeds the preset maximum (%default max file size%MB), discard task.",
+    'downloader_download_filesize_exceed'  => "Task Download: detect that the file size to be downloaded (%file size%Byte) exceeds the preset maximum (%default max file size%Byte), discard task.",
     'http_transfer_exception'       => "Request Anomaly: %exception_msg% (exception_code: %exception_code%) (task_url: %url%)",
     'http_transfer_compress'        => "Compress Transfer: detect that the compression algorithm is enabled: %algorithm%",
     'http_assemble_method'          => "Assemble Package: detect that the assemble package method is enabled: %assemble_method%",
@@ -60,6 +60,7 @@ return [
     'track_task_package'            => "Task Package：%task_package%",
     'redis_server_error'            => "Service Inspect：%error_msg%, it depends on the [redis-server] service when running as multi-worker mode, please check whether the [redis-server] service is started or whether the firewall permits the service port, the current process will exit automatically after 10 seconds of sleep and resume running after restart.",
     'ext_redis_class_not_found'     => "Server Inspect: the class Redis was not found because the redis extension was not found, please install the official PHP extension phpredis yourself, the current process will exit after 10 seconds of sleep and resume running after restart.",
+    'http_method_head_error'        => "HTTP HEAD: %error_msg%",
 
     //more fields to be configured......
 ];

@@ -127,7 +127,7 @@ class Parser extends PHPCreeper
         ]));
 
         $connection->maxSendBufferSize = $this->getSendBufferSize();
-        $connection->maxPackageSize = PHPCreeper::getDefaultMaxFileSizeToDownload();
+        $connection->maxPackageSize = PHPCreeper::getDefaultMaxFileSizeToDownload() > 0 ?: (20 * (1<<20));
         empty($connection->lastMessageAliveTime) && $connection->lastMessageAliveTime = time();
 
         //trigger user callback

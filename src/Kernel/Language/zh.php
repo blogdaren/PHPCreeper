@@ -38,7 +38,7 @@ return [
     'downloader_got_replay_null'    => "收到反馈: 检测到解析器响应为空：原因很可能是下载器和解析器socket通信协议设定不一致.",
     'downloader_lost_connections'   => "网络巡检：检测到下载器获取不到可用的任务连接对象.............................",
     'downloader_lost_channel'       => "网络巡检：检测到下载器获取不到可用的任务连接通道.............................",
-    'downloader_download_filesize_exceed' => "下载任务：预检到要下载的文件大小(%file_size%MB)超过了预设的最大值(%default_max_file_size%MB), 丢弃任务.....",
+    'downloader_download_filesize_exceed' => "下载任务：检检到要下载的文件大小(%file_size%字节)超过了预设的最大值(%default_max_file_size%字节), 丢弃任务.....",
     'http_transfer_exception'       => "请求异常: %exception_msg% (exception_code: %exception_code%) (task_url: %url%)",
     'http_transfer_compress'        => "压缩传输: 检测到已启用压缩方式传输数据: 压缩算法%algorithm%...................",
     'http_assemble_method'          => "打包传输: 检测到已启用打包方式传输数据: 打包方式%assemble_method%...................",
@@ -61,6 +61,7 @@ return [
     'track_task_package'            => "任务数据：%task_package%",
     'redis_server_error'            => "服务巡检：%error_msg%, 以多worker模式运行时依赖[redis-server]服务, 请检查[redis-server]服务有没有启动 或 防火墙有没有放行服务端口, 当前进程将在休眠%sleep_time%秒之后自动退出并重启后继续运行.",
     'ext_redis_class_not_found'     => "服务巡检: 没有找到类Redis, 因为没有找到redis扩展, 请自行安装PHP官方扩展phpredis, 当前进程将在休眠%sleep_time%秒之后退出并重启后继续运行.",
+    'http_method_head_error'        => "HEAD请求: %error_msg%",
 
     //若干待配字段......
 ];

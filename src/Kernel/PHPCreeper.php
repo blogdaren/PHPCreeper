@@ -39,7 +39,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    public const CURRENT_VERSION = '1.8.2';
+    public const CURRENT_VERSION = '1.8.3';
 
     /**
      * engine name
@@ -296,11 +296,12 @@ class PHPCreeper extends Worker
     /**
      * default max file size to download: 
      *
-     * 20(MB) = 20971520(Byte) = 20 * (1 << 20)
+     * (1) default value is 0, greater than 0 will result in one more HTTP HEAD request  
+     * (2) 20(MB) = 20971520(B) = 20 * (1 << 20) will be a nice default value if possible
      *
      * @var int
      */
-    static private $_defaultMaxFileSizeToDownload = 20971520;
+    static private $_defaultMaxFileSizeToDownload = 0;
 
     /**
      * user callbacks

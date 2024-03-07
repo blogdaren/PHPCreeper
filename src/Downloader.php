@@ -708,28 +708,38 @@ class Downloader extends PHPCreeper
             return Tool::throwback('-200', $this->langConfig['downloader_rebuild_task_null'], $extra);
         }
 
+        list($method, $url) = [$args['method'], $args['url']];
+        unset($args['method'], $args['url']);
+
+        //try to set download worker only when need to track request args 
+        if(isset($args['track_request_args']) && true === $args['track_request_args'])
+        {
+            method_exists($this->httpClient, 'setWorker') && $this->httpClient->setWorker($this);
+        }
+
+        //check whether large files are to be downloaded and the size exceeds the default max file size or not
+        if(PHPCreeper::getDefaultMaxFileSizeToDownload() > 0)
+        {
+            try{
+                $content_length = $this->prefetchRemoteFileSizeToBeDownloaded($url, $args);
+                $defaut_max_file_size = PHPCreeper::getDefaultMaxFileSizeToDownload();
+                if($content_length > $defaut_max_file_size)
+                {
+                    $extra = [
+                        'file_size'             => $content_length,
+                        'default_max_file_size' => $defaut_max_file_size,
+                    ];
+                    return Tool::throwback('-202', $this->langConfig['downloader_download_filesize_exceed'], $extra);
+                }
+            }catch(\Throwable $e){
+                Logger::error(Tool::replacePlaceHolder($this->langConfig['http_method_head_error'], [
+                    'error_msg' => $e->getMessage(),
+                ]));
+            }
+        }
+
+        //continue to make normal request
         try{
-            list($method, $url) = [$args['method'], $args['url']];
-            unset($args['method'], $args['url']);
-
-            //try to set download worker only when need to track request args 
-            if(isset($args['track_request_args']) && true === $args['track_request_args'])
-            {
-                method_exists($this->httpClient, 'setWorker') && $this->httpClient->setWorker($this);
-            }
-
-            //check whether large files are to be downloaded and the size exceeds the default max file size or not
-            $content_length = ceil($this->prefetchRemoteFileSizeToBeDownloaded($url, $args) / 1024 / 1024);
-            $defaut_max_file_size = ceil(PHPCreeper::getDefaultMaxFileSizeToDownload() / 1024 / 1024);
-            if($content_length > $defaut_max_file_size)
-            {
-                $extra = [
-                    'file_size'             => $content_length,
-                    'default_max_file_size' => $defaut_max_file_size,
-                ];
-                return Tool::throwback('-202', $this->langConfig['downloader_download_filesize_exceed'], $extra);
-            }
-
             $code = $this->httpClient->request($method, $url, $args)->getResponseStatusCode();
 
             if(in_array($code, [301, 302])){
@@ -780,6 +790,7 @@ class Downloader extends PHPCreeper
     {
         $args['allow_redirects'] = true;
         $args['headers']['Cache-Control'] = 'no-cache';
+        $args['timeout'] = 2;
         $code = $this->httpClient->request('head', $url, $args)->getResponseStatusCode();
 
         if(in_array($code, [301, 302])){

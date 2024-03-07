@@ -101,6 +101,14 @@ use Logger\Logger;
 
 
 /**
+ * set default max file size to download, default is `0`【version >= 1.8.3】
+ * 设置默认最大下载文件大小, 默认为0, 如果大于0, 将会触发额外的HTTP.METHOD.HEAD请求.
+ * 注意：大文件机制尚待优化，当下载大文件遇到不可预期的问题时，尝试设置本参数为20MB.
+ */
+//PHPCreeper::setDefaultMaxFileSizeToDownload(20 * 1048576);
+
+
+/**
  * Global-Redis-Config: just leave it alone when run as Single-Worker mode
  * 仅单worker运作模式下不依赖redis，所以此时redis的配置可以忽略不管.
  * 特别注意：自v1.6.4起，redis锁机制已升级并默认使用官方推荐的更安全的分布式红锁，
