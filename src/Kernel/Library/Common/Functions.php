@@ -12,6 +12,8 @@
 //定义默认的下载文件缓存目录
 !defined("DEFAULT_DOWNLOAD_CACHE_DIR") && define("DEFAULT_DOWNLOAD_CACHE_DIR", sys_get_temp_dir() . '/DownloadCache4PHPCreeper/');
 
+//定义业务异常时进程的休眠时间
+!defined('PROCESS_SLEEP_TIME') && define('PROCESS_SLEEP_TIME', 10);
 
 /**
  * 打印可能要用到的<pre>开始标签

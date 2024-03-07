@@ -9,9 +9,25 @@
 
 namespace PHPCreeper\Kernel\Middleware\MessageQueue;
 
+use PHPCreeper\PHPCreeper;
 use PHPCreeper\Kernel\Slot\BrokerInterface;
 use PHPCreeper\Kernel\Library\Helper\Tool;
 use PHPCreeper\Timer;
+use Logger\Logger;
+
+if(!extension_loaded("redis"))
+{
+    Logger::error(Tool::replacePlaceHolder(PHPCreeper::$langConfigBackup['ext_redis_class_not_found'], [
+        'sleep_time'   => PROCESS_SLEEP_TIME,
+    ]));sleep(PROCESS_SLEEP_TIME);exit;
+}
+
+//引入此桥类可以有效解决PHP8.2废弃动态属性的问题
+class ThirdRedisClient extends \Redis
+{
+    //将动态属性集中定义到本桥类中
+    public $ping_timer = 0; 
+}
 
 #[\AllowDynamicProperties]
 class RedisExtension implements BrokerInterface
@@ -165,7 +181,7 @@ class RedisExtension implements BrokerInterface
 
         if(empty($this->_connection[$index]) || !$this->_connection[$index]->isConnected()) 
         {
-            $this->_connection[$index] = new \Redis();
+            $this->_connection[$index] = new ThirdRedisClient();
 
             $method = 'connect';
             if(!empty($this->connectionConfig[$index]['persisted']) && true === $this->connectionConfig[$index]['persisted'])
@@ -173,20 +189,30 @@ class RedisExtension implements BrokerInterface
                 $method = 'pconnect';
             }
 
-            $rs = call_user_func(
-                [$this->_connection[$index], $method],
-                $this->connectionConfig[$index]['host'] ?? '',
-                $this->connectionConfig[$index]['port'] ?? 0,
-                $this->connectionConfig[$index]['connection_timeout'] ?? 0,
-                $this->connectionConfig[$index]['persist_id'] ?? null,
-                $this->connectionConfig[$index]['retry_interval'] ?? 0,
-                $this->connectionConfig[$index]['read_write_timeout'] ?? 0
-            );
+            try{
+                $host = $this->connectionConfig[$index]['host'];
+                $port = $this->connectionConfig[$index]['port'];
+                $rs = call_user_func(
+                    [$this->_connection[$index], $method],
+                    $this->connectionConfig[$index]['host'] ?? '',
+                    $this->connectionConfig[$index]['port'] ?? 0,
+                    $this->connectionConfig[$index]['connection_timeout'] ?? 0,
+                    $this->connectionConfig[$index]['persist_id'] ?? null,
+                    $this->connectionConfig[$index]['retry_interval'] ?? 0,
+                    $this->connectionConfig[$index]['read_write_timeout'] ?? 0
+                );
 
-            $host = $this->connectionConfig[$index]['host'];
-            $port = $this->connectionConfig[$index]['port'];
-
-            if(empty($rs)) throw new \RedisException("connect redis-server-{$index} failed($host:$port)");
+                //if(empty($rs)) throw new \RedisException("connect redis-server-{$index} failed($host:$port)");
+            }catch(\Exception $e){
+                Logger::error(Tool::replacePlaceHolder(PHPCreeper::$langConfigBackup['redis_server_error'], [
+                    'error_msg'    => $e->getMessage() . " > connect failed to redis-server-{$index} > tcp://{$host}:{$port}",
+                    'sleep_time'   => PROCESS_SLEEP_TIME,
+                ]));sleep(PROCESS_SLEEP_TIME);exit;
+            }catch(\Throwable $e){
+                Logger::error(Tool::replacePlaceHolder(PHPCreeper::$langConfigBackup['redis_server_error'], [
+                    'sleep_time'   => PROCESS_SLEEP_TIME,
+                ]));sleep(PROCESS_SLEEP_TIME);exit;
+            }
 
             if(strpos($host, '127.0.0.1') !== 0 && $this->_connection[$index]->isConnected())
             {                                                                                   

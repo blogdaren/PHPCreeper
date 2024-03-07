@@ -39,7 +39,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    public const CURRENT_VERSION = '1.8.1';
+    public const CURRENT_VERSION = '1.8.2';
 
     /**
      * engine name
@@ -136,6 +136,15 @@ class PHPCreeper extends Worker
      * @var array
      */
     public $langConfig = [];
+
+    /**
+     * language config backup
+     *
+     * only used for the Third-Class and shoud be removed in future !!
+     *
+     * @var array
+     */
+    static public $langConfigBackup = [];
 
     /**
      * phpcreeper config

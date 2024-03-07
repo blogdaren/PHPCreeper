@@ -9,6 +9,7 @@
 
 namespace PHPCreeper\Kernel\Service\Provider;
 
+use PHPCreeper\PHPCreeper;
 use PHPCreeper\Kernel\Service\Service;
 use PHPCreeper\Kernel\Service\Wrapper\LanguageService;
 
@@ -26,7 +27,7 @@ class LanguageServiceProvider
     public function render(Service $service)
     {
         $service->inject('bindLangConfig', function($type = 'zh'){
-            return $this->langConfig = LanguageService::load($type);
+            return $this->langConfig = PHPCreeper::$langConfigBackup = LanguageService::load($type);
         });
     }
 }

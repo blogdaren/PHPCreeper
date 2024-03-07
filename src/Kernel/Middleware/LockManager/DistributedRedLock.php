@@ -10,7 +10,10 @@
 
 namespace PHPCreeper\Kernel\Middleware\LockManager;
 
+use PHPCreeper\PHPCreeper;
 use PHPCreeper\Kernel\Library\Polyfill\Uuid;
+use PHPCreeper\Kernel\Library\Helper\Tool;
+use Logger\Logger;
 
 
 class DistributedRedLock
@@ -389,7 +392,21 @@ class DistributedRedLock
             if(isset($options['prefix'])) unset($options['prefix']);
 
             $client = new \Predis\Client($params, $options); 
-            $client->connect();
+
+            try{
+                $client->connect();
+            }catch(\Exception $e){
+                Logger::error(Tool::replacePlaceHolder(PHPCreeper::$langConfigBackup['redis_server_error'], [
+                    'error_msg'    => $e->getMessage(),
+                    'sleep_time'   => PROCESS_SLEEP_TIME,
+                ]));sleep(PROCESS_SLEEP_TIME);exit;
+            }catch(\Throwable $e){
+                Logger::error(Tool::replacePlaceHolder(PHPCreeper::$langConfigBackup['redis_server_error'], [
+                    'error_msg'    => $e->getMessage(),
+                    'sleep_time'   => PROCESS_SLEEP_TIME,
+                ]));sleep(PROCESS_SLEEP_TIME);exit;
+            }
+
             $this->instances[] = $client;
         }
 
@@ -444,7 +461,20 @@ class DistributedRedLock
 
 
             $client = new \Redis(); 
-            $client->connect($host, $port, $timeout, '', 0, $read_write_timeout);
+
+            try{
+                $client->connect($host, $port, $timeout, '', 0, $read_write_timeout);
+            }catch(\Exception $e){
+                Logger::error(Tool::replacePlaceHolder(PHPCreeper::$langConfigBackup['redis_server_error'], [
+                    'error_msg'    => $e->getMessage() . " > tcp://{$host}:{$port}",
+                    'sleep_time'   => PROCESS_SLEEP_TIME,
+                ]));sleep(PROCESS_SLEEP_TIME);exit;
+            }catch(\Throwable $e){
+                Logger::error(Tool::replacePlaceHolder(PHPCreeper::$langConfigBackup['redis_server_error'], [
+                    'error_msg'    => $e->getMessage() . " > tcp://{$host}:{$port}",
+                    'sleep_time'   => PROCESS_SLEEP_TIME,
+                ]));sleep(PROCESS_SLEEP_TIME);exit;
+            }
 
             if(!empty($config['auth']) && true === $config['auth'])
             {

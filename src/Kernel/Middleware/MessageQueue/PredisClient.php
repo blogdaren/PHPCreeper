@@ -12,6 +12,15 @@ namespace PHPCreeper\Kernel\Middleware\MessageQueue;
 use PHPCreeper\Kernel\Slot\BrokerInterface;
 use PHPCreeper\Kernel\Library\Helper\Tool;
 use PHPCreeper\Timer;
+use PHPCreeper\PHPCreeper;
+use Logger\Logger;
+
+//引入此桥类可以有效解决PHP8.2废弃动态属性的问题
+class ThirdPredisClient extends \Predis\Client
+{
+    //将动态属性集中定义到本桥类中
+    public $ping_timer = 0; 
+}
 
 #[\AllowDynamicProperties]
 class PredisClient implements BrokerInterface
@@ -177,12 +186,25 @@ class PredisClient implements BrokerInterface
             $output = $this->rebuildConnectionParamsAndOptions($index);
             if(empty($output['params'])) throw new \Exception("predis connection params invalid");
 
-            $this->_connection[$index] = new \Predis\Client($output['params'], $output['options']);
+            $this->_connection[$index] = new ThirdPredisClient($output['params'], $output['options']);
 
             $scheme = $output['params']['scheme'];
             $host = $output['params']['host'];
             $port = $output['params']['port'];
-            $this->_connection[$index]->connect();
+
+            try{
+                $this->_connection[$index]->connect();
+            }catch(\Exception $e){
+                Logger::error(Tool::replacePlaceHolder(PHPCreeper::$langConfigBackup['redis_server_error'], [
+                    'error_msg'    => $e->getMessage(),
+                    'sleep_time'   => PROCESS_SLEEP_TIME,
+                ]));sleep(PROCESS_SLEEP_TIME);exit;
+            }catch(\Throwable $e){
+                Logger::error(Tool::replacePlaceHolder(PHPCreeper::$langConfigBackup['redis_server_error'], [
+                    'error_msg'    => $e->getMessage(),
+                    'sleep_time'   => PROCESS_SLEEP_TIME,
+                ]));sleep(PROCESS_SLEEP_TIME);exit;
+            }
 
             if(strpos($host, '127.0.0.1') !== 0 && $this->_connection[$index]->isConnected())
             {                                                                                   

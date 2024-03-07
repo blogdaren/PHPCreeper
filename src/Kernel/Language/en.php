@@ -58,6 +58,8 @@ return [
     'logger_prefix_server'          => "Server     | %worker_name% | Process %worker_id%",
     'track_request_args'            => "Request Arguments：%request_args%",
     'track_task_package'            => "Task Package：%task_package%",
+    'redis_server_error'            => "Service Inspect：%error_msg%, it depends on the [redis-server] service when running as multi-worker mode, please check whether the [redis-server] service is started or whether the firewall permits the service port, the current process will exit automatically after 10 seconds of sleep and resume running after restart.",
+    'ext_redis_class_not_found'     => "Server Inspect: the class Redis was not found because the redis extension was not found, please install the official PHP extension phpredis yourself, the current process will exit after 10 seconds of sleep and resume running after restart.",
 
     //more fields to be configured......
 ];

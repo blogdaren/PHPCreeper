@@ -59,6 +59,8 @@ return [
     'logger_prefix_server'          => "Server     | %worker_name% | %worker_id%号服务器进程",
     'track_request_args'            => "请求参数：%request_args%",
     'track_task_package'            => "任务数据：%task_package%",
+    'redis_server_error'            => "服务巡检：%error_msg%, 以多worker模式运行时依赖[redis-server]服务, 请检查[redis-server]服务有没有启动 或 防火墙有没有放行服务端口, 当前进程将在休眠%sleep_time%秒之后自动退出并重启后继续运行.",
+    'ext_redis_class_not_found'     => "服务巡检: 没有找到类Redis, 因为没有找到redis扩展, 请自行安装PHP官方扩展phpredis, 当前进程将在休眠%sleep_time%秒之后退出并重启后继续运行.",
 
     //若干待配字段......
 ];
