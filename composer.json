@@ -17,7 +17,7 @@
     },
     "require": {
         "php": ">=7.0.0",
-        "workerman/workerman": ">=3.5.0",
+        "workerman/workerman": ">=3.5.0,<5.0.0",
         "blogdaren/configurator": "^1.0",
         "blogdaren/logger": "^1.1.2",
         "guzzlehttp/guzzle": "^6.4 || ^7.0",

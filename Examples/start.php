@@ -16,8 +16,20 @@
  */
 
 
-//自行设定自动加载器路径
-require dirname(__FILE__, 2) . "/vendor/autoload.php";
+//自动路由autoloader
+$msg = PHP_EOL."找不到自动加载器autoloader, 请尝试运行: composer require blogdaren/phpcreeper".PHP_EOL.PHP_EOL;
+false === ($files = @scandir(__DIR__, 1)) && exit($msg);
+foreach($files as $k => $file){
+    if('vendor' === $file && is_dir(__DIR__ . DIRECTORY_SEPARATOR . $file)){
+        require_once dirname(__FILE__, 1) . "/vendor/autoload.php";break;
+    }elseif(false !== strpos(__DIR__, 'Examples')){
+        require_once dirname(__FILE__, 2) . "/vendor/autoload.php";break;
+    }elseif(false !== strpos(__DIR__, 'vendor/blogdaren/phpcreeper/Examples')){
+        require_once dirname(__FILE__, 5) . "/vendor/autoload.php";break;
+    }else{
+        (count($files) == ($k+1)) && exit($msg);
+    }
+}
 
 
 //只是临时为了兼容工具函数库在低版本工作正常以及演示需要，实际并不需要这行代码
