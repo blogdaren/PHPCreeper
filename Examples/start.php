@@ -22,10 +22,10 @@ false === ($files = @scandir(__DIR__, 1)) && exit($msg);
 foreach($files as $k => $file){
     if('vendor' === $file && is_dir(__DIR__ . DIRECTORY_SEPARATOR . $file)){
         require_once dirname(__FILE__, 1) . "/vendor/autoload.php";break;
-    }elseif(false !== strpos(__DIR__, 'Examples')){
-        require_once dirname(__FILE__, 2) . "/vendor/autoload.php";break;
     }elseif(false !== strpos(__DIR__, 'vendor/blogdaren/phpcreeper/Examples')){
         require_once dirname(__FILE__, 5) . "/vendor/autoload.php";break;
+    }elseif(false !== strpos(__DIR__, 'Examples')){
+        require_once dirname(__FILE__, 2) . "/vendor/autoload.php";break;
     }else{
         (count($files) == ($k+1)) && exit($msg);
     }
