@@ -1771,6 +1771,26 @@ EOT;
     }
 
     /**
+     * @brief    get master pid
+     *
+     * @return   int
+     */
+    static public function getMasterPid()
+    {
+        $master_pid_file = self::getMasterPidFile();
+        $master_pid = -1;
+
+        if(is_file($master_pid_file) && file_exists($master_pid_file))
+        {
+            $master_pid = file_get_contents($master_pid_file);
+
+            if(empty($master_pid)) $master_pid = -1;
+        }
+
+        return $master_pid;
+    }
+
+    /**
      * @brief    rewrite method runAll
      *
      * @return   void

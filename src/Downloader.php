@@ -560,7 +560,7 @@ class Downloader extends PHPCreeper
 
         //remember to check
         $addresses = $this->getClientSocketAddress('parser');
-        if(empty($addresses)) return false;
+        if(empty($addresses)) return [];
 
         foreach($addresses as $k => $v)
         {
@@ -1034,7 +1034,21 @@ class Downloader extends PHPCreeper
      */
     public function removeTimer()
     {
-        $this->getTimerId() > 0 && Timer::del($this->getTimerId());
+        if(PHPCreeper::$isRunAsMultiWorker)
+        {
+            $task_connections = $this->getAsyncTaskConnection();
+            foreach($task_connections as $target_server => $connections)
+            {
+                foreach($connections as $k => $connection)
+                {
+                    Timer::del($connection->taskTimerId);
+                }
+            }
+        }
+        else
+        {
+            $this->getTimerId() > 0 && Timer::del($this->getTimerId());
+        }
 
         return $this;
     }
