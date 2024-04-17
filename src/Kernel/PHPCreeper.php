@@ -39,7 +39,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    public const CURRENT_VERSION = '1.8.5';
+    public const CURRENT_VERSION = '1.8.6';
 
     /**
      * engine name
@@ -336,6 +336,7 @@ class PHPCreeper extends Worker
         'onServerBufferFull'   => null,
         'onServerBufferDrain'  => null,
         'onServerError'        => null,
+        'onTaskEmpty'          => null,
     );
 
     /**

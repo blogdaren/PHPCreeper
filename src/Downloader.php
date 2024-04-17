@@ -379,6 +379,9 @@ class Downloader extends PHPCreeper
         //check task 
         if(empty($task)) 
         {
+            $returning = $this->triggerUserCallback('onTaskEmpty', $this);
+            if(false === $returning) return false;
+
             Logger::crazy(Tool::replacePlaceHolder($this->langConfig['queue_empty'],[
                 'crawl_interval' => $this->getTaskCrawlInterval(),
             ]));
@@ -418,21 +421,7 @@ class Downloader extends PHPCreeper
      */
     public function getOneTask()
     {
-        //lock
-        /*
-         *if($this->count > 1)
-         *{
-         *    $gold_key = $this->lockHelper->lock('getonetask');
-         *    if(!$gold_key) return false;
-         *}
-         */
-
         $task = $this->getTaskMan()->getTask();
-
-        //unlock
-        /*
-         *$this->count > 1 && $this->lockHelper->unlock('getonetask', $gold_key);
-         */
 
         return $task;
     }
