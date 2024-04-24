@@ -62,6 +62,10 @@ return [
     'redis_server_error'            => "服务巡检：%error_msg%, 以多worker模式运行时依赖[redis-server]服务, 请检查[redis-server]服务有没有启动 或 防火墙有没有放行服务端口, 当前进程将在休眠%sleep_time%秒之后自动退出并重启后继续运行.",
     'ext_redis_class_not_found'     => "服务巡检: 没有找到类Redis, 因为没有找到redis扩展, 请自行安装PHP官方扩展phpredis, 当前进程将在休眠%sleep_time%秒之后退出并重启后继续运行.",
     'http_method_head_error'        => "HEAD请求: %error_msg%",
+    'headless_browser_enabled'            => "无头浏览：检测到已启用无头浏览器【%bin%】.............................",
+    'headless_browser_disabled'           => "无头浏览：检测到已禁用无头浏览器......................................",
+    'headless_browser_binary_not_found'   => "无头浏览：无头浏览器二进制文件【%bin%】找不到, 请自行安装无头浏览器...",
+    'headless_browser_exception'          => "无头浏览：",
 
     //若干待配字段......
 ];

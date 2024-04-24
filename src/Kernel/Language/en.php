@@ -61,6 +61,10 @@ return [
     'redis_server_error'            => "Service Inspect：%error_msg%, it depends on the [redis-server] service when running as multi-worker mode, please check whether the [redis-server] service is started or whether the firewall permits the service port, the current process will exit automatically after 10 seconds of sleep and resume running after restart.",
     'ext_redis_class_not_found'     => "Server Inspect: the class Redis was not found because the redis extension was not found, please install the official PHP extension phpredis yourself, the current process will exit after 10 seconds of sleep and resume running after restart.",
     'http_method_head_error'        => "HTTP HEAD: %error_msg%",
+    'headless_browser_enabled'            => "Headless Browser: headless browser【%bin%】is configured as enabled.",
+    'headless_browser_disabled'           => "Headless Browser: headless browser is configured as disabled.",
+    'headless_browser_binary_not_found'   => "Headless Browser：headless browser binary file (%bin%) not found, please install your own headless browser.",
+    'headless_browser_exception'          => "Headless Browser：",
 
     //more fields to be configured......
 ];

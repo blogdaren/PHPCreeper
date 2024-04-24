@@ -20,6 +20,7 @@ use PHPCreeper\Kernel\Service\Provider\LockServiceProvider;
 use PHPCreeper\Kernel\Service\Provider\LanguageServiceProvider;
 use PHPCreeper\Kernel\Service\Provider\ExtractorServiceProvider;
 use PHPCreeper\Kernel\Service\Provider\DropDuplicateServiceProvider;
+use PHPCreeper\Kernel\Service\Provider\HeadlessBrowserServiceProvider;
 use PHPCreeper\Kernel\Slot\BrokerInterface;
 use PHPCreeper\Kernel\Slot\DropDuplicateInterface;
 use PHPCreeper\Kernel\Slot\HttpClientInterface;
@@ -287,6 +288,13 @@ class PHPCreeper extends Worker
     static private $_defaultRedisClient = 'predis';
 
     /**
+     * default headless browser
+     *
+     * @var string
+     */
+    static private $_defaultHeadlessBrowser = 'chrome';
+
+    /**
      * default timezone 
      *
      * @var string
@@ -337,6 +345,7 @@ class PHPCreeper extends Worker
         'onServerBufferDrain'  => null,
         'onServerError'        => null,
         'onTaskEmpty'          => null,
+        'onHeadlessBrowserOpenPage' => null,
     );
 
     /**
@@ -350,7 +359,7 @@ class PHPCreeper extends Worker
      *
      * @var array
      */
-    static public $callbacks_alias= array(
+    static public $callbacks_alias = array(
         'onBeforeDownload'  => ['onDownloadBefore'],
         'onStartDownload'   => ['onDownloadStart'],
         'onAfterDownload'   => ['onDownloadAfter'],
@@ -502,6 +511,8 @@ class PHPCreeper extends Worker
         $this->bindHttpClient('guzzle', []);
         $this->bindQueueClient('php');
         $this->bindExtractor();
+        $browser_options = (array)Configurator::get('globalConfig/main/task/context/headless_browser');
+        $this->bindHeadlessBrowser(self::getDefaultHeadlessBrowser(), $browser_options);
 
         if(self::$isRunAsMultiWorker)
         {
@@ -1131,6 +1142,7 @@ class PHPCreeper extends Worker
             LanguageServiceProvider::class,
             ExtractorServiceProvider::class,
             DropDuplicateServiceProvider::class,
+            HeadlessBrowserServiceProvider::class,
         ];
     }
 
@@ -1700,6 +1712,34 @@ EOT;
     {
         return self::$_defaultRedisClient;
     }
+
+    /**
+     * @brief    set default headless browser
+     *
+     * @param    string  $browser
+     *
+     * @return   void
+     */
+    static public function setDefaultHeadlessBrowser($browser = 'chrome')
+    {
+        if(empty($browser) || !is_string($browser) || !in_array($browser, ['chrome', /*'puppeteer', 'phantomjs',*/]))
+        {
+            $browser = 'chrome';
+        }
+
+        self::$_defaultHeadlessBrowser = $browser;
+    }
+
+    /**
+     * @brief    get default headless browser
+     *
+     * @return   string
+     */
+    static public function getDefaultHeadlessBrowser()
+    {
+        return self::$_defaultHeadlessBrowser;
+    }
+
 
     /**
      * @brief    set default timezone     

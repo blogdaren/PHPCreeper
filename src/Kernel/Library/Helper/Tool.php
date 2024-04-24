@@ -1337,6 +1337,51 @@ class Tool
         }
     }
 
+    /**
+     * @brief    search headless browser binary path     
+     *
+     * @return   string | null
+     */
+    public static function searchHeadlessBrowserBinaryPath($browser = 'chrome')
+    {
+        if('chrome' === $browser) {
+            if(array_key_exists('CHROME_PATH', $_SERVER)) return $_SERVER['CHROME_PATH'];
+
+            switch(strtolower(PHP_OS)) 
+            {
+                case 'windows':
+                    return null;
+                case 'darwin':
+                    return '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+                default:
+                    $result = self::executeShell('command -v google-chrome chromium-browser chrome chromium');
+                    return rtrim(explode("\n", $result, 2)[0]) ?: null;
+            }
+        } elseif('puppeteer' === $browser) {
+            //to be implemented
+        } elseif('phantomjs' === $browser) {
+            //to be implemented
+        }
+
+        return null;
+    }
+
+    /**
+     * @brief    execute shell command
+     *
+     * @param    string  $command
+     *
+     * @return   string | null
+     */
+    public static function executeShell($command = '')
+    {
+        try{
+            $result = @shell_exec($command);
+            return is_string($result) ? $result : null;
+        }catch(Throwable $e){
+            return null;
+        }
+    }
 
 }
 

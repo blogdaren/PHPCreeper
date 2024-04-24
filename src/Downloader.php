@@ -697,6 +697,22 @@ class Downloader extends PHPCreeper
             return Tool::throwback('-200', $this->langConfig['downloader_rebuild_task_null'], $extra);
         }
 
+        //maybe use headless browser
+        if(!empty($args['headless_browser']['headless']) && true === $args['headless_browser']['headless'])
+        {
+            $browser = PHPCreeper::getDefaultHeadlessBrowser();
+            $bin = Tool::searchHeadlessBrowserBinaryPath($browser);
+            if(empty($bin)){
+                'chrome' === $browser && $browser = "google-{$browser}";
+                $extra = ['bin' => '/path/to/bin/' . $browser];
+                return Tool::throwback('-210', $this->langConfig['headless_browser_binary_not_found'], $extra);
+            }
+            Logger::warn(Tool::replacePlaceHolder($this->langConfig['headless_browser_enabled'], [
+                'bin' => $bin,
+            ]));
+            return $this->useHeadlessBrowser($args);
+        }
+
         list($method, $url) = [$args['method'], $args['url']];
         unset($args['method'], $args['url']);
 
@@ -759,6 +775,72 @@ class Downloader extends PHPCreeper
         }catch(\Throwable $e){
             $extra = array(
                 'url'            => $task['url'],
+                'exception_code' => $e->getCode(),
+                'exception_msg'  => $e->getMessage(),
+            );
+
+            return Tool::throwback('-205', $this->langConfig['http_transfer_exception'], $extra);
+        }
+    }
+
+    /**
+     * @brief    use headless browser    
+     *
+     * @param    array  $args
+     *
+     * @return   array
+     */
+    public function useHeadlessBrowser($args = [])
+    {
+        $extra = [];
+
+        if(empty($args['headless_browser']['headless']) || true !== $args['headless_browser']['headless'])
+        {
+            return Tool::throwback('-351', $this->langConfig['headless_browser_disabled'], $extra);
+        }
+
+        //try to set download worker only when need to track request args 
+        if(isset($args['track_request_args']) && true === $args['track_request_args'])
+        {
+            method_exists($this->headlessBrowser, 'setWorker') && $this->headlessBrowser->setWorker($this);
+        }
+
+        $options = $args['headless_browser'] ?? [];
+        $options['track_request_args'] = !empty($args['track_request_args']) ? true : false;
+        $merged_options = $this->headlessBrowser->getMergedOptions($options);
+
+        try{
+            $this->headlessBrowser->getBrowserFactoryInstance()->setOptions($merged_options);
+            $browser = $this->headlessBrowser->getBrowserInstance();
+            $page = $this->headlessBrowser->getPage();
+        }catch(\Throwable $e){
+            $msg = $e->getMessage();
+            return Tool::throwback('-352', $this->langConfig['headless_browser_exception'] . " $msg ", $extra);
+        }
+
+        $returning = $this->triggerUserCallback('onHeadlessBrowserOpenPage', $this, $browser, $page, $args['url']);
+
+        //maybe issue request by user callback
+        if(false === $returning){
+            $page->close();
+            return Tool::throwback('-353', $this->langConfig['downloader_download_task_no'] . '(NaN)', $extra);
+        }elseif(is_string($returning)){
+            $page->close();
+            $extra = ['content' => $returning];
+            return Tool::throwback('0', $this->langConfig['downloader_download_task_yes'], $extra);
+        }else{
+            $page->close();
+            is_array($returning) && $merged_options = array_merge($merged_options, $returning);
+        }
+
+        //maybe issue request by API directly
+        try{
+            $content = $this->headlessBrowser->request($args['method'], $args['url'], $merged_options);
+            $extra = ['content' => $content];
+            return Tool::throwback('0', $this->langConfig['downloader_download_task_yes'], $extra);
+        }catch(\Throwable $e){
+            $extra = array(
+                'url'            => $args['url'],
                 'exception_code' => $e->getCode(),
                 'exception_msg'  => $e->getMessage(),
             );
@@ -949,8 +1031,7 @@ class Downloader extends PHPCreeper
                 'error_msg'  => $error_msg,
                 'extra_msg'  => $result['extra_msg'],
             ];
-            $returning = $this->triggerUserCallback('onFailDownload', $this, $error, $task);
-            if(false === $returning) return false;
+            $this->triggerUserCallback('onFailDownload', $this, $error, $task);
 
             return false;
         }
@@ -1041,7 +1122,7 @@ class Downloader extends PHPCreeper
             {
                 foreach($connections as $k => $connection)
                 {
-                    Timer::del($connection->taskTimerId);
+                    !empty($connection->taskTimerId) && Timer::del($connection->taskTimerId);
                 }
             }
         }

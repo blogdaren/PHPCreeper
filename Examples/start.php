@@ -121,6 +121,14 @@ use Logger\Logger;
 
 
 /**
+ * set default headless browser, default is `chrome`【version >= 1.8.6】
+ * 设置默认的无头浏览器，默认为 chrome，后续可能陆续支持 puppeteer 和 phantomjs.
+ */
+//PHPCreeper::setDefaultHeadlessBrowser('chrome');
+
+
+
+/**
  * Global-Redis-Config: just leave it alone when run as Single-Worker mode
  * 仅单worker运作模式下不依赖redis，所以此时redis的配置可以忽略不管.
  * 特别注意：自v1.6.4起，redis锁机制已升级并默认使用官方推荐的更安全的分布式红锁，
@@ -185,7 +193,7 @@ $config['task'] = array(
         //'expected_insertions' => 10000,  //预期任务总量
         //'expected_falseratio' => 0.01,   //预期误判率
     //],
-    //全局任务context上下文
+    //全局任务context上下文 [注意每条任务都有各自的私有context上下文，最终采用合并覆盖策略]
     'context' => [
         //要不要缓存下载文件 [默认false]
         'cache_enabled'   => true,
@@ -212,6 +220,10 @@ $config['task'] = array(
         //除了内置参数之外，还可以自由配置自定义参数，在上下游业务链应用场景中十分有用
         'user_define_key1' => 'user_define_value1',
         'user_define_key2' => 'user_define_value2',
+        //无头浏览器，如果是动态页面考虑启用，否则应当禁用 [默认使用chrome且为禁用状态]
+        'headless_browser' => [
+            'headless' => true, 
+        ],
     ],
 ); 
 
@@ -335,6 +347,16 @@ function startAppDownloader()
     $downloader->setName('AppDownloader')->setCount(1)->setClientSocketAddress([
         'ws://127.0.0.1:8888',
     ]);
+
+    $downloader->onTaskEmpty = function($downloader){
+    };
+
+    //使用无头浏览器回调或者直接使用无头浏览器相关API
+    $downloader->onHeadlessBrowserOpenPage = function($downloader, $browser, $page, $url){
+        //$page->navigate($url)->waitForNavigation('firstMeaningfulPaint');
+        //$html = $page->getHtml();
+        //return $html;
+    };
 
     $downloader->onDownloaderStart = function($downloader){
     };

@@ -14,12 +14,14 @@ asynchronous event-driven spider engine based on [workerman](https://www.workerm
 
 * Focus on efficient agile development, and make the crawler job become more easy   
 * Solve the performance and scalability bottlenecks of traditional crawler frameworks
-* Take full advantage of crawling in Multi-Process + Distributed + Separated deployment environment
+* Take advantage of crawling fully in Multi-Process + Distributed + Separated environment
+* Support headless browser which can execute JavaScript codes for crawling dynamic pages 
 
 爬山虎是基于workerman开发的全新一代多进程异步事件驱动型PHP爬虫引擎, 它有助于：
 * 专注于高效敏捷开发，让爬取工作变得更加简单。
 * 解决传统型PHP爬虫框架的性能和扩展瓶颈问题。
 * 充分发挥多进程+分布式+分离式部署环境下的爬取优势。
+* 支持无头浏览器即支持运行JavaScript代码及其渲染页。
 
 ## Documentation
 The chinese document is relatively complete, and the english document will be kept up-to-date constantly here.   
@@ -48,6 +50,7 @@ The chinese document is relatively complete, and the english document will be ke
 
 ## Features
 * Inherit almost all features from [workerman](https://www.workerman.net)
+* Support headless browser for crawling dynamic pages
 * Support Crontab-Jobs similar to Linux-Crontab
 * Support distributed and separated deployment
 * Support agile development with [PHPCreeper-Application](https://github.com/blogdaren/PHPCreeper-Application)
@@ -57,7 +60,7 @@ The chinese document is relatively complete, and the english document will be ke
 
 
 ## Prerequisites
-* PHP_VERSION ≥ 7.0.0 (Better to choose PHP 7.2+ for some compatibility reasons)    
+* PHP_VERSION ≥ 7.0.0 (Better to choose PHP 7.4+ for some compatibility reasons)    
 * A POSIX compatible OS (Linux、OSX、BSD)  
 * POSIX &nbsp;extension for PHP (**Required**)
 * PCNTL extension for PHP (**Required**)
@@ -95,8 +98,18 @@ use PHPCreeper\Server;
 use PHPCreeper\Crontab;
 use PHPCreeper\Timer;
 
+//enable the single worker mode so that we can run without redis, however, you should note 
+//it will be limited to run only all the downloader workers in this case【version >= 1.3.2】
+//PHPCreeper::enableMultiWorkerMode(false);
+
 //switch runtime language between `zh` and `en`, default is `zh`【version >= 1.3.7】
 PHPCreeper::setLang('en');
+
+//set master pid file manually as needed【version >= 1.3.8】
+//PHPCreeper::setMasterPidFile('/path/to/master.pid');
+
+//set worker log file when start as daemon mode as needed【version >= 1.3.8】
+//PHPCreeper::setLogFile('/path/to/phpcreeper.log');
 
 //note that `predis` will be the default redis client since【version >= 1.4.2】
 //but you could still switch it to be `redis` if you prefer to use ext-redis
@@ -105,19 +118,11 @@ PHPCreeper::setLang('en');
 //set default timezone, default is `Asia/Shanghai`【version >= 1.5.4】
 //PHPCreeper::setDefaultTimezone('Asia/Shanghai');
 
-//set master pid file manually as needed【version >= 1.3.8】
-//PHPCreeper::setMasterPidFile('/path/to/master.pid');
-
-//set worker log file when start as daemon mode as needed【version >= 1.3.8】
-//PHPCreeper::setLogFile('/path/to/phpcreeper.log');
-
 //redirect all stdandard out to file when run as daemonize【version >= 1.7.0】
 //PHPCreeper::setStdoutFile("/path/to/stdout.log");
 
-//enable the single worker mode so that we can run without redis, however, you should note 
-//it will be limited to run only all the downloader workers in this case【version >= 1.3.2】
-//PHPCreeper::enableMultiWorkerMode(false);
-
+//set default headless browser, default is `chrome`【version >= 1.8.6】
+//PHPCreeper::setDefaultHeadlessBrowser('chrome');
 
 //Global-Redis-Config: support array value with One-Dimension or Two-Dimension, 
 //SPECIAL NOTE: since v1.6.4, it's been upgraded to use a more secure and officially
@@ -141,7 +146,7 @@ $config['redis'] = [
 
 //Global-Task-Config: the context member configured here is a global context,
 //we can also set a private context for each task, finally the global context 
-//and task private context will adopt the strategy of merging and covering.
+//and private task context will adopt the strategy of merging and covering.
 //you can free to customize various context settings, including user-defined,
 //for details on how to configure it, please refer to the Follow-Up sections.
 $config['task'] = array( 
@@ -153,6 +158,7 @@ $config['task'] = array(
     'context' => [
         'cache_enabled'   => false,
         'cache_directory' => sys_get_temp_dir() . '/DownloadCache4PHPCreeper/',
+        'headless_browser' => ['headless' => false, /*more browser options*/],
         //..................................................
     ],
 ); 
@@ -164,9 +170,8 @@ function startAppProducer()
 
     $producer->setName('AppProducer')->setCount(1);
     $producer->onProducerStart = function($producer){
-        //task private context
+        //private task context which will be merged with global context
         $context = [];
-
 
         //【version <  1.6.0】: we mainly use an OOP style API to create task     
         //$producer->newTaskMan()->setXXX()->setXXX()->createTask()
@@ -174,22 +179,19 @@ function startAppProducer()
         //$producer->newTaskMan()->setXXX()->setXXX()->createMultiTask()
         //$producer->newTaskMan()->setXXX()->setXXX()->createMultiTask($task)
 
-
         //【version >= 1.6.0】: we provide a shorter and easier API to create task    
         //with more rich parameter types, and the old OOP style API can still be used,    
         //and extension jobs are promoted just to maintain backward compatibility
         //1. Single-Task-API: $task parameter types supported: [string | 1D-array]    
-        //1. Single-Task-API：$producer->createTask($task);   
-        //2. Multi-Task-API:  $task parameter types supported: [string | 1D-array | 2D-array]   
-        //2. Multi-Task-API： $producer->createMultiTask($task);
-
+        //2. Single-Task-API：$producer->createTask($task);   
+        //3. Multi-Task-API:  $task parameter types supported: [string | 1D-array | 2D-array]   
+        //4. Multi-Task-API： $producer->createMultiTask($task);
 
         //use string: not recommended to use because the configuration is limited.    
         //so the question is that you need to process the fetching result by yourself     
         //$task = "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories";
         //$producer->createTask($task);
         //$producer->createMultiTask($task);
-
 
         //use 1D-array：recommeded to use, rich configuration, engine helps to deal with all    
         $task = $_task = array(
@@ -239,17 +241,6 @@ function startAppProducer()
         //here is the old OOP style multi-task-create API which is not recommended to use
         $_task['url'] = "http://www.demo6.com";
         $producer->newTaskMan()->createMultiTask($_task);
-
-        //we can also create task by opening an internal port 
-        //for external communication with third-party applications
-        /*
-         *$server = new Server();
-         *$server->setServerSocketAddress("text://0.0.0.0:3333");
-         *$server->serve();
-         *$server->onMessage = function($connection, $task)use($producer){
-         *    $producer->createTask($task);
-         *};
-         */
     };
 }
 
@@ -262,6 +253,13 @@ function startAppDownloader()
     $downloader->setName('AppDownloader')->setCount(2)->setClientSocketAddress([
         'ws://127.0.0.1:8888',
     ]);
+
+    //use headless browser by callback or API directly
+    $downloader->onHeadlessBrowserOpenPage = function($downloader, $browser, $page, $url){
+        //$page->navigate($url)->waitForNavigation('firstMeaningfulPaint');
+        //$html = $page->getHtml();
+        //return $html;
+    };
 
     $downloader->onDownloadBefore = function($downloader, $task){
         //disable http ssl verify in any of the following two ways 
@@ -276,6 +274,7 @@ function startAppDownloader()
     //$downloader->onDownloadStart = function($downloader, $task){};
     //$downloader->onDownloadAfter = function($downloader, $download_data, $task){};
     //$downloader->onDownloadFail  = function($downloader, $error, $task){};
+    //$downloader->onTaskEmpty = function($downloader){};
 }
 
 function startAppParser()
@@ -308,7 +307,6 @@ function startAppServer()
         });
     };
 }
-
 
 //start producer component
 startAppProducer();
