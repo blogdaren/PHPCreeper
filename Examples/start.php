@@ -222,7 +222,7 @@ $config['task'] = array(
         'user_define_key2' => 'user_define_value2',
         //无头浏览器，如果是动态页面考虑启用，否则应当禁用 [默认使用chrome且为禁用状态]
         'headless_browser' => [
-            'headless' => true, 
+            'headless' => false, 
         ],
     ],
 ); 
