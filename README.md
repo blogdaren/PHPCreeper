@@ -121,7 +121,7 @@ PHPCreeper::setLang('en');
 //redirect all stdandard out to file when run as daemonize【version >= 1.7.0】
 //PHPCreeper::setStdoutFile("/path/to/stdout.log");
 
-//set default headless browser, default is `chrome`【version >= 1.8.6】
+//set default headless browser, default is `chrome`【version >= 1.8.7】
 //PHPCreeper::setDefaultHeadlessBrowser('chrome');
 
 //Global-Redis-Config: support array value with One-Dimension or Two-Dimension, 

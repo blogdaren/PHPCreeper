@@ -121,7 +121,7 @@ use Logger\Logger;
 
 
 /**
- * set default headless browser, default is `chrome`【version >= 1.8.6】
+ * set default headless browser, default is `chrome`【version >= 1.8.7】
  * 设置默认的无头浏览器，默认为 chrome，后续可能陆续支持 puppeteer 和 phantomjs.
  */
 //PHPCreeper::setDefaultHeadlessBrowser('chrome');
