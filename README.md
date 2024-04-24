@@ -121,7 +121,7 @@ PHPCreeper::setLang('en');
 //redirect all stdandard out to file when run as daemonize【version >= 1.7.0】
 //PHPCreeper::setStdoutFile("/path/to/stdout.log");
 
-//set default headless browser, default is `chrome`【version >= 1.8.6】
+//set default headless browser, default is `chrome`【version >= 1.8.8】
 //PHPCreeper::setDefaultHeadlessBrowser('chrome');
 
 //Global-Redis-Config: support array value with One-Dimension or Two-Dimension, 
@@ -241,6 +241,17 @@ function startAppProducer()
         //here is the old OOP style multi-task-create API which is not recommended to use
         $_task['url'] = "http://www.demo6.com";
         $producer->newTaskMan()->createMultiTask($_task);
+
+        //use headless browser to crawl dynamic page
+        $context['headless_browser']['headless'] = true;
+        $dynamic_task = array(
+            'url' => "https://www.toutiao.com",
+            'rule' => array(
+                'title' => ['div.show-monitor ol li a', 'aria-label'],
+            ), 
+            'context' => $context,
+        );
+        $producer->createTask($dynamic_task);
     };
 }
 

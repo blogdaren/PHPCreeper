@@ -121,7 +121,7 @@ use Logger\Logger;
 
 
 /**
- * set default headless browser, default is `chrome`【version >= 1.8.6】
+ * set default headless browser, default is `chrome`【version >= 1.8.8】
  * 设置默认的无头浏览器，默认为 chrome，后续可能陆续支持 puppeteer 和 phantomjs.
  */
 //PHPCreeper::setDefaultHeadlessBrowser('chrome');
@@ -265,12 +265,11 @@ function startAppProducer()
         //$producer->createTask($task);
         //$producer->createMultiTask($task);
 
-
         //使用一维数组：推荐使用，配置丰富，引擎内置处理抓取结果
         $task = $_task = array(
             'active' => true,       //是否激活当前任务，只有配置为false才会冻结任务，默认true
             'url' => "http://www.weather.com.cn/weather/101010100.shtml",
-            "rule" => array(        //如果该字段留空默认将返回原始下载数据
+            'rule' => array(        //如果该字段留空默认将返回原始下载数据
                 'time' => ['div#7d ul.t.clearfix h1',      'text', [], 'function($field_name, $data){
                     return "具体日子: " . $data;
                 }'],                //关于回调字符串的用法务必详看官方手册
@@ -291,7 +290,7 @@ function startAppProducer()
         $task = array(
             array(
                 "url" => "http://www.weather.com.cn/weather/101010100.shtml",
-                "rule" => array(
+                'rule' => array(
                     'time' => ['div#7d ul.t.clearfix h1',      'text'],
                     'wea'  => ['div#7d ul.t.clearfix p.wea',   'text'],
                     'tem'  => ['div#7d ul.t.clearfix p.tem',   'text'],
@@ -301,7 +300,7 @@ function startAppProducer()
             ),
             array(
                 "url" => "http://www.weather.com.cn/weather/201010100.shtml",
-                "rule" => array(
+                'rule' => array(
                     'time' => ['div#7d ul.t.clearfix h1',      'text'],
                     'wea'  => ['div#7d ul.t.clearfix p.wea',   'text'],
                     'tem'  => ['div#7d ul.t.clearfix p.tem',   'text'],
@@ -315,21 +314,22 @@ function startAppProducer()
         //以下是旧版本OOP风格的单任务创建API：可继续使用
         $_task['url'] = "http://www.demo5.com";
         $producer->newTaskMan()->setUrl($_task['url'])->setRule($_task['rule'])
-            ->setContext($context)->createTask();
+                 ->setContext($context)->createTask();
 
         //以下是旧版本OOP风格的多任务创建API：不推荐使用
         $_task['url'] = "http://www.demo6.com";
         $producer->newTaskMan()->createMultiTask($_task);
 
-        //也可以通过开启一个内部端口与第三方应用进行外部通信来创建任务
-        /*
-         *$server = new Server();
-         *$server->setServerSocketAddress("text://0.0.0.0:3333");
-         *$server->serve();
-         *$server->onMessage = function($connection, $task)use($producer){
-         *    $producer->createTask($task);
-         *};
-         */
+        //使用无头浏览器爬取动态页面
+        $context['headless_browser']['headless'] = true;
+        $dynamic_task = array(
+            'url'  => 'https://www.toutiao.com',
+            'rule' => array(
+                'title' => ['div.show-monitor ol li a', 'aria-label'],
+            ), 
+            'context' => $context,
+        );
+        $producer->createTask($dynamic_task);
     };
 }
 
@@ -455,7 +455,7 @@ startAppParser();
 
 //启动通用型服务器组件，可按需自由定制一些服务，
 //完全独立于 [Producer|Downloader|Parser] 组件.
-//startAppServer();
+startAppServer();
 
 
 PHPCreeper::start();

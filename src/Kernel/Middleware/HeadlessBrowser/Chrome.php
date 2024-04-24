@@ -143,7 +143,7 @@ class Chrome
     public function getMergedOptions($args = [])
     {
         !is_array($args) && $args = [];
-        $merged_options = array_merge(self::getDefaultArguments(), $args, self::$_config);
+        $merged_options = array_merge(self::getDefaultArguments(), self::$_config, $args);
 
         return $merged_options;
     }
