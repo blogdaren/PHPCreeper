@@ -221,12 +221,10 @@ $config['task'] = array(
         'user_define_key1' => 'user_define_value1',
         'user_define_key2' => 'user_define_value2',
         //无头浏览器，如果是动态页面考虑启用，否则应当禁用 [默认使用chrome且为禁用状态]
-        'headless_browser' => [
-            'headless' => false, 
-        ],
+        'headless_browser' => ['headless' => false, /*更多其他无头参数*/],
+        //更多其他上下文参数详见官方手册
     ],
 ); 
-
 
 
 /**
@@ -242,8 +240,7 @@ function startAppProducer()
     //模拟抓取未来7天内北京的天气预报
     $producer->onProducerStart = function($producer){
         //任务私有context，其上下文成员与全局context完全相同，最终会采用合并覆盖策略
-        $context = [];
-
+        $private_task_context = [];
 
         //在v1.6.0之前，爬山虎主要使用OOP风格的API来创建任务：
         //$producer->newTaskMan()->setXXX()->setXXX()->createTask()
@@ -251,14 +248,12 @@ function startAppProducer()
         //$producer->newTaskMan()->setXXX()->setXXX()->createMultiTask()
         //$producer->newTaskMan()->setXXX()->setXXX()->createMultiTask($task)
 
-
         //自v1.6.0开始，爬山虎提供了更加短小便捷的API来创建任务, 而且参数类型更加丰富：
         //注意：仅仅只是扩展，原有的API依然可以正常使用，提倡扩展就是为了保持向下兼容。
         //1. 单任务API：$task参数类型可支持：[字符串 | 一维数组]
-        //1. 单任务API：$producer->createTask($task);
-        //2. 多任务API：$task参数类型可支持：[字符串 | 一维数组 | 二维数组]
-        //2. 多任务API：$producer->createMultiTask($task);
-
+        //2. 单任务API：$producer->createTask($task);
+        //3. 多任务API：$task参数类型可支持：[字符串 | 一维数组 | 二维数组]
+        //4. 多任务API：$producer->createMultiTask($task);
 
         //使用字符串：不推荐使用，配置受限，需要自行处理抓取结果
         //$task = "http://www.weather.com.cn/weather/101010100.shtml";
@@ -266,7 +261,7 @@ function startAppProducer()
         //$producer->createMultiTask($task);
 
         //使用一维数组：推荐使用，配置丰富，引擎内置处理抓取结果
-        $task = $_task = array(
+        $task = array(
             'active' => true,       //是否激活当前任务，只有配置为false才会冻结任务，默认true
             'url' => "http://www.weather.com.cn/weather/101010100.shtml",
             'rule' => array(        //如果该字段留空默认将返回原始下载数据
@@ -278,13 +273,12 @@ function startAppProducer()
             ), 
             'rule_name' =>  '',     //如果留空将使用md5($task_id)作为规则名
             'refer'     =>  '',
-            'type'      =>  'text', //可以自由设定类型
+            'type'      =>  'text', //已丧失原本的概念设定,可以自由设定类型
             'method'    =>  'get',
-            'context'   =>  $context,
+            'context'   =>  $private_task_context,
         );
         $producer->createTask($task);
         $producer->createMultiTask($task);
-
 
         //使用二维数组: 推荐使用，配置丰富，因为是多任务，所以只能调用createMultiTask()接口
         $task = array(
@@ -296,7 +290,7 @@ function startAppProducer()
                     'tem'  => ['div#7d ul.t.clearfix p.tem',   'text'],
                 ), 
                 'rule_name' => 'r1', //如果留空将使用md5($task_id)作为规则名
-                "context" => $context,
+                "context" => $private_task_context,
             ),
             array(
                 "url" => "http://www.weather.com.cn/weather/201010100.shtml",
@@ -306,28 +300,20 @@ function startAppProducer()
                     'tem'  => ['div#7d ul.t.clearfix p.tem',   'text'],
                 ), 
                 'rule_name' => 'r2', //如果留空将使用md5($task_id)作为规则名
-                "context" => $context,
+                "context" => $private_task_context,
             ),
         );
         $producer->createMultiTask($task);
 
-        //以下是旧版本OOP风格的单任务创建API：可继续使用
-        $_task['url'] = "http://www.demo5.com";
-        $producer->newTaskMan()->setUrl($_task['url'])->setRule($_task['rule'])
-                 ->setContext($context)->createTask();
-
-        //以下是旧版本OOP风格的多任务创建API：不推荐使用
-        $_task['url'] = "http://www.demo6.com";
-        $producer->newTaskMan()->createMultiTask($_task);
-
         //使用无头浏览器爬取动态页面
-        $context['headless_browser']['headless'] = true;
+        $private_task_context['headless_browser']['headless'] = true;
         $dynamic_task = array(
             'url'  => 'https://www.toutiao.com',
             'rule' => array(
                 'title' => ['div.show-monitor ol li a', 'aria-label'],
+                'link'  => ['div.show-monitor ol li a', 'href'],
             ), 
-            'context' => $context,
+            'context' => $private_task_context,
         );
         $producer->createTask($dynamic_task);
     };
@@ -347,16 +333,6 @@ function startAppDownloader()
     $downloader->setName('AppDownloader')->setCount(1)->setClientSocketAddress([
         'ws://127.0.0.1:8888',
     ]);
-
-    $downloader->onTaskEmpty = function($downloader){
-    };
-
-    //使用无头浏览器回调或者直接使用无头浏览器相关API
-    $downloader->onHeadlessBrowserOpenPage = function($downloader, $browser, $page, $url){
-        //$page->navigate($url)->waitForNavigation('firstMeaningfulPaint');
-        //$html = $page->getHtml();
-        //return $html;
-    };
 
     $downloader->onDownloaderStart = function($downloader){
     };
@@ -381,6 +357,23 @@ function startAppDownloader()
     //回调【onFailDownload】的新增别名是【onDownloadFail】
     $downloader->onDownloadFail = function($downloader, $error, $task){
         //pprint($error, $task);
+    };
+
+    $downloader->onTaskEmpty = function($downloader){
+    };
+
+    //使用无头浏览器回调或者直接使用无头浏览器相关API
+    $downloader->onHeadlessBrowserOpenPage = function($downloader, $browser, $page, $url){
+        //注意：灵活设计特定类型的返回值有助于对付各种复杂的应用场景
+        //1. 返回false， 会触发中断后续的业务逻辑；
+        //2. 返回string，会触发中断后续的业务逻辑，一般多用于返回页面的HTML；
+        //3. 返回array， 会继续执行后续的业务逻辑，一般多用于返回无头浏览器选项参数；
+        //4. 返回其他，  会继续执行后续的业务逻辑，相当于是什么也没有发生；
+
+        //注意：一般无需调用如下几行代码，因为爬山虎内部默认会自动调用无头API做同样的工作.
+        //$page->navigate($url)->waitForNavigation('firstMeaningfulPaint');
+        //$html = $page->getHtml();
+        //return $html;
     };
 }
 

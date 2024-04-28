@@ -127,8 +127,7 @@ return array(
         ),
 
         //limit domains which are allowed to crawl, no limit if leave empty
-        'limit_domains' => array(
-        ),
+        'limit_domains' => [],
 
         //automatically compute the optimal bitmap size and hash functions count by given expected insertions and falseratio
         'bloomfilter' => [
@@ -146,7 +145,7 @@ return array(
         //SPECIAL NOTE: there are very few members which is not inconsistent with
         //Guzzle Official, so the inconsistencies will be annotated specifically.
         'context' => array(
-            //whether to enable the downlod cache or not (optional, default `false`)
+            //whether to enable the download cache or not (optional, default `false`)
             'cache_enabled'   => false,                               
 
             //set the download cache directory (optional, default `sys_get_temp_dir()`)
@@ -190,6 +189,13 @@ return array(
             //which are very useful in the upstream and downstream service chain application scenarios.
             'user_define_key1' => 'user_define_value1',
             'user_define_key2' => 'user_define_value2',
+
+            //use headless browser to crawl dynamic pages
+            'headless_browser' => [
+                'headless' => false, 
+                /* more browser options for chrome to see: */
+                /* https://github.com/chrome-php/chrome?tab=readme-ov-file#available-options */
+            ],
         ),
     ),
 
@@ -293,7 +299,7 @@ public function onDownloaderMessage($downloader, $parser_reply)
 
 public function onDownloadBefore($downloader, $task)
 {
-    //here we can reset the $task and be sure to return it
+    //here we can reset the $task and then return it
     //$task = [...];
     //return $task;
 

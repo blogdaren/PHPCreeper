@@ -33,6 +33,7 @@ The chinese document is relatively complete, and the english document will be ke
 * **爬山虎是一个开源自由项目，欢迎小星星Star支持，让更多的人发现、使用并受益。**
 * **爬山虎是一个佛系随缘项目，业余应用应该没有问题，但生产环境表现未知请慎用。**
 * **爬山虎源码根目录下有一个`Examples/start.php`样例脚本，开发之前建议先阅读它而后运行它。**
+* **爬山虎提供的例子如果未能按照预期工作，请检查修改爬取规则，因为源站DOM极可能更新了。**
 
 ## 技术交流
 * 下方绿色二维码为VX交流群：&nbsp;phpcreeper 【群主热心、进微信群需先加此专属微信并备注来意或备注：爬山虎】  
@@ -125,7 +126,7 @@ PHPCreeper::setLang('en');
 //PHPCreeper::setDefaultHeadlessBrowser('chrome');
 
 //Global-Redis-Config: support array value with One-Dimension or Two-Dimension, 
-//SPECIAL NOTE: since v1.6.4, it's been upgraded to use a more secure and officially
+//NOTE: since v1.6.4, it's been upgraded to use a more secure and officially
 //recommended distributed red lock mechanism by default, but it will use the
 //old version of the lock mechanism degenerate only when all the redis instances 
 //are explicitly configured with the option [use_red_lock === false] as below.
@@ -150,16 +151,16 @@ $config['redis'] = [
 //you can free to customize various context settings, including user-defined,
 //for details on how to configure it, please refer to the Follow-Up sections.
 $config['task'] = array( 
+    //'crawl_interval'  => 1,
     //'max_depth'       => 1,
     //'max_number'      => 1000,
     //'max_request'     => 1000,
-    //'crawl_interval'  => 1,
-    //'limit_domains'   => [],
     'context' => [
-        'cache_enabled'   => false,
-        'cache_directory' => sys_get_temp_dir() . '/DownloadCache4PHPCreeper/',
+        'cache_enabled'    => true,
+        'cache_directory'  => sys_get_temp_dir() . '/DownloadCache4PHPCreeper/',
+        'allow_url_repeat' => true,
         'headless_browser' => ['headless' => false, /*more browser options*/],
-        //..................................................
+        //please refer to the Follow-Up sections to find more context options
     ],
 ); 
 
@@ -171,7 +172,7 @@ function startAppProducer()
     $producer->setName('AppProducer')->setCount(1);
     $producer->onProducerStart = function($producer){
         //private task context which will be merged with global context
-        $context = [];
+        $private_task_context = [];
 
         //【version <  1.6.0】: we mainly use an OOP style API to create task     
         //$producer->newTaskMan()->setXXX()->setXXX()->createTask()
@@ -194,17 +195,17 @@ function startAppProducer()
         //$producer->createMultiTask($task);
 
         //use 1D-array：recommeded to use, rich configuration, engine helps to deal with all    
-        $task = $_task = array(
-            'url' => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
-            "rule" => array(
-                'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
-                'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
-            ), 
-            'rule_name' =>  '',       //it will use md5($task_id) as rule_name if leave empty  
+        $task = array(
+            'url'       =>  'https://github.com/search?q=stars:%3E1&s=stars&type=Repositories',
+            'rule'      =>  [
+                'title' => ['div.Box-sc-g0xbh4-0.bDcVHV div.search-title a span', 'text'],
+                'stars' => ['div.Box-sc-g0xbh4-0.bDcVHV ul li a span.Text-sc-17v1xeu-0.gPDEWA', 'text'],
+            ],
+            'rule_name' =>  '',       //md5($task_id) will be the rule_name if leave empty  
             'refer'     =>  '',
-            'type'      =>  'text',   //you can set the type freely on your demand
+            'type'      =>  'text',   //you can set the task type freely on your demand
             'method'    =>  'get',
-            "context"   =>  $context, //we can set a private context for each task individually
+            "context"   =>  $private_task_context, 
         );
         $producer->createTask($task);
         $producer->createMultiTask($task);
@@ -213,43 +214,35 @@ function startAppProducer()
         //since it is multitasking, only the createMultiTask() API can be called
         $task = array(
             array(
-                'url' => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
-                "rule" => array(
-                    'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
-                    'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
-                ), 
-                //'rule_name' => 'r1', //it will use md5($task_id) as rule_name if leave empty
-                "context" => $context,
+                'url'       => 'https://github.com/search?q=stars:%3E1&s=stars&type=Repositories',
+                'rule'      =>  [
+                    'title' => ['div.Box-sc-g0xbh4-0.bDcVHV div.search-title a span', 'text'],
+                    'stars' => ['div.Box-sc-g0xbh4-0.bDcVHV ul li a span.Text-sc-17v1xeu-0.gPDEWA', 'text'],
+                ],
+                'rule_name' => 'r1',
+                "context"   => $private_task_context,
             ),
             array(
-                'url' => "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories",
-                "rule" => array(
-                    'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
-                    'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
-                ), 
-                //'rule_name' => 'r2', //it will use md5($task_id) as rule_name if leave empty
-                "context" => $context,
+                'url'       => 'https://github.com/search?q=stars:%3E1&s=stars&type=Repositories',
+                'rule'      =>  [
+                    'title' => ['div.Box-sc-g0xbh4-0.bDcVHV div.search-title a span', 'text'],
+                    'stars' => ['div.Box-sc-g0xbh4-0.bDcVHV ul li a span.Text-sc-17v1xeu-0.gPDEWA', 'text'],
+                ],
+                'rule_name' => 'r2', 
+                "context"   => $private_task_context,
             ),
         );
         $producer->createMultiTask($task);
 
-        //here is the old OOP style single-task-create API which you can continue to use
-        $_task['url'] = "http://www.demo5.com";
-        $producer->newTaskMan()->setUrl($_task['url'])->setRule($_task['rule'])
-                 ->setContext($context)->createTask();
-
-        //here is the old OOP style multi-task-create API which is not recommended to use
-        $_task['url'] = "http://www.demo6.com";
-        $producer->newTaskMan()->createMultiTask($_task);
-
         //use headless browser to crawl dynamic page
-        $context['headless_browser']['headless'] = true;
+        $private_task_context['headless_browser']['headless'] = true;
         $dynamic_task = array(
-            'url' => "https://www.toutiao.com",
+            'url' => 'https://www.toutiao.com',
             'rule' => array(
                 'title' => ['div.show-monitor ol li a', 'aria-label'],
+                'link'  => ['div.show-monitor ol li a', 'href'],
             ), 
-            'context' => $context,
+            'context' => $private_task_context,
         );
         $producer->createTask($dynamic_task);
     };
@@ -265,20 +258,31 @@ function startAppDownloader()
         'ws://127.0.0.1:8888',
     ]);
 
-    //use headless browser by callback or API directly
-    $downloader->onHeadlessBrowserOpenPage = function($downloader, $browser, $page, $url){
-        //$page->navigate($url)->waitForNavigation('firstMeaningfulPaint');
-        //$html = $page->getHtml();
-        //return $html;
-    };
-
     $downloader->onDownloadBefore = function($downloader, $task){
         //disable http ssl verify in any of the following two ways 
         //$downloader->httpClient->disableSSL();
         //$downloader->httpClient->setOptions(['verify' => false]);
     }; 
 
-    //some more downloader or download callbacks commonly used
+    //use headless browser by user callback or API directly
+    $downloader->onHeadlessBrowserOpenPage = function($downloader, $browser, $page, $url){
+        //Note: keeping flexible types of return values helps to deal with various complex app scenarios.
+        //1. Returning false  will trigger the interruption of subsequent business logic.
+        //2. Returning string will trigger the interruption of subsequent business logic, 
+        //   it is often used to return the HTML of the web page.
+        //3. Returning array  will continue to execute subsequent business logic, 
+        //   it is often used to return headless browser options.
+        //4. Returning others will continue to execute subsequent business logic, 
+        //   which is equivalent to do nothing.
+
+        //Note: Generally, there is no need to call the following lines of code, because 
+        //Note: PHPCreeper will automatically call the headless API by default to do the same work.
+        //$page->navigate($url)->waitForNavigation('firstMeaningfulPaint');
+        //$html = $page->getHtml();
+        //return $html;
+    };
+
+    //more downloader or download callbacks frequently used
     //$downloader->onDownloaderStart = function($downloader){};
     //$downloader->onDownloaderStop  = function($downloader){};
     //$downloader->onDownloaderMessage = function($downloader, $parser_reply){};
@@ -296,7 +300,7 @@ function startAppParser()
         pprint($fields);
     };
 
-    //some more parser callbacks commonly used
+    //more parser callbacks frequently used
     //$parser->onParserStart = function($parser){};
     //$parser->onParserStop  = function($parser){};
     //$parser->onParserMessage = function($parser, $connection, $download_data){};
@@ -354,22 +358,22 @@ $rule = array(
 
 //Single-Task
 $task = array(
-    'url'  => "http://www.weather.com.cn/weather/101010100.shtml",
-    "rule" => $rule,
+    'url'  => 'http://www.weather.com.cn/weather/101010100.shtml',
+    'rule' => $rule,
     'rule_name' =>  'r1',   
 ); 
 
 //Multi-Task
 $task = array(
     array(
-        "url" => "http://www.weather.com.cn/weather/101010100.shtml",
-        "rule" => $rule,
+        'url'  => 'http://www.weather.com.cn/weather/101010100.shtml',
+        'rule' => $rule,
         'rule_name' => 'r1', 
         "context" => $context,
     ),
     array(
-        "url" => "http://www.weather.com.cn/weather/201010100.shtml",
-        "rule" => $rule,
+        'url'  => 'http://www.weather.com.cn/weather/201010100.shtml',
+        'rule' => $rule,
         'rule_name' => 'r2', 
         "context" => $context,
     ),
