@@ -3009,7 +3009,7 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
 	/**
    * @access private
 	 */
-    public function key() : mixed
+    public function key() : int
     {
 		return $this->current;
 	}
@@ -3056,7 +3056,7 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
 	/**
    * @access private
 	 */
-    public function offsetGet($offset) : mixed 
+    public function offsetGet($offset) : object
     {
 		return $this->find($offset);
 	}

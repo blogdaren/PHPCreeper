@@ -9,7 +9,7 @@
 
 namespace PHPCreeper\Kernel\Service\Wrapper;
 
-require_once dirname(dirname(dirname(__FILE__))) . '/Library/phpQuery/phpQuery.php';
+require_once dirname(__FILE__, 3) . '/Library/phpQuery/phpQuery.php';
 
 use PHPCreeper\Kernel\PHPCreeper;
 use PHPCreeper\Kernel\Library\Helper\Tool;

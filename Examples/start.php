@@ -32,10 +32,6 @@ foreach($files as $k => $file){
 }
 
 
-//只是临时为了兼容工具函数库在低版本工作正常以及演示需要，实际并不需要这行代码
-//require_once dirname(__FILE__, 2) . "/src/Kernel/Library/Common/Functions.php";
-
-
 use PHPCreeper\PHPCreeper;
 use PHPCreeper\Producer;
 use PHPCreeper\Downloader;
@@ -51,7 +47,6 @@ use Logger\Logger;
  * enable the single worker mode so that we can run without redis, however, you should note 
  * it will be limited to run only all the downloader workers in this case【version >= 1.3.2】
  * and the default is Multi-Worker run mode.
- *
  * 多worker运作模式开关，默认是多worker运作模式，支持两种运作模式【version >= 1.3.2】：
  *
  * 1、单worker运作模式：限定只能编写若干特定的downloader实例，即可完成所有的爬虫需求，
