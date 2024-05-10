@@ -40,7 +40,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    public const CURRENT_VERSION = '1.8.9';
+    public const CURRENT_VERSION = '1.9.0';
 
     /**
      * engine name
@@ -481,7 +481,7 @@ class PHPCreeper extends Worker
      *
      * @param    boolean $mode
      *
-     * @return   null
+     * @return   void
      */
     static public function enableMultiWorkerMode($mode = true)
     {

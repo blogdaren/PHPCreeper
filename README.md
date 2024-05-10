@@ -30,8 +30,7 @@ The chinese document is relatively complete, and the english document will be ke
 * 爬山虎中文官方网站：[http://www.phpcreeper.com](http://www.phpcreeper.com)
 * 中文开发文档主节点：[http://www.phpcreeper.com/docs/](http://www.phpcreeper.com/docs/)
 * 中文开发文档备节点：[http://www.blogdaren.com/docs/](http://www.blogdaren.com/docs/)
-* **爬山虎是一个开源自由项目，欢迎小星星Star支持，让更多的人发现、使用并受益。**
-* **爬山虎是一个佛系随缘项目，业余应用应该没有问题，但生产环境表现未知请慎用。**
+* **爬山虎是一个免费开源的佛系爬虫项目，欢迎小星星Star支持，让更多的人发现、使用并受益。**
 * **爬山虎源码根目录下有一个`Examples/start.php`样例脚本，开发之前建议先阅读它而后运行它。**
 * **爬山虎提供的例子如果未能按照预期工作，请检查修改爬取规则，因为源站DOM极可能更新了。**
 
