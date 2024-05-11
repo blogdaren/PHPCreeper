@@ -326,13 +326,6 @@ class Parser extends PHPCreeper
 
         if($max_depth > 0 && $this->task['depth'] >= $max_depth) 
         {
-            /*
-             *Logger::error(Tool::replacePlaceHolder($this->langConfig['task_exceed_max_depth'], [
-             *    'max_depth' => $max_depth,
-             *    'sub_url'   => $sub_url,
-             *]));
-             */
-
             return true; 
         }
 

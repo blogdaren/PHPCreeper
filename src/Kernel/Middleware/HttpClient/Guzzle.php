@@ -250,10 +250,16 @@ class Guzzle implements HttpClientInterface
         //set cookies
         $options['cookies'] = self::setCookies($options['cookies'] ?? []);
 
+        //duplicate options mere for logging 
+        $duplicate_options = $options;
+        if($duplicate_options['cookies'] instanceof CookieJar){
+            $duplicate_options['cookies'] = $duplicate_options['cookies']->toArray();
+        }
+
         //try to track request args 
-        if(isset($options['track_request_args']) && true === $options['track_request_args'] && is_object($this->getWorker()))
+        if(isset($duplicate_options['track_request_args']) && true === $duplicate_options['track_request_args'] && is_object($this->getWorker()))
         {
-            $full_args = ['url' => $url, 'method' => $method] + $options;
+            $full_args = ['url' => $url, 'method' => $method] + $duplicate_options;
             Logger::crazy(Tool::replacePlaceHolder($this->getWorker()->langConfig['track_request_args'], [
                 'request_args' => str_replace("\\/", "/", json_encode($full_args)),
             ]));

@@ -445,6 +445,6 @@ startAppParser();
 //完全独立于 [Producer|Downloader|Parser] 组件.
 startAppServer();
 
-
+//启动爬山虎引擎
 PHPCreeper::start();
 
