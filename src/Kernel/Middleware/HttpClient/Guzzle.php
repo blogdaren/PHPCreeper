@@ -13,8 +13,10 @@ use PHPCreeper\Kernel\PHPCreeper;
 use PHPCreeper\Kernel\Library\Helper\Tool;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Psr7;
 use PHPCreeper\Kernel\Slot\HttpClientInterface;
 use Logger\Logger;
+
 
 class Guzzle implements HttpClientInterface
 {
@@ -254,6 +256,18 @@ class Guzzle implements HttpClientInterface
         $duplicate_options = $options;
         if($duplicate_options['cookies'] instanceof CookieJar){
             $duplicate_options['cookies'] = $duplicate_options['cookies']->toArray();
+        }
+
+        //rewash multipart-form-data
+        if(!empty($options['multipart']) && is_array($options['multipart']))
+        {
+            foreach($options['multipart'] as $k => &$v)
+            {
+                if(!empty($v['contents_as_stream']) && true === $v['contents_as_stream'] && is_string($v['contents']))
+                {
+                    $v['contents'] = Psr7\Utils::streamFor(fopen($v['contents'], 'r'));
+                }
+            }
         }
 
         //try to track request args 

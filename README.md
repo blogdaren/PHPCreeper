@@ -151,7 +151,6 @@ $config['redis'] = [
 //for details on how to configure it, please refer to the Follow-Up sections.
 $config['task'] = array( 
     //'crawl_interval'  => 1,
-    //'max_depth'       => 1,
     //'max_number'      => 1000,
     //'max_request'     => 1000,
     'context' => [

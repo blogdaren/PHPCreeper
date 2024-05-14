@@ -173,16 +173,8 @@ class Parser extends PHPCreeper
         //check task_id + download_data
         if(empty($task_id) || empty($download_data)) return false;
 
-        //if type of $download_data is resource, then base64_decode it
-        /*
-         *if('text' <> $message['task']['type'])
-         *{
-         *    $download_data = base64_decode($download_data);
-         *}
-         */
-
         //set task + increase task depth
-        $this->setTask($message['task'])->increaseTaskDepth();
+        $this->setTask($message['task']);
 
         //trigger user callback: only return false can skip the rest execution in this session
         $returning = $this->triggerUserCallback('onParserMessage', $this, $connection, $download_data);
@@ -195,28 +187,17 @@ class Parser extends PHPCreeper
         if(false === $returning) return false;
         if(!empty($returning) && is_string($returning)) $download_data = $returning;
 
-        //extract sub url
-        $sub_urls = $this->extractSubUrl($download_data);
-        if(empty($sub_urls)) return false;
-
-        //trigger user callback: only return false can skip the rest execution in this session
-        foreach($sub_urls as $sub_url)
+        //whether to extract sub url
+        if(!isset($message['task']['context']['extract_sub_url']) || false !== $message['task']['context']['extract_sub_url'])
         {
-            $returning = $this->triggerUserCallback('onParserFindUrl', $this, $sub_url);
-            if(false === $returning) continue;
-            if(!empty($returning) && is_string($returning)) $sub_url = $returning;
+            //extract sub url
+            $sub_urls = $this->extractSubUrl($download_data);
 
-            //if task depth > max_depth then discard the current task
-            $check_result = $this->checkWhetherTaskDepthExceedMaxDepth($sub_url);
-            if(true === $check_result) continue;
-
-            //contine to add sub task
-            $sub_task_id = $this->addSubTask($sub_url);
-            if(!empty($sub_task_id))
+            //trigger user callback: only return false can skip the rest execution in this session
+            foreach($sub_urls as $sub_url)
             {
-                Logger::info(Tool::replacePlaceHolder($this->langConfig['parser_find_url'], [
-                    'sub_url'   => $sub_url,
-                ]));
+                $returning = $this->triggerUserCallback('onParserFindUrl', $this, $sub_url);
+                if(false === $returning) continue;
             }
         }
 
@@ -231,6 +212,7 @@ class Parser extends PHPCreeper
         ]);
         $reply = $this->assemblePackage($reply);
 
+        //send feedback to downloader
         $connection->send($reply);
     }
 
@@ -296,7 +278,7 @@ class Parser extends PHPCreeper
     }
 
     /**
-     * @brief    increase task depth
+     * @brief    increase task depth - Deprecated
      *
      * @param    int    $step 
      *
@@ -312,7 +294,7 @@ class Parser extends PHPCreeper
     }
 
     /**
-     * @brief    check whether task depth exceed max depth or not 
+     * @brief    check whether task depth exceed max depth or not - Deprecated
      *
      * @param    string  $sub_url
      *
@@ -519,7 +501,7 @@ class Parser extends PHPCreeper
     }
 
     /**
-     * @brief    add sub task     
+     * @brief    add sub task - Deprecated     
      *
      * @param    string  $sub_url
      *

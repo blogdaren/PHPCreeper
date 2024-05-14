@@ -173,8 +173,6 @@ $config['redis'] = [
 $config['task'] = array( 
     //任务爬取间隔，单位秒，最小支持0.001秒 (可选项，默认1秒)
     //'crawl_interval'  => 1,
-    //最大爬取深度, 0代表爬取深度无限制 (可选项，默认1)
-    //'max_depth'       => 1,
     //任务队列最大task数量, 0代表无限制 (可选项，默认0)
     //'max_number'      => 1000,
     //当前Socket连接累计最大请求数，0代表无限制 (可选项，默认0)
@@ -206,18 +204,25 @@ $config['task'] = array(
         'force_use_md5url_if_rulename_empty' => false,
         //强制使用多任务创建API的旧版本参数风格，保持向下兼容，不再推荐使用 [默认false]
         'force_use_old_style_multitask_args' => false,
+        //设置http请求头：默认引擎会自动伪装成常见的各种随机User-Agent
+        'headers' => [
+            //'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+            //'Accept'     => 'text/html,*/*',
+        ],
         //cookies成员的配置格式和guzzle官方不大一样，屏蔽了cookieJar，取值[false|array]
         'cookies' => [
             //'domain' => 'domain.com',
             //'k1' => 'v1',
             //'k2' => 'v2',
         ],
+        //无头浏览器，如果是动态页面考虑启用，否则应当禁用 [默认使用chrome且为禁用状态]
+        'headless_browser' => ['headless' => false, /*更多其他无头参数详见手册[常见问题]章节*/],
+        //要不要提取子URL，注意提取成功后并不会入队，可配合onParserFindUrl回调API自行入队[默认true]
+        'extract_sub_url'  => true,
         //除了内置参数之外，还可以自由配置自定义参数，在上下游业务链应用场景中十分有用
         'user_define_key1' => 'user_define_value1',
         'user_define_key2' => 'user_define_value2',
-        //无头浏览器，如果是动态页面考虑启用，否则应当禁用 [默认使用chrome且为禁用状态]
-        'headless_browser' => ['headless' => false, /*更多其他无头参数*/],
-        //更多其他上下文参数详见官方手册
+        //更多其他上下文参数详见手册[应用配置]和[常见问题]章节
     ],
 ); 
 
@@ -384,6 +389,10 @@ function startAppParser()
     $parser->setServerSocketAddress('websocket://0.0.0.0:8888');
     $parser->onParserExtractField = function($parser, $download_data, $fields){
         pprint($fields);
+    };
+    $parser->onParserFindUrl = function($parser, $sub_url){
+        //here we can create new task by sub_url
+        //$parser->createTask($sub_url);
     };
 }
 

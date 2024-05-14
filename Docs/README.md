@@ -105,9 +105,6 @@ return array(
         //set the task crawl interval, the minimum 0.001 second (optional, default `1`)
         'crawl_interval'  => 1,
 
-        //set the max crawl depth, 0 indicates no limit (optional, default `1`)
-        'max_depth'       => 1,
-
         //set the max number of the task queue, 0 indicates no limit (optional, default `0`)
         'max_number'      => 1000,
 
@@ -174,6 +171,12 @@ return array(
             //to maintain backward compatibility, but it is not recommendeded to use.
             'force_use_old_style_multitask_args' => false,
 
+            //set http request header: engine will automatically disguise itself as a variety of common random User-Agents
+            'headers' => [
+                //'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                //'Accept'     => 'text/html,*/*',
+            ],
+
             //the format of cookies member is not different with the Guzzle Official, 
             //we shield up the cookieJar, the value maybe [false | array]
             'cookies' => [
@@ -185,17 +188,22 @@ return array(
             //set guzzle config membere here  
             //..............................
 
-            //in addition to the built-in parameters, you can also configure user-defined parameters,
-            //which are very useful in the upstream and downstream service chain application scenarios.
-            'user_define_key1' => 'user_define_value1',
-            'user_define_key2' => 'user_define_value2',
-
             //use headless browser to crawl dynamic pages
             'headless_browser' => [
                 'headless' => false, 
                 /* more browser options for chrome to see: */
                 /* https://github.com/chrome-php/chrome?tab=readme-ov-file#available-options */
             ],
+
+            //whether to extract sub url or not, note that engine just extract the sub url,
+            //but it won't be pushed into the task queue, so you can use the callback API 
+            //`onParserFindUrl` to do this job as you expected. (optional, default `true`)
+            'extract_sub_url'  => true,
+
+            //in addition to the built-in parameters, you can also configure user-defined parameters,
+            //which are very useful in the upstream and downstream service chain application scenarios.
+            'user_define_key1' => 'user_define_value1',
+            'user_define_key2' => 'user_define_value2',
         ),
     ),
 
@@ -345,10 +353,10 @@ public function onParerMessage($parser, $connection, $download_data)
     //pprint($parser->task);
 }
 
-public function onParserFindUrl($parser, $url)
+public function onParserFindUrl($parser, $sub_url)
 {
-    //here we can check whether the sub url is valid or not
-    //if(!Tool::checkUrl($url)) return false;
+    //here we can create new task by sub_url
+    //$parser->createTask($sub_url);
 }
 
 public function onParserExtractField($parser, $download_data, $fields)
