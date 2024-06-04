@@ -173,55 +173,73 @@ $config['redis'] = [
 $config['task'] = array( 
     //任务爬取间隔，单位秒，最小支持0.001秒 (可选项，默认1秒)
     //'crawl_interval'  => 1,
+
     //任务队列最大task数量, 0代表无限制 (可选项，默认0)
     //'max_number'      => 1000,
+
     //当前Socket连接累计最大请求数，0代表无限制 (可选项，默认0)
     //如果当前Socket连接的累计请求数超过最大请求数时，
     //parser端会主动关闭连接，同时客户端会自动尝试重连
     //'max_request'     => 1000,
+
     //限定爬取站点域，留空表示不受限
     'limit_domains' => [],
+
     //根据预期任务总量和误判率引擎会自动计算布隆过滤器最优的bitmap长度以及hash函数的个数
     //'bloomfilter' => [
         //'expected_insertions' => 10000,  //预期任务总量
         //'expected_falseratio' => 0.01,   //预期误判率
     //],
+    
     //全局任务context上下文 [注意每条任务都有各自的私有context上下文，最终采用合并覆盖策略]
     'context' => [
         //要不要缓存下载文件 [默认false]
         'cache_enabled'   => true,
+
+        //缓存下载数据存放目录  (可选项，默认位于系统临时目录下)
         'cache_directory' => sys_get_temp_dir() . '/DownloadCache4PHPCreeper/',
+
         //在特定的生命周期内是否允许重复抓取同一个URL资源 [默认false]
         'allow_url_repeat'   => true,
+
         //要不要跟踪完整的HTTP请求参数，开启后终端会显示完整的请求参数 [默认false]
         'track_request_args' => true,
+
         //要不要跟踪完整的TASK数据包，开启后终端会显示完整的任务数据包 [默认false]
         'track_task_package' => true,
+
         //在v1.6.0之前，如果rulename留空，默认会使用 md5($task_url)作为rulename
         //自v1.6.0开始，如果rulename留空，默认会使用 md5($task_id) 作为rulename
         //所以这个配置参数是仅仅为了保持向下兼容，但是不推荐使用，因为有潜在隐患
         //换句话如果使用的是v1.6.0之前旧版本，那么才有可能需要激活本参数 [默认false]
         'force_use_md5url_if_rulename_empty' => false,
+
         //强制使用多任务创建API的旧版本参数风格，保持向下兼容，不再推荐使用 [默认false]
         'force_use_old_style_multitask_args' => false,
+
         //设置http请求头：默认引擎会自动伪装成常见的各种随机User-Agent
         'headers' => [
             //'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
             //'Accept'     => 'text/html,*/*',
         ],
+
         //cookies成员的配置格式和guzzle官方不大一样，屏蔽了cookieJar，取值[false|array]
         'cookies' => [
             //'domain' => 'domain.com',
             //'k1' => 'v1',
             //'k2' => 'v2',
         ],
+
         //无头浏览器，如果是动态页面考虑启用，否则应当禁用 [默认使用chrome且为禁用状态]
         'headless_browser' => ['headless' => false, /*更多其他无头参数详见手册[常见问题]章节*/],
+
         //要不要提取子URL，注意提取成功后并不会入队，可配合onParserFindUrl回调API自行入队[默认true]
         'extract_sub_url'  => true,
+
         //除了内置参数之外，还可以自由配置自定义参数，在上下游业务链应用场景中十分有用
         'user_define_key1' => 'user_define_value1',
         'user_define_key2' => 'user_define_value2',
+
         //更多其他上下文参数详见手册[应用配置]和[常见问题]章节
     ],
 ); 

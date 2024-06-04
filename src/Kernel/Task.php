@@ -251,6 +251,7 @@ class Task
         $method  = (empty($input['method']) || !is_string($input['method'])) ? $this->getMethod() : $input['method'];
         $referer = (empty($input['referer']) || !is_string($input['referer'])) ? $this->getReferer() : $input['referer'];
         $rule    = (empty($input['rule']) || !is_array($input['rule'])) ? $this->getRule() : $input['rule'];
+        $rule_name = (empty($input['rule_name']) || !is_string($input['rule_name'])) ? $this->getRuleName() : $input['rule_name'];
 
 
         //important!!! ensure that the 4th argument of rule is a valid callback string
@@ -264,7 +265,6 @@ class Task
         $depth     = $input['depth'];
         $context   = $this->getContext($input['context'] ?? []);
         $task_id   = $this->createTaskId();
-        $rule_name = $this->getRuleName();
 
         if(empty($rule_name) || !is_string($rule_name)) 
         {
