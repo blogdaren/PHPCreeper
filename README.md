@@ -140,7 +140,7 @@ $config['redis'] = [
         'prefix'    =>  'PHPCreeper', 
         'connection_timeout' => 5,
         'read_write_timeout' => 0,
-        //'use_red_lock'     => true,   //default to true since v1.6.4
+        'use_red_lock'       => true,   //default to true since v1.6.4
     ],
 ];
 
@@ -201,7 +201,7 @@ function startAppProducer()
             ],
             'rule_name' =>  '',       //md5($task_id) will be the rule_name if leave empty  
             'refer'     =>  '',
-            'type'      =>  'text',   //you can set the task type freely on your demand
+            'type'      =>  'text',   //it has lost the original concept setting, which can be set freely
             'method'    =>  'get',
             "context"   =>  $private_task_context, 
         );
@@ -349,9 +349,9 @@ If u wanna develop the app based on the `PHPCreeper Application Framework` or `s
 ```php
 //NOTE: this is new usage for【version >= v1.6.0】, strongly recommended to use.
 $rule = array( 
-    'field1' => ['selector', 'flag', 'range', 'callback'],
+    'field1' => ['selector', 'action', 'range', 'callback'],
     .....................................................,
-    'fieldN' => ['selector', 'flag', 'range', 'callback'],
+    'fieldN' => ['selector', 'action', 'range', 'callback'],
 );
 
 //Single-Task
@@ -395,15 +395,15 @@ $urls = array(
 
 $rule = array( 
     'rule_name1' => array(
-        'field1' => ['selector', 'flag', 'range', 'callback'],
+        'field1' => ['selector', 'action', 'range', 'callback'],
         '......' => ['........', '....', '.....', '........'];
-        'fieldN' => ['selector', 'flag', 'range', 'callback'],
+        'fieldN' => ['selector', 'action', 'range', 'callback'],
     );
     .........................................................,
     'rule_nameN' => array(
-        'field1' => ['selector', 'flag', 'range', 'callback'],
+        'field1' => ['selector', 'action', 'range', 'callback'],
         '......' => ['........', '....', '.....', '........'];
-        'fieldN' => ['selector', 'flag', 'range', 'callback'],
+        'fieldN' => ['selector', 'action', 'range', 'callback'],
     );
 );
 ```
@@ -417,7 +417,7 @@ index the data that we want, if you leave it empty, it will use
 selector must be provided, or it will be ignored, just like jQuery selector, its value can be like `#idName` or `.className` or `Html Element` 
 and so on.
 
-+ **flag**  
++ **action**  
 default value is `text`, indicates what action we should take, the value can be one of the following:    
 `text`： used to get the text of html element    
 `html`： used to get the html code snippets    
@@ -433,8 +433,8 @@ the value can be like `#idName` or `.className` or `Html Element` and so on.
 + **callback**  
 you can trigger a `callback string` or `callback function` here, but remember to return the data expected.
 
-    `callback string:`  it is semantically equivalent to the callback function, but it can only be type of string, **recommended to use**.   
-    `callback function:` ~~PHP native callback function which may work unexpectedly in communication across multi-process environments, supported currently but **strongly NOT recommended to use and may be deprecated in the near future**.~~   
+  `callback string:`  it is recommended to use and semantically equivalent to the PHP native callback function.   
+~~`callback function:` PHP native callback function which may work unexpectedly in communication across multi-process environments, supported currently but **strongly NOT recommended to use and may be deprecated in the near future**.~~   
 
 
 ```php   
