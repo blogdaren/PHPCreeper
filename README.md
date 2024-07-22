@@ -420,7 +420,7 @@ and so on.
 + **action**  
 default value is `text`, indicates what action we should take, the value can be one of the following:    
 `text`： used to get the inner text of html element    
-`html`： used to get the inner text with tags of html element 
+`html`： used to get the inner text with tags of html element    
 `attr`： used to get the attrbute value of html element     
 　　　　【**Attention: the real value shoud be the attribute like `src`、`href` etc, NOT `attr` itself**】   
 `css` ： &nbsp;used specially to get the style attribute of html element, and return as an array form   
