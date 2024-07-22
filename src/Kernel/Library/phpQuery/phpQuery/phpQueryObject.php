@@ -888,14 +888,15 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
 				if ($this->elements)
 					$this->elements = array($this->elements[count($this->elements)-1]);
 				break;
-			/*case 'parent':
+			case 'parent':
 				$stack = array();
 				foreach($this->elements as $node) {
-					if ( $node->childNodes->length )
-						$stack[] = $node;
+                    if (is_object($node->parentNode) && $node->parentNode->hasChildNodes()){
+                        $stack[] = $node->parentNode;     
+                    }
 				}
 				$this->elements = $stack;
-				break;*/
+				break;
 			case 'contains':
 				$text = trim($args, "\"'");
 				$stack = array();
@@ -1037,6 +1038,23 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
                     }
 				)->elements;
 			break;
+            case 'nth-of-type':
+                $param = trim($args, "\"'");
+                if(!$param || !is_numeric($param)) $param = null;
+                $mapped = $this->map(
+                    function($node, $index){
+                        $prevs = pq($node)->prevAll($node->tagName)->size();
+                        if ($prevs && $prevs == $index-1)
+                            return $node;
+                        else if (! $prevs && $index == 1)
+                            return $node;
+                        else 
+                            return null;
+                    },   
+                    new CallbackParam(), $param
+                );   
+                $this->elements = $mapped->elements;
+            break;
 			case 'nth-child':
 				$param = trim($args, "\"'");
 				if (! $param)
