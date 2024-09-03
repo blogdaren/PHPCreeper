@@ -40,7 +40,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    public const CURRENT_VERSION = '1.9.2';
+    public const CURRENT_VERSION = '1.9.3';
 
     /**
      * engine name
@@ -767,7 +767,7 @@ class PHPCreeper extends Worker
 
         array_map(function($key)use(&$config){
             if(isset($config[$key])) unset($config[$key]);
-        }, ['redis', 'mysql', 'lang']);
+        }, ['redis', 'dbo', 'lang']);
 
         //兼容不同工作环境下的配置：未来可能会考虑重新设定一套统一的配置规格
         if(!defined('USE_PHPCREEPER_APPLICATION_FRAMEWORK')){
@@ -781,9 +781,9 @@ class PHPCreeper extends Worker
             Configurator::set('globalConfig/database/redis', $this->_config['redis']);
         }
 
-        if(!empty($this->_config['mysql']))
+        if(!empty($this->_config['dbo']))
         {
-            Configurator::set('globalConfig/database/mysql', $this->_config['mysql']);
+            Configurator::set('globalConfig/database/dbo', $this->_config['dbo']);
         }
 
         if(!empty($this->_config['lang']))
