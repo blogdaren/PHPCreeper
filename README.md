@@ -35,10 +35,11 @@ The chinese document is relatively complete, and the english document will be ke
 * **爬山虎提供的例子如果未能按照预期工作，请检查修改爬取规则，因为源站DOM极可能更新了。**
 
 ## 技术交流
-* 下方绿色二维码为微信交流群：&nbsp;phpcreeper 【进群前需先加此专属微信并备明来意或附上备注：爬山虎】  
+* 下方绿色二维码为微信交流群：phpcreeper 【进群之前需先加此专属微信并备明来意或附上备注：爬山虎】  
+* 若是奔着虎哥的原创视频[《深入PHP内核源码》](https://item.taobao.com/item.htm?ft=t&id=719914277319)而来，务必添加专属微信方可获得配套教程文档，弥足珍贵。
 * 微信群主要围绕 [爬山虎](http://www.phpcreeper.com) 和 [workerman](https://www.workerman.net/)
-和 [深入PHP内核源码](https://www.bilibili.com/video/BV1pP4y1G7ae) 
-开展技术交流，观看PHP内核视频请移步[B站](https://www.bilibili.com/video/BV1pP4y1G7ae)
+和 [深入PHP内核源码](https://item.taobao.com/item.htm?ft=t&id=719914277319) 
+开展技术交流，观看PHP内核视频请移步至[B站](https://www.bilibili.com/video/BV1pP4y1G7ae)。
 
 <p align="center">
   <img src="./Image/QRCodePHPCreeperForWechat.png" />
@@ -434,7 +435,7 @@ the value can be like `#idName` or `.className` or `Html Element` and so on.
 you can trigger a `callback string` or `callback function` here, but remember to return the data expected.
 
   `callback string:`  it is recommended to use and semantically equivalent to the PHP native callback function.   
-~~`callback function:` PHP native callback function which may work unexpectedly in communication across multi-process environments, supported currently but **strongly NOT recommended to use and may be deprecated in the near future**.~~   
+  `callback function:` note that you should use `callback string` instead of ~~`callback function`~~, because PHP native callback function may work unexpectedly in communication across multi-process environments.   
 
 
 ```php   
@@ -567,24 +568,11 @@ php start.php connections
 * [http://www.blogdaren.com](http://www.blogdaren.com)
 * [https://www.workerman.net](https://www.workerman.net)
 
-## Donate
-As a free worker, if you think [PHPCreeper](http://www.phpcreeper.com) is valuable to you and benefit from it, 
-I'm willing to accept donations from all sides. Thanks a lot.
-
-* By Alipay or Wechat：    
-![alipay](./Image/alipay.png)
-&nbsp;&nbsp;&nbsp;&nbsp;
-![wechat](./Image/wechat.png)
-
 ## LICENSE
 [PHPCreeper](http://www.phpcreeper.com) is released under the [MIT License](https://github.com/blogdaren/PHPCreeper/blob/master/LICENSE.txt).   
 
 ## DISCLAIMER
 Please **DON'T** use PHPCreeper for businesses which are **NOT PERMITTED BY LAW** in your country. 
 I take no warranty or responsibility for this code. Use at your own risk.
-
-## 友情链接
-* 致谢workerman官方：[workerman](https://www.workerman.net)
-* 协程版workerman：[WarriorMan](https://github.com/zyfei/WarriorMan)
 
 
