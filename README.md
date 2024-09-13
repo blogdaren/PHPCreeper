@@ -153,6 +153,7 @@ $config['redis'] = [
 $config['task'] = array( 
     //'crawl_interval'  => 1,
     //'max_number'      => 1000,
+    //'max_connections' => 1,
     //'max_request'     => 1000,
     'context' => [
         'cache_enabled'    => true,
@@ -285,10 +286,11 @@ function startAppDownloader()
     //$downloader->onDownloaderStart = function($downloader){};
     //$downloader->onDownloaderStop  = function($downloader){};
     //$downloader->onDownloaderMessage = function($downloader, $parser_reply){};
+    //$downloader->onDownloaderConnectToParser = function($connection){};
     //$downloader->onDownloadStart = function($downloader, $task){};
     //$downloader->onDownloadAfter = function($downloader, $download_data, $task){};
     //$downloader->onDownloadFail  = function($downloader, $error, $task){};
-    //$downloader->onTaskEmpty = function($downloader){};
+    //$downloader->onDownloadTaskEmpty = function($downloader){};
 }
 
 function startAppParser()

@@ -40,7 +40,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    public const CURRENT_VERSION = '1.9.3';
+    public const CURRENT_VERSION = '1.9.4';
 
     /**
      * engine name
@@ -324,6 +324,8 @@ class PHPCreeper extends Worker
         'onDownloaderStop'     => null,
         'onDownloaderReload'   => null,
         'onDownloaderMessage'  => null,
+        'onDownloaderConnectToParser' => null,
+        'onTaskEmpty'          => null,
         'onBeforeDownload'     => null,
         'onStartDownload'      => null,
         'onAfterDownload'      => null,
@@ -344,7 +346,6 @@ class PHPCreeper extends Worker
         'onServerBufferFull'   => null,
         'onServerBufferDrain'  => null,
         'onServerError'        => null,
-        'onTaskEmpty'          => null,
         'onHeadlessBrowserOpenPage' => null,
     );
 
@@ -364,6 +365,7 @@ class PHPCreeper extends Worker
         'onStartDownload'   => ['onDownloadStart'],
         'onAfterDownload'   => ['onDownloadAfter'],
         'onFailDownload'    => ['onDownloadFail'],
+        'onTaskEmpty'       => ['onDownloadTaskEmpty'],
     );
 
     /**

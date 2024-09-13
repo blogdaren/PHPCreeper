@@ -177,9 +177,12 @@ $config['task'] = array(
     //任务队列最大task数量, 0代表无限制 (可选项，默认0)
     //'max_number'      => 1000,
 
+    //特指每个下载器进程可以建立到解析器的最大连接数 (可选项，默认1，最小值为1，最大值为1000)
+    //'max_connections' => 1,
+    
     //当前Socket连接累计最大请求数，0代表无限制 (可选项，默认0)
     //如果当前Socket连接的累计请求数超过最大请求数时，
-    //parser端会主动关闭连接，同时客户端会自动尝试重连
+    //parser端会主动关闭连接，同时客户端会自动尝试重连.
     //'max_request'     => 1000,
 
     //限定爬取站点域，留空表示不受限
@@ -355,6 +358,10 @@ function startAppDownloader()
     $downloader->onDownloaderStart = function($downloader){
     };
 
+    $downloader->onDownloaderConnectToParser = function($connection){
+        //$connection->bufferFull = true;
+    };
+
     //回调【onBeforeDownload】的新增别名是【onDownloadBefore】
     $downloader->onDownloadBefore = function($downloader, $task){
         //disable http ssl verify in any of the following two ways 
@@ -377,7 +384,9 @@ function startAppDownloader()
         //pprint($error, $task);
     };
 
-    $downloader->onTaskEmpty = function($downloader){
+    //回调【onTaskEmpty】的新增别名是【onDownloadTaskEmpty】
+    $downloader->onDownloadTaskEmpty= function($downloader){
+        //$downloader->removeTimer();
     };
 
     //使用无头浏览器回调或者直接使用无头浏览器相关API

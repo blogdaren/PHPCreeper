@@ -123,7 +123,7 @@ class Downloader extends PHPCreeper
         }
 
         //try to connect to parser asynchronously then execute consumeOneTask by interval
-        $this->connectToParser();
+        $this->_connectToParser();
     }
 
     /**
@@ -158,7 +158,7 @@ class Downloader extends PHPCreeper
      *
      * @return   void
      */
-    public function connectToParser()
+    private function _connectToParser()
     {
         //get all task connections
         $task_connections = $this->getAsyncTaskConnection();
@@ -229,6 +229,10 @@ class Downloader extends PHPCreeper
         Logger::debug(Tool::replacePlaceHolder($this->langConfig['downloader_connect_success'], [
             'downloader_client_address' => 'tcp://' . $connection->getLocalAddress(),
         ]));
+
+        //trigger callback
+        $returning = $this->triggerUserCallback('onDownloaderConnectToParser', $connection);
+        if(false === $returning) return false;
 
         //install task timer
         $connection->taskTimerId = Timer::add($this->getTaskCrawlInterval(), [$this, 'consumeOneTask'], [$connection->channel], 1);

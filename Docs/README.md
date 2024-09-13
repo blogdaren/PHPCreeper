@@ -108,6 +108,10 @@ return array(
         //set the max number of the task queue, 0 indicates no limit (optional, default `0`)
         'max_number'      => 1000,
 
+        //specifies the max number of connections each downloader process can connect to the parser
+        //(optional, default `1`, minimum value 1, maximum value 1000)
+        //'max_connections' => 1,
+
         //set the max number of the request for each socket connection,  
         //if the cumulative number of socket requests exceeds the max number of requests,
         //the parser will close the connection and try to reconect automatically.
