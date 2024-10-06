@@ -40,7 +40,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    public const CURRENT_VERSION = '1.9.4';
+    public const CURRENT_VERSION = '1.9.5';
 
     /**
      * engine name
@@ -1027,17 +1027,15 @@ class PHPCreeper extends Worker
      */
     public function __set($k, $v)
     {
-        //$k == 'whenStart' && $k = 'onStart'; 
         $k = self::getCallbackAlias($k);
 
-        if(array_key_exists($k, self::$callbacks) && is_callable($v))
-        {
+        /*if(array_key_exists($k, self::$callbacks) && is_callable($v)) {
             self::$callbacks[$k][] = $v;
-        }
-        else
-        {
+        } else {
             $this->$k = $v;
-        }
+        }*/
+
+        $this->$k = $v;
 
         return false;
     }
@@ -1064,7 +1062,7 @@ class PHPCreeper extends Worker
     }
 
     /**
-     * @brief    triggerUserCallback    
+     * @brief    trigger user callback    
      *
      * @param    string  $name
      * @param    mixed   $args
@@ -1073,7 +1071,15 @@ class PHPCreeper extends Worker
      */
     public function triggerUserCallback($name, ...$args)
     {
-        $callbacks = self::$callbacks[$name];
+        //strictly speaking: every worker should define its respective user callbacks separately
+        if(property_exists($this, $name) && array_key_exists($name, self::$callbacks) && is_callable($this->$name))
+        {
+            return call_user_func($this->$name, ...$args);
+        }
+
+        return;
+
+        /*$callbacks = self::$callbacks[$name];
 
         if(empty($callbacks)) return;
 
@@ -1083,7 +1089,7 @@ class PHPCreeper extends Worker
 
         if(!isset($map[0])) return;
 
-        return $map[0];
+        return $map[0];*/
     }
 
     /**

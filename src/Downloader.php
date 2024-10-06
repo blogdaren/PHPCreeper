@@ -107,7 +107,7 @@ class Downloader extends PHPCreeper
         $returning = $this->triggerUserCallback('onDownloaderStart', $this);
         if(false === $returning) return false;
 
-        //check middleware again to avoid unexpected things by user callback 
+        //check middleware again to avoid unexpected issues by user callback 
         $result = $this->checkWhetherMiddlewareIsValid();
         if(0 <> $result['error_code'])
         {
@@ -280,7 +280,7 @@ class Downloader extends PHPCreeper
         //trigger callback
         $returning = $this->triggerUserCallback('onDownloaderMessage', $this, $parser_reply);
 
-        //check middleware again to avoid unexpected things by user callback 
+        //check middleware again to avoid unexpected issues by user callback 
         $result = $this->checkWhetherMiddlewareIsValid();
         if(0 <> $result['error_code'])
         {
@@ -392,6 +392,10 @@ class Downloader extends PHPCreeper
             return false;
         }
 
+        //inject connection channel into $task, pay attention to the following rules:
+        //the callback task channel have higher priority than the task config channel
+        $task['channel'] = $this->getTaskConfigChannel($task) ?: $channel;
+
         //logger
         Logger::info(Tool::replacePlaceHolder($this->langConfig['downloader_get_one_task'], [
             'task_url'   => $task['url'],
@@ -400,7 +404,7 @@ class Downloader extends PHPCreeper
         //trigger user callback
         $returning = $this->triggerUserCallback('onBeforeDownload', $this, $task);
 
-        //check middleware again to avoid unexpected things by user callback 
+        //check middleware again to avoid unexpected issues by user callback 
         $result = $this->checkWhetherMiddlewareIsValid();
         if(0 <> $result['error_code'])
         {
@@ -411,11 +415,22 @@ class Downloader extends PHPCreeper
         if(false === $returning) return false;
         if(!empty($returning) && is_array($returning)) $task = $returning;
 
-        //reject connection channel into $task
-        $task['channel'] = $channel;
-
         //start download
         $this->_startDownload($task);
+    }
+
+    /**
+     * @brief    get task config channel   
+     *
+     * @param    array  $task
+     *
+     * @return   string
+     */
+    public function getTaskConfigChannel($task = [])
+    {
+        if(!is_array($task) || empty($task['parser']) || !is_string($task['parser'])) return '';
+
+        return $this->routerToParser($task['parser']);
     }
 
     /**
@@ -442,7 +457,7 @@ class Downloader extends PHPCreeper
         //trigger user callback
         $returning = $this->triggerUserCallback('onStartDownload', $this, $task);
 
-        //check middleware again to avoid unexpected things by user callback 
+        //check middleware again to avoid unexpected issues by user callback 
         $result = $this->checkWhetherMiddlewareIsValid();
         if(0 <> $result['error_code'])
         {
@@ -459,7 +474,7 @@ class Downloader extends PHPCreeper
         //trigger user callback: only return false can stop executing in this session
         $returning = $this->triggerUserCallback('onAfterDownload', $this, $download_data, $task);
 
-        //check middleware again to avoid unexpected things by user callback 
+        //check middleware again to avoid unexpected issues by user callback 
         $result = $this->checkWhetherMiddlewareIsValid();
         if(0 <> $result['error_code'])
         {
@@ -603,9 +618,9 @@ class Downloader extends PHPCreeper
     /**
      * @brief    indicates how many connections which could be created by downloader to parser,
      *           this is for per downloader process separately. default 1 if nothing configured 
-     *           and at most 1000 if more than the number, especially, you must must give the 
-     *           appropriate value according to machine memory, or it will lead to unexpected 
-     *           problems at your own disk.
+     *           and at most 1000 if more than the number, especially, you should consider giving 
+     *           an appropriate value according to machine memory, or it will lead to unexpected 
+     *           issues at your own risk.
      *
      * @return   int
      */
@@ -649,39 +664,52 @@ class Downloader extends PHPCreeper
     /**
      * @brief    router target parser server
      *
-     * $conn = [
+     * $conns = [
      *      '127.0.0.1:8888' => [$connection1, $connection2, ...., $connectionN];
      *      '127.0.0.1:9999' => [$connection1, $connection2, ...., $connectionN];
      *      ......
      * ];
      *
-     * @param    array      $conn   
+     * @param    string     $parser
      * @param    string     $algorithm 
      *
      * @return   string
      */
-    private function _routerTargetServer($conn, $algorithm = 'modula')
+    public function routerToParser($parser = '', $algorithm = 'random')
     {
-        if(empty($conn)) return '';
+        if(!is_string($parser)) return '';
 
-        if(1 == $this->count) return array_rand($conn);
+        $conns = $this->getAsyncTaskConnection();
 
-        $target_servers = array_keys($conn);
+        if(empty($conns)) return '';
 
-        switch($algorithm) 
-        {
-            case 'modula':
-                $total_server_number = count($target_servers);
-                $target_server_key = abs($this->id % $total_server_number);
-                break;
-            default:
-                $target_server_key = array_rand($conn);
-                break;
+        $target_servers = array_keys($conns);
+
+        if(empty($parser)){
+            switch($algorithm) 
+            {
+                case 'modula':
+                    $total_server_number = count($target_servers);
+                    $target_server_key = abs($this->id % $total_server_number);
+                    break;
+                case 'random':
+                default:
+                    $target_server_key = array_rand($conns);
+                    break;
+            }
+        }else{
+            $target_server_key = array_search($parser, $target_servers);
+            if(false === $target_server_key) return '';
         }
 
         $target_server = $target_servers[$target_server_key] ?? '';
+        if(empty($target_server)) return '';
 
-        return $target_server;
+        $_conns = $conns[$target_server];
+        $connection_id = $_conns[array_rand($_conns)]->id;
+        $channel = $target_server . '|' . $connection_id;
+
+        return $channel;
     }
 
     /**

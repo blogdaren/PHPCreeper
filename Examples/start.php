@@ -296,6 +296,7 @@ function startAppProducer()
             'refer'     =>  '',
             'type'      =>  'text', //已丧失原本的概念设定,可以自由设定类型
             'method'    =>  'get',
+            'parser'    =>  '',     //如果留空将路由至一台随机的目标parser服务器[ip:port]
             'context'   =>  $private_task_context,
         );
         $producer->createTask($task);

@@ -84,6 +84,13 @@ class Task
     public $rule = [];
 
     /**
+     * task parser 
+     *
+     * @var string
+     */
+    public $parser = '';
+
+    /**
      * task context
      *
      * @var array
@@ -252,6 +259,7 @@ class Task
         $referer = (empty($input['referer']) || !is_string($input['referer'])) ? $this->getReferer() : $input['referer'];
         $rule    = (empty($input['rule']) || !is_array($input['rule'])) ? $this->getRule() : $input['rule'];
         $rule_name = (empty($input['rule_name']) || !is_string($input['rule_name'])) ? $this->getRuleName() : $input['rule_name'];
+        $parser  = (empty($input['parser']) || !is_string($input['parser'])) ? $this->getParser() : $input['parser'];
 
 
         //important!!! ensure that the 4th argument of rule is a valid callback string
@@ -310,6 +318,7 @@ class Task
             'depth'       => $depth,
             'context'     => $context,
             'create_time' => Tool::getNowTime(true),
+            'parser'      => $parser,
         ];
 
         //try to push into queue
@@ -847,5 +856,29 @@ class Task
         }
 
         return true;
+    }
+
+    /**
+     * @brief    set target parser
+     *
+     * @param    string  $parser
+     *
+     * @return   void
+     */
+    public function setParser($parser = '')
+    {
+        if(!is_string($parser)) return;
+
+        $this->parser = $parser;
+    }
+
+    /**
+     * @brief    get target parser  
+     *
+     * @return   string
+     */
+    public function getParser()
+    {
+        return !is_string($this->parser) ? '' : $this->parser;
     }
 }

@@ -52,6 +52,7 @@ The chinese document is relatively complete, and the english document will be ke
 ## Features
 * Inherit almost all features from [workerman](https://www.workerman.net)
 * Support headless browser for crawling dynamic pages
+* Support router to different parser by the task type
 * Support Crontab-Jobs similar to Linux-Crontab
 * Support distributed and separated deployment
 * Support agile development with [PHPCreeper-Application](https://github.com/blogdaren/PHPCreeper-Application)
@@ -203,8 +204,9 @@ function startAppProducer()
             ],
             'rule_name' =>  '',       //md5($task_id) will be the rule_name if leave empty  
             'refer'     =>  '',
-            'type'      =>  'text',   //it has lost the original concept setting, which can be set freely
+            'type'      =>  'text',   //it has lost the original concept setting, feel free to use 
             'method'    =>  'get',
+            'parser'    =>  '',       //router to one random target parser if leave empty [ip:port]  
             "context"   =>  $private_task_context, 
         );
         $producer->createTask($task);
