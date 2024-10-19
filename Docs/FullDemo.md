@@ -1,6 +1,8 @@
 Well, this is an full demo example to show how to `capture the weather in Washington in 7 days`：
 ```php
 <?php 
+//Note: if this example provided by the PHPCreeper does not work as expected, 
+//check to modify the crawl rules, as the source DOM is most likely updated.
 require "./vendor/autoload.php";
 
 use PHPCreeper\PHPCreeper;
@@ -101,7 +103,7 @@ function startAppProducer()
 
         //use string: not recommended to use because the configuration is limited.    
         //so the question is that you need to process the fetching result by yourself     
-        //$task = "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories";
+        //$task = "https://forecast.weather.gov/MapClick.php?lat=47.4113&lon=-120.5563";
         //$producer->createTask($task);
         //$producer->createMultiTask($task);
 
@@ -254,7 +256,7 @@ startAppServer();
 PHPCreeper::start();
 ```
 
-Now, save the example code above to a file and name it to be `github.php` as a startup script, then run it like this:
+Now, save the example code above to a file and name it to be `weather.php` as a startup script, then run it like this:
 ```
-/path/to/php github.php start
+/path/to/php weather.php start
 ```

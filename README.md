@@ -87,8 +87,11 @@ which will greatly improve your job efficiency. Besides, we can also write
 the code which **NOT** depends on the framework, it is also easy to make it.   
 
 Next let's take an example to show how to `capture the weather in Washington in 7 days`：([**See Full Demo Here**](/Docs/FullDemo.md))
+
 ```php
 <?php 
+//Note: if this example provided by the PHPCreeper does not work as expected, 
+//check to modify the crawl rules, as the source DOM is most likely updated.
 require "./vendor/autoload.php";
 
 use PHPCreeper\PHPCreeper;
@@ -300,9 +303,9 @@ startAppServer();
 PHPCreeper::start();
 ```
 
-Now, save the example code above to a file and name it to be `github.php` as a startup script, then run it like this:
+Now, save the example code above to a file and name it to be `weather.php` as a startup script, then run it like this:
 ```
-/path/to/php github.php start
+/path/to/php weather.php start
 ```
 
 ## Usage: Depend On The PHPCreeper Application Framework
