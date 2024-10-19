@@ -56,7 +56,6 @@ The chinese document is relatively complete, and the english document will be ke
 * Support Crontab-Jobs similar to Linux-Crontab
 * Support distributed and separated deployment
 * Support agile development with [PHPCreeper-Application](https://github.com/blogdaren/PHPCreeper-Application)
-* Free to customize various callbacks and 3rd middleware
 * Use PHPQuery as the elegant content extractor
 * With high performance and strong scalability
 
@@ -84,10 +83,10 @@ Firstly, there is another matched Application Framework
 named [PHPCreeper-Application](https://github.com/blogdaren/PHPCreeper-Application) 
 which is published simultaneously for your development convenience,
 although this framework is not necessary, we strongly recommend that you use it
-which will greatly improve your job efficiency. Besides, we can certainly write 
+which will greatly improve your job efficiency. Besides, we can also write 
 the code which **NOT** depends on the framework, it is also easy to make it.   
 
-Next let's take an example to show how to capture the `github top 10 repos ranked by stars`：
+Next let's take an example to show how to `capture the weather in Washington in 7 days`：([**See Full Demo Here**](/Docs/FullDemo.md))
 ```php
 <?php 
 require "./vendor/autoload.php";
@@ -100,12 +99,12 @@ use PHPCreeper\Server;
 use PHPCreeper\Crontab;
 use PHPCreeper\Timer;
 
+//switch runtime language between `zh` and `en`, default is `zh`【version >= 1.3.7】
+PHPCreeper::setLang('en');
+
 //enable the single worker mode so that we can run without redis, however, you should note 
 //it will be limited to run only all the downloader workers in this case【version >= 1.3.2】
 //PHPCreeper::enableMultiWorkerMode(false);
-
-//switch runtime language between `zh` and `en`, default is `zh`【version >= 1.3.7】
-PHPCreeper::setLang('en');
 
 //set master pid file manually as needed【version >= 1.3.8】
 //PHPCreeper::setMasterPidFile('/path/to/master.pid');
@@ -151,19 +150,14 @@ $config['redis'] = [
 //and private task context will adopt the strategy of merging and covering.
 //you can free to customize various context settings, including user-defined,
 //for details on how to configure it, please refer to the Follow-Up sections.
-$config['task'] = array( 
-    //'crawl_interval'  => 1,
-    //'max_number'      => 1000,
-    //'max_connections' => 1,
-    //'max_request'     => 1000,
+$config['task'] = [ 
     'context' => [
         'cache_enabled'    => true,
         'cache_directory'  => sys_get_temp_dir() . '/DownloadCache4PHPCreeper/',
         'allow_url_repeat' => true,
-        'headless_browser' => ['headless' => false, /*more browser options*/],
-        //please refer to the Follow-Up sections to find more context options
+        'headless_browser' => ['headless' => false],
     ],
-); 
+]; 
 
 function startAppProducer()
 {
@@ -175,32 +169,13 @@ function startAppProducer()
         //private task context which will be merged with global context
         $private_task_context = [];
 
-        //【version <  1.6.0】: we mainly use an OOP style API to create task     
-        //$producer->newTaskMan()->setXXX()->setXXX()->createTask()
-        //$producer->newTaskMan()->setXXX()->setXXX()->createTask($task)
-        //$producer->newTaskMan()->setXXX()->setXXX()->createMultiTask()
-        //$producer->newTaskMan()->setXXX()->setXXX()->createMultiTask($task)
-
-        //【version >= 1.6.0】: we provide a shorter and easier API to create task    
-        //with more rich parameter types, and the old OOP style API can still be used,    
-        //and extension jobs are promoted just to maintain backward compatibility
-        //1. Single-Task-API: $task parameter types supported: [string | 1D-array]    
-        //2. Single-Task-API：$producer->createTask($task);   
-        //3. Multi-Task-API:  $task parameter types supported: [string | 1D-array | 2D-array]   
-        //4. Multi-Task-API： $producer->createMultiTask($task);
-
-        //use string: not recommended to use because the configuration is limited.    
-        //so the question is that you need to process the fetching result by yourself     
-        //$task = "https://github.com/search?q=stars:%3E1&s=stars&type=Repositories";
-        //$producer->createTask($task);
-        //$producer->createMultiTask($task);
-
-        //use 1D-array：recommeded to use, rich configuration, engine helps to deal with all    
+        //use 1D-array：we can use either `createTask()` or `createMultiTask()` API
         $task = array(
-            'url'       =>  'https://github.com/search?q=stars:%3E1&s=stars&type=Repositories',
-            'rule'      =>  [
-                'title' => ['div.Box-sc-g0xbh4-0.bDcVHV div.search-title a span', 'text'],
-                'stars' => ['div.Box-sc-g0xbh4-0.bDcVHV ul li a span.Text-sc-17v1xeu-0.gPDEWA', 'text'],
+            'url'  => "https://forecast.weather.gov/MapClick.php?lat=47.4113&lon=-120.5563",
+            'rule' => [       
+                'period'      => ['#seven-day-forecast-container ul li p.period-name', 'text'],
+                'weather'     => ['#seven-day-forecast-container ul li p.short-desc', 'text'],
+                'temperature' => ['#seven-day-forecast-container ul li p.temp', 'text'],
             ],
             'rule_name' =>  '',       //md5($task_id) will be the rule_name if leave empty  
             'refer'     =>  '',
@@ -210,31 +185,31 @@ function startAppProducer()
             "context"   =>  $private_task_context, 
         );
         $producer->createTask($task);
-        $producer->createMultiTask($task);
 
-        //use 2D-array: recommed to use, rich configuration，engine helps to deal with all
-        //since it is multitasking, only the createMultiTask() API can be called
+        //use 2D-array: since it is multitasking, we can only use the `createMultiTask()` API 
         $task = array(
             array(
-                'url'       => 'https://github.com/search?q=stars:%3E1&s=stars&type=Repositories',
-                'rule'      =>  [
-                    'title' => ['div.Box-sc-g0xbh4-0.bDcVHV div.search-title a span', 'text'],
-                    'stars' => ['div.Box-sc-g0xbh4-0.bDcVHV ul li a span.Text-sc-17v1xeu-0.gPDEWA', 'text'],
+                'url'  => "https://forecast.weather.gov/MapClick.php?lat=47.4113&lon=-120.5563",
+                'rule' => [       
+                    'period'      => ['#seven-day-forecast-container ul li p.period-name', 'text'],
+                    'weather'     => ['#seven-day-forecast-container ul li p.short-desc', 'text'],
+                    'temperature' => ['#seven-day-forecast-container ul li p.temp', 'text'],
                 ],
                 'rule_name' => 'r1',
                 "context"   => $private_task_context,
             ),
             array(
-                'url'       => 'https://github.com/search?q=stars:%3E1&s=stars&type=Repositories',
-                'rule'      =>  [
-                    'title' => ['div.Box-sc-g0xbh4-0.bDcVHV div.search-title a span', 'text'],
-                    'stars' => ['div.Box-sc-g0xbh4-0.bDcVHV ul li a span.Text-sc-17v1xeu-0.gPDEWA', 'text'],
+                'url'  => "https://forecast.weather.gov/MapClick.php?lat=47.4113&lon=-120.5563",
+                'rule' => [       
+                    'period'      => ['#seven-day-forecast-container ul li p.period-name', 'text'],
+                    'weather'     => ['#seven-day-forecast-container ul li p.short-desc', 'text'],
+                    'temperature' => ['#seven-day-forecast-container ul li p.temp', 'text'],
                 ],
                 'rule_name' => 'r2', 
                 "context"   => $private_task_context,
             ),
         );
-        $producer->createMultiTask($task);
+        $producer->createMultiTask($task); 
 
         //use headless browser to crawl dynamic page rendered by javascript
         $private_task_context['headless_browser']['headless'] = true;
@@ -266,24 +241,6 @@ function startAppDownloader()
         //$downloader->httpClient->setOptions(['verify' => false]);
     }; 
 
-    //use headless browser by user callback or API directly
-    $downloader->onHeadlessBrowserOpenPage = function($downloader, $browser, $page, $url){
-        //Note: keeping flexible types of return values helps to deal with various complex app scenarios.
-        //1. Returning false  will trigger the interruption of subsequent business logic.
-        //2. Returning string will trigger the interruption of subsequent business logic, 
-        //   it is often used to return the HTML of the web page.
-        //3. Returning array  will continue to execute subsequent business logic, 
-        //   it is often used to return headless browser options.
-        //4. Returning others will continue to execute subsequent business logic, 
-        //   which is equivalent to do nothing.
-
-        //Note: Generally, there is no need to call the following lines of code, because 
-        //Note: PHPCreeper will automatically call the headless API by default to do the same work.
-        //$page->navigate($url)->waitForNavigation('firstMeaningfulPaint');
-        //$html = $page->getHtml();
-        //return $html;
-    };
-
     //more downloader or download callbacks frequently used
     //$downloader->onDownloaderStart = function($downloader){};
     //$downloader->onDownloaderStop  = function($downloader){};
@@ -293,6 +250,7 @@ function startAppDownloader()
     //$downloader->onDownloadAfter = function($downloader, $download_data, $task){};
     //$downloader->onDownloadFail  = function($downloader, $error, $task){};
     //$downloader->onDownloadTaskEmpty = function($downloader){};
+    //$downloader->onHeadlessBrowserOpenPage = function($downloader, $browser, $page, $url){};
 }
 
 function startAppParser()
@@ -576,7 +534,6 @@ php start.php connections
 [PHPCreeper](http://www.phpcreeper.com) is released under the [MIT License](https://github.com/blogdaren/PHPCreeper/blob/master/LICENSE.txt).   
 
 ## DISCLAIMER
-Please **DON'T** use PHPCreeper for businesses which are **NOT PERMITTED BY LAW** in your country. 
-I take no warranty or responsibility for this code. Use at your own risk.
-
-
+Please **DON'T** use PHPCreeper for any businesses which are **NOT PERMITTED BY LAW** in your country.    
+Please comply with the spider protocol for friendly use of PHPCreeper, if you choose to use PHPCreeper,    
+you will comply with this agreement. I take no warranty or responsibility for this code. Use at your own risk.

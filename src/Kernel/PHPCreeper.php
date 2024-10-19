@@ -40,7 +40,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    public const CURRENT_VERSION = '1.9.5';
+    public const CURRENT_VERSION = '1.9.6';
 
     /**
      * engine name
@@ -1360,7 +1360,7 @@ class PHPCreeper extends Worker
         if(false === self::checkSpiderName($this->name))
         {
             self::clearScreen();
-            self::showHelpByeBye('worker name `' . $this->name . '` invalid, only alpha or number combined, and 30 characters at most.');
+            self::showHelpByeBye('worker name `' . $this->name . "` invalid, can only be any combination of numbers or letters or underscores, and can't start with a number, 30 characters at most.");
         }
 
         //set worker count 
@@ -1397,7 +1397,7 @@ class PHPCreeper extends Worker
      */
     static public function checkSpiderName($name = '')
     {
-        if(!preg_match("/^[a-zA-Z0-9]{1,30}$/is", $name)) return false;
+        if(!preg_match("/^[a-zA-Z_][a-zA-Z0-9_]{0,29}$/is", $name)) return false;
 
         return true;
     }
