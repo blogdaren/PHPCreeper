@@ -1,6 +1,6 @@
 
 ## Usage: Depend On The PHPCreeper Application Framework
-Now, let's do the same job based on the Application Framework:    
+Now, let's do the same job based on the PHPCreeper Application Framework:    
 
 
 #### *Step-1：Download PHPCreeper-Application Framework*
@@ -32,27 +32,28 @@ php  Application/Sbin/Creeper
 
 #### *Step-4：Create One Application*
 
-1、Create one spider application named **github**:
+1、Create one spider application named **weather**:
 ```
-php Application/Sbin/Creeper make github --en
+php Application/Sbin/Creeper make weather --en
 ```
 
 2、The complete execution process looks like this:   
-![AppAssistant](/Image/AppGithubEnglish.png)
 
-As matter of fact, we have accomplished all the jobs at this point,
-you just need to run `php github.php start` to see what has happened, 
-but you still need to finish the rest step of the work if you wanna
+![AppWeather2English](/Image/AppWeather2English.png)
+
+In fact, we have done all the jobs at this point,
+now you just need to run `php weather.php start` to see what has happened, 
+but you still need to finish the rest step of the work if you want to 
 do some elaborate work or jobs.
 
 #### *Step-5：Business Configuration*
 1、Switch to the application config direcory:
 ```
-cd Application/Spider/Github/Config/
+cd Application/Spider/Weather/Config/
 ```
 2、Edit the global config file named **global.php**:   
 ```
-Normally, there is no need to change this file unless you wanna create a new global sub-config file
+Basically, there is no need to change this file unless you want to create a new global sub-config file
 ```
 3、Edit the global sub-config file named **database.php**:
 ```php
@@ -62,7 +63,7 @@ return [
         'host'   => '127.0.0.1',
         'port'   => 6379,
         'database' => 0,
-        'prefix' => 'Github',
+        'prefix' => 'Weather',
     ],
 ];
 ```
@@ -74,7 +75,7 @@ return [
         'host'   => '127.0.0.1',
         'port'   => 6379,
         'database' => 0,
-        'prefix' => 'Github',
+        'prefix' => 'Weather',
     ]],
 ];
 ```
@@ -95,9 +96,9 @@ return array(
 
     //whether to start the given worker(s) instance or not(optional, default `true`)
     'start' => array(
-        'GithubProducer'      => true,
-        'GithubDownloader'    => true,
-        'GithubParser'        => true,
+        'AppProducer'      => true,
+        'AppDownloader'    => true,
+        'AppParser'        => true,
     ),
 
     //global task config
@@ -110,7 +111,7 @@ return array(
 
         //specifies the max number of connections each downloader process can connect to the parser
         //(optional, default `1`, minimum value 1, maximum value 1000)
-        //'max_connections' => 1,
+        'max_connections' => 1,
 
         //set the max number of the request for each socket connection,  
         //if the cumulative number of socket requests exceeds the max number of requests,
@@ -213,12 +214,13 @@ return array(
 
     //set the initialized task, support both Single-Task and Multi-Task
     'task_init' => array(
-        'url' => 'https://github.com/search?q=stars:%3E1&s=stars&type=Repositories',
+        'url'  => "https://forecast.weather.gov/MapClick.php?lat=47.4113&lon=-120.5563",
 
         //please refer to the "How to set extractor rule" section for details
         "rule" => array(
-            'title' => ['ul.repo-list div.f4.text-normal > a',      'text'],
-            'stars' => ['ul.repo-list div.mr-3:nth-of-typ(1) > a',  'text'],
+            'period'      => ['#seven-day-forecast-container ul li p.period-name', 'text'],
+            'weather'     => ['#seven-day-forecast-container ul li p.short-desc', 'text'],
+            'temperature' => ['#seven-day-forecast-container ul li p.temp', 'text'],
         ),  
 
         //set rule name which will be set to `md5($task_id)` if leave it empty
@@ -305,6 +307,10 @@ public function onDownloaderReload($downloader)
 {
 }
 
+public function onDownloaderConnectToParser($connection)
+{   
+}  
+
 public function onDownloaderMessage($downloader, $parser_reply)
 {
 }
@@ -312,13 +318,11 @@ public function onDownloaderMessage($downloader, $parser_reply)
 public function onDownloadBefore($downloader, $task)
 {
     //here we can reset the $task and then return it
-    //$task = [...];
     //return $task;
 
     //here we can change the context parameters when creating a http request
-    //$downloader->httpClient->setConnectTimeout(3);
+    //$downloader->httpClient->setConnectTimeout(5);
     //$downloader->httpClient->setTransferTimeout(10);
-    //$downloader->httpClient->setProxy('http://180.153.144.138:8800');
     //$downloader->httpClient->disableSSL();
 }
 
@@ -333,6 +337,10 @@ public function onDownloadAfter($downloader, $download_data, $task)
 }
 
 public function onDownloadFail($downloader, $error, $task)
+{
+}
+
+public function onTaskEmpty($downloader)
 {
 }
 ```
@@ -383,13 +391,13 @@ it can be distributed or deployed separately.
 
 1、Or Global Startup:
 ```
-php github.php start
+php weather.php start
 ```
 
 2、Or Single Startup:
 ```
-php Application/Spider/Github/AppProducer.php start
-php Application/Spider/Github/AppDownloader.php start
-php Application/Spider/Github/AppParser.php start
+php Application/Spider/Weather/Start/AppProducer.php    start
+php Application/Spider/Weather/Start/AppDownloader.php  start
+php Application/Spider/Weather/Start/AppParser.php      start
 ```
 

@@ -144,7 +144,7 @@ $config['redis'] = [
         'prefix'    =>  'PHPCreeper', 
         'connection_timeout' => 5,
         'read_write_timeout' => 0,
-        'use_red_lock'       => true,   //default to true since v1.6.4
+        'use_red_lock'       => true,   
     ],
 ];
 
@@ -322,7 +322,7 @@ $rule = array(
 
 //Single-Task
 $task = array(
-    'url'  => 'http://www.weather.com.cn/weather/101010100.shtml',
+    'url'  => "https://forecast.weather.gov/MapClick.php?lat=47.4113&lon=-120.5563",
     'rule' => $rule,
     'rule_name' =>  'r1',   
 ); 
@@ -330,13 +330,13 @@ $task = array(
 //Multi-Task
 $task = array(
     array(
-        'url'  => 'http://www.weather.com.cn/weather/101010100.shtml',
+        'url'  => "https://forecast.weather.gov/MapClick.php?lat=47.4113&lon=-120.5563",
         'rule' => $rule,
         'rule_name' => 'r1', 
         "context" => $context,
     ),
     array(
-        'url'  => 'http://www.weather.com.cn/weather/201010100.shtml',
+        'url'  => "https://forecast.weather.gov/MapClick.php?lat=47.4113&lon=-120.5563",
         'rule' => $rule,
         'rule_name' => 'r2', 
         "context" => $context,
