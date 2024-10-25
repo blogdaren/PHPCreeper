@@ -174,6 +174,19 @@ class Chrome
     }
 
     /**
+     * @brief    destroy    
+     *
+     * @return   void
+     */
+    public function destroy()
+    {
+        if(empty(self::$_browser) || !is_object(self::$_browser)) return;
+
+        self::$_browser->close();
+        self::$_browser = null;
+    }
+
+    /**
      * @brief    get default arguments    
      *
      * @return   array
@@ -251,9 +264,15 @@ class Chrome
 
         //issue http request
         $page = self::getPage();
-        $page->navigate($url)->waitForNavigation($page_event, $navigate_timeout);
-        $html = $page->getHtml();
-        $page->close();
+
+        try{
+            $page->navigate($url)->waitForNavigation($page_event, $navigate_timeout);
+            $html = $page->getHtml();
+            $page->close();
+        }catch(\Throwable $e){
+            $page->close();
+            throw new \Exception($e->getMessage());
+        }
 
         return $html;
     }
@@ -290,12 +309,19 @@ class Chrome
     /**
      * @brief    set http header
      *
-     * @param    array  $headers
+     * @param    array|string  $headers
      *
      * @return   object
      */
     public function setHeaders($headers = [])
     {
+        if(!is_string($headers) && !is_array($headers)) return $this;
+
+        if(is_string($headers))
+        {
+            $headers = Tool::convertRawHeaderToArray($headers);
+        }
+
         !empty($headers) && self::$_config['headers'] = $headers;
 
         return $this;

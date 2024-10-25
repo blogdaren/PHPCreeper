@@ -841,28 +841,28 @@ class Downloader extends PHPCreeper
         $options['track_request_args'] = !empty($args['track_request_args']) ? true : false;
         $merged_options = $this->headlessBrowser->getMergedOptions($options);
 
+        //maybe issue request by user callback
         try{
-            $this->headlessBrowser->getBrowserFactoryInstance()->setOptions($merged_options);
-            $browser = $this->headlessBrowser->getBrowserInstance();
-            $page = $this->headlessBrowser->getPage();
+            if(property_exists($this, 'onHeadlessBrowserOpenPage')){
+                $this->headlessBrowser->getBrowserFactoryInstance()->setOptions($merged_options);
+                $browser = $this->headlessBrowser->getBrowserInstance();
+                $page = $this->headlessBrowser->getPage();
+                $returning = $this->triggerUserCallback('onHeadlessBrowserOpenPage', $this, $browser, $page, $args['url']);
+                if(false === $returning){
+                    $page->close();
+                    return Tool::throwback('-353', $this->langConfig['downloader_download_task_no'] . '(NaN)', $extra);
+                }elseif(is_string($returning)){
+                    $page->close();
+                    $extra = ['content' => $returning];
+                    return Tool::throwback('0', $this->langConfig['downloader_download_task_yes'], $extra);
+                }else{
+                    $page->close();
+                    is_array($returning) && $merged_options = array_merge($merged_options, $returning);
+                }
+            }
         }catch(\Throwable $e){
             $msg = $e->getMessage();
             return Tool::throwback('-352', $this->langConfig['headless_browser_exception'] . " $msg ", $extra);
-        }
-
-        $returning = $this->triggerUserCallback('onHeadlessBrowserOpenPage', $this, $browser, $page, $args['url']);
-
-        //maybe issue request by user callback
-        if(false === $returning){
-            $page->close();
-            return Tool::throwback('-353', $this->langConfig['downloader_download_task_no'] . '(NaN)', $extra);
-        }elseif(is_string($returning)){
-            $page->close();
-            $extra = ['content' => $returning];
-            return Tool::throwback('0', $this->langConfig['downloader_download_task_yes'], $extra);
-        }else{
-            $page->close();
-            is_array($returning) && $merged_options = array_merge($merged_options, $returning);
         }
 
         //maybe issue request by API directly

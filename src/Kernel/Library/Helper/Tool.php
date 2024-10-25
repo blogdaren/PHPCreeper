@@ -1383,6 +1383,31 @@ class Tool
         }
     }
 
+    /**
+     * @brief    convertRawHeaderToArray    
+     *
+     * @param    string  $header
+     *
+     * @return   array
+     */
+    public static function convertRawHeaderToArray($header = '')
+    {
+        if(!is_string($header)) return [];
+
+        $_header = [];
+        $header = explode("\n", $header);
+        foreach($header as $k => $v)
+        {
+            $tmp = explode(":", $v);
+            if(empty($tmp[0]) || empty($tmp[1])) continue;
+            if(!empty($tmp[0]) && preg_match("/(CONNECT|GET|POST|PUT|DELETE)/s", $tmp[0])) continue; 
+            $k1 = trim($tmp[0]);
+            $v1 = trim($tmp[1]);
+            $_header[$k1] = $v1;
+        }
+
+        return $_header;
+    }
 }
 
 

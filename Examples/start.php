@@ -391,7 +391,7 @@ function startAppDownloader()
     };
 
     //使用无头浏览器回调或者直接使用无头浏览器相关API
-    $downloader->onHeadlessBrowserOpenPage = function($downloader, $browser, $page, $url){
+    /*$downloader->onHeadlessBrowserOpenPage = function($downloader, $browser, $page, $url){
         //注意：灵活设计特定类型的返回值有助于对付各种复杂的应用场景
         //1. 返回false， 会触发中断后续的业务逻辑；
         //2. 返回string，会触发中断后续的业务逻辑，一般多用于返回页面的HTML；
@@ -399,10 +399,10 @@ function startAppDownloader()
         //4. 返回其他，  会继续执行后续的业务逻辑，相当于是什么也没有发生；
 
         //注意：一般无需调用如下几行代码，因为爬山虎内部默认会自动调用无头API做同样的工作.
-        //$page->navigate($url)->waitForNavigation('firstMeaningfulPaint');
-        //$html = $page->getHtml();
-        //return $html;
-    };
+        $page->navigate($url)->waitForNavigation('firstMeaningfulPaint');
+        $html = $page->getHtml();
+        return $html;
+    };*/
 }
 
 

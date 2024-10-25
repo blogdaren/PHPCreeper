@@ -358,12 +358,19 @@ class Guzzle implements HttpClientInterface
     /**
      * @brief    set http header
      *
-     * @param    array  $headers
+     * @param    array|string  $headers
      *
      * @return   object
      */
     public function setHeaders($headers = [])
     {
+        if(!is_string($headers) && !is_array($headers)) return $this;
+
+        if(is_string($headers))
+        {
+            $headers = Tool::convertRawHeaderToArray($headers);
+        }
+
         !empty($headers) && self::$_config['headers'] = $headers;
 
         return $this;
