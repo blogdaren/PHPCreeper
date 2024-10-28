@@ -805,13 +805,14 @@ class Downloader extends PHPCreeper
                 }
             }
         }catch(\Throwable $e){
+            $error_code = $e->getCode() < 0 ? $e->getCode() : '-205';
             $extra = array(
                 'url'            => $task['url'],
-                'exception_code' => $e->getCode(),
+                'exception_code' => $error_code,
                 'exception_msg'  => $e->getMessage(),
             );
 
-            return Tool::throwback('-205', $this->langConfig['http_transfer_exception'], $extra);
+            return Tool::throwback($error_code, $this->langConfig['http_transfer_exception'], $extra);
         }
     }
 
@@ -871,13 +872,14 @@ class Downloader extends PHPCreeper
             $extra = ['content' => $content];
             return Tool::throwback('0', $this->langConfig['downloader_download_task_yes'], $extra);
         }catch(\Throwable $e){
+            $error_code = $e->getCode() < 0 ? $e->getCode() : '-205';
             $extra = array(
                 'url'            => $args['url'],
-                'exception_code' => $e->getCode(),
+                'exception_code' => $error_code,
                 'exception_msg'  => $e->getMessage(),
             );
 
-            return Tool::throwback('-205', $this->langConfig['http_transfer_exception'], $extra);
+            return Tool::throwback($error_code, $this->langConfig['http_transfer_exception'], $extra);
         }
     }
 
@@ -973,6 +975,12 @@ class Downloader extends PHPCreeper
             array_walk($args['context'], function($v, $k)use(&$args){
                 $args[$k] = $v;
             });
+        }
+
+        //force to keep option `headless_browser.headless`   
+        if(empty($args['context']['headless_browser']['headless']))
+        {
+            $args['headless_browser']['headless'] = false;
         }
 
         //unset ditry data

@@ -196,7 +196,7 @@ class Chrome
         return [
             'headless'  => true,
             'noSandbox' => true,
-            'keepAlive' => true,
+            'keepAlive' => false,
             'ignoreCertificateErrors' => true,
             'sendSyncDefaultTimeout'  => 10000,
         ];
@@ -262,7 +262,6 @@ class Chrome
             ]));
         }
 
-        //issue http request
         $page = self::getPage();
 
         try{
@@ -271,7 +270,9 @@ class Chrome
             $page->close();
         }catch(\Throwable $e){
             $page->close();
-            throw new \Exception($e->getMessage());
+            //since the headless lib don't define an exception code, 
+            //so we have to define a uniform exception code here.... 
+            throw new \Exception($e->getMessage(), -400);
         }
 
         return $html;
