@@ -262,14 +262,12 @@ class Chrome
             ]));
         }
 
-        $page = self::getPage();
-
         try{
+            $page = self::getPage();
             $page->navigate($url)->waitForNavigation($page_event, $navigate_timeout);
             $html = $page->getHtml();
             $page->close();
         }catch(\Throwable $e){
-            $page->close();
             //since the headless lib don't define an exception code, 
             //so we have to define a uniform exception code here.... 
             throw new \Exception($e->getMessage(), -400);

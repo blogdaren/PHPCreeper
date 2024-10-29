@@ -40,7 +40,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    public const CURRENT_VERSION = '1.9.8';
+    public const CURRENT_VERSION = '1.9.9';
 
     /**
      * engine name
