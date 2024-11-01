@@ -135,8 +135,15 @@ class Downloader extends PHPCreeper
      */
     public function onWorkerStop($worker)
     {
-        $this->triggerUserCallback('onDownloaderStop', $this);
-        $this->removeTimer();
+        try{
+            $this->triggerUserCallback('onDownloaderStop', $this);
+            $this->removeTimer();
+
+            //avoid headless chrome processes NOT exiting normally 
+            $this->headlessBrowser->destroy();
+        }catch(\Throwable $e){
+            Logger::warn(Tool::replacePlaceHolder($e->getMessage(), []));
+        }
     }
 
     /**

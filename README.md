@@ -128,6 +128,9 @@ PHPCreeper::setLang('en');
 //set default headless browser, default is `chrome`【version >= 1.8.7】
 //PHPCreeper::setDefaultHeadlessBrowser('chrome');
 
+//if the child process don't exit within timeout, then force to kill it【version >= 2.0.0】
+//PHPCreeper::setChildProcessStopTimeout(5);
+
 //Global-Redis-Config: support array value with One-Dimension or Two-Dimension, 
 //NOTE: since v1.6.4, it's been upgraded to use a more secure and officially
 //recommended distributed red lock mechanism by default, but it will use the

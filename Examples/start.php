@@ -122,6 +122,12 @@ use Logger\Logger;
 //PHPCreeper::setDefaultHeadlessBrowser('chrome');
 
 
+/**
+ * if the child process don't exit within timeout, then force to kill it【version >= 2.0.0】
+ * 如果在timeout时间内子进程还没有退出，多用于慢业务场景，则强制将其杀死，默认2秒.
+ */
+//PHPCreeper::setChildProcessStopTimeout(5);
+
 
 /**
  * Global-Redis-Config: just leave it alone when run as Single-Worker mode

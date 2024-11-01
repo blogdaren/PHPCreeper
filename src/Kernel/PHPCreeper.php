@@ -40,7 +40,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    public const CURRENT_VERSION = '1.9.9';
+    public const CURRENT_VERSION = '2.0.0';
 
     /**
      * engine name
@@ -548,15 +548,16 @@ class PHPCreeper extends Worker
 
         if(empty($worker)) return $this;
 
-        //app worker
-        $worker_name = str_pad($this->name, 15, " ", STR_PAD_RIGHT);  
-
         //set log message prefix
-        $length = strlen($this->count) <= 2 ? 2 : strlen($this->count);
+        $pid = posix_getpid();
+        $pid_length = strlen($pid) <= 5 ? 5 : strlen($pid);
+        $worker_name_length = strlen($this->name) <= 13 ? 13 : 15;
+        $worker_id_length = strlen($this->count) <= 2 ? 2 : strlen($this->count);
         Logger::setMessagePrefix(
             Tool::replacePlaceHolder($this->langConfig["logger_prefix_{$worker}"], [
-                'worker_id'   => str_pad($this->id + 1, $length, 0, STR_PAD_LEFT),
-                'worker_name' => $worker_name,
+                'worker_id'   => str_pad($this->id + 1, $worker_id_length, 0, STR_PAD_LEFT),
+                'worker_name' => str_pad($this->name, $worker_name_length, " ", STR_PAD_RIGHT),  
+                'process_id'  => str_pad($pid, $pid_length, " ", STR_PAD_RIGHT),
             ])
         );
 
@@ -1839,6 +1840,24 @@ EOT;
     }
 
     /**
+     * @brief    set child process stop timeout     
+     *
+     * @param    int|float  $timeout (s)
+     *
+     * @return   void
+     */
+    static public function setChildProcessStopTimeout($timeout = 2)
+    {
+        if($timeout <= 0) return;
+        if(!is_int($timeout) && !is_float($timeout)) return;
+
+        if(property_exists(__CLASS__, 'stopTimeout'))
+        {
+            self::$stopTimeout = $timeout;
+        }
+    }
+
+    /**
      * @brief    rewrite method runAll
      *
      * @return   void
@@ -1854,7 +1873,7 @@ EOT;
         //reset process title
         if(property_exists(__CLASS__, 'processTitle'))
         {
-            Worker::$processTitle = self::ENGINE_NAME;
+            self::$processTitle = self::ENGINE_NAME;
         }
 
         //try to boot all phpcreeper instances
