@@ -65,6 +65,8 @@ return [
     'headless_browser_disabled'           => "Headless Browser: headless browser is configured as disabled.",
     'headless_browser_binary_not_found'   => "Headless Browser：headless browser binary file (%bin%) not found, please install your own headless browser.",
     'headless_browser_exception'          => "Headless Browser：",
+    'headless_browser_proxy_server'       => "Headless Browser：detect the proxy server is enabled: %proxy_server%",
+    'headless_browser_proxy_credential'   => "Headless Browser：detect the credential submitted to the proxy server【%proxy_username% and %proxy_password%】",
 
     //more fields to be configured......
 ];

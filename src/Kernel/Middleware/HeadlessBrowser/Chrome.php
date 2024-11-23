@@ -17,6 +17,7 @@ use HeadlessChromium\BrowserFactory;
 use HeadlessChromium\Page;
 use HeadlessChromium\Exception\OperationTimedOut;
 use HeadlessChromium\Exception\NavigationExpired;
+use HeadlessChromium\Communication\Message;
 
 class Chrome
 {
@@ -263,7 +264,7 @@ class Chrome
         }
 
         try{
-            $page = self::getPage();
+            $page = self::getPage($options);
             $page->navigate($url)->waitForNavigation($page_event, $navigate_timeout);
             $html = $page->getHtml();
             $page->close();
@@ -279,11 +280,55 @@ class Chrome
     /**
      * @brief   get page 
      *
+     * @param   array  $options
+     *
      * @return  object 
      */
-    public function getPage()
+    public function getPage($options)
     {
-        return self::getBrowserInstance()->createPage();
+        $page = self::getBrowserInstance()->createPage();
+
+        if(!empty($options['proxyServer']))
+        {
+            Logger::warn(Tool::replacePlaceHolder($this->getWorker()->langConfig['headless_browser_proxy_server'], [
+                'proxy_server' => $options['proxyServer']
+            ]));
+
+            if(!empty($options['proxyServerAuth']['username']) && !empty($options['proxyServerAuth']['password']))
+            {
+                Logger::warn(Tool::replacePlaceHolder($this->getWorker()->langConfig['headless_browser_proxy_credential'], [
+                    'proxy_username' => $options['proxyServerAuth']['username'],
+                    'proxy_password' => $options['proxyServerAuth']['password'],
+                ]));
+            }
+        }
+
+        if(!empty($options['proxyServer']) && !empty($options['proxyServerAuth']['username']) && !empty($options['proxyServerAuth']['password']))
+        {
+            $username = $options['proxyServerAuth']['username'];
+            $password = $options['proxyServerAuth']['password'];
+            $page->getSession()->sendMessageSync(new Message('Network.setRequestInterception', ['patterns' => [['urlPattern' => '*']]])); 
+            $page->getSession()->on('method:Network.requestIntercepted', function  (array $params) use ($page, $username, $password) {  
+                if (isset($params["authChallenge"])) {
+                    $page->getSession()->sendMessageSync(
+                        new Message('Network.continueInterceptedRequest', [
+                            'interceptionId' => $params["interceptionId"], 
+                            'authChallengeResponse' => [
+                                'response' => 'ProvideCredentials', 
+                                'username' => $username, 
+                                'password' => $password,
+                            ]
+                        ])
+                    );   
+                } else {
+                    $page->getSession()->sendMessageSync(
+                        new Message('Network.continueInterceptedRequest', ['interceptionId' => $params["interceptionId"]])
+                    );   
+                }    
+            });  
+        }
+
+        return $page;
     }
 
     /**

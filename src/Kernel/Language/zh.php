@@ -66,6 +66,8 @@ return [
     'headless_browser_disabled'           => "无头浏览：检测到已禁用无头浏览器......................................",
     'headless_browser_binary_not_found'   => "无头浏览：无头浏览器二进制文件【%bin%】找不到, 请自行安装无头浏览器...",
     'headless_browser_exception'          => "无头浏览：",
+    'headless_browser_proxy_server'       => "无头浏览：检测到已启用代理服务器: %proxy_server%",
+    'headless_browser_proxy_credential'   => "无头浏览：检测到提交给代理服务器的使用凭据【%proxy_username% 和 %proxy_password%】",
 
     //若干待配字段......
 ];

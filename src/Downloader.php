@@ -854,7 +854,7 @@ class Downloader extends PHPCreeper
             if(property_exists($this, 'onHeadlessBrowserOpenPage')){
                 $this->headlessBrowser->getBrowserFactoryInstance()->setOptions($merged_options);
                 $browser = $this->headlessBrowser->getBrowserInstance();
-                $page = $this->headlessBrowser->getPage();
+                $page = $this->headlessBrowser->getPage($merged_options);
                 $returning = $this->triggerUserCallback('onHeadlessBrowserOpenPage', $this, $browser, $page, $args['url']);
                 if(false === $returning){
                     $page->close();
