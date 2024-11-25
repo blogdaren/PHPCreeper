@@ -22,34 +22,54 @@ class Tool
     {
         if(empty($url) || !is_string($url)) return false;
 
-        $result = \filter_var($url, FILTER_VALIDATE_URL);
+        //port pattern
+        $port_mode = "([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])";
 
-        return false !== $result ? true : false;
+        //support domain with optional port number
+        $pattern = "/^((http|https):\/\/){1}[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,15}(:$port_mode)?(\/\S*)?$/is";
+        preg_match($pattern, $url, $domain);
+        if(!empty($domain[0])) return true;
+
+        //support IPv4 with optional port number
+        $pattern  = "/^((http|https):\/\/){1}";
+        $pattern .= "([1-9]|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])\.([0-9]|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])";
+        $pattern .= "\.([0-9]|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])\.([0-9]|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])";
+        $pattern .= "(:$port_mode)?(\/\S*)?$/is";
+        preg_match($pattern, $url, $ip4);
+        if(!empty($ip4[0])) return true;
+
+        //support IPv6 with optional port number
+        $pattern  = "/^((http|https):\/\/){1}(\[[0-9a-fA-F:]+\])(:$port_mode)?(\/\S*)?$/is";
+        preg_match($pattern, $url, $ip6);
+        if(!empty($ip6[0])) return true;
+
+        return false;
     }
-	/**
-	 * 检测电子邮件
-	 *
-	 * @param  string  $email
-	 *
-	 * @return boolean
-	 */
-	static public function checkEmail($email)
-	{
+
+    /**
+     * 检测电子邮件
+     *
+     * @param  string  $email
+     *
+     * @return boolean
+     */
+    static public function checkEmail($email)
+    {
         if(empty($email)) return false;
 
-		if(preg_match("/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/", $email))
-		{
-			list($username, $domain)= explode('@', $email);
+        if(preg_match("/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/", $email))
+        {
+            list($username, $domain)= explode('@', $email);
 
-			if(!self::checkdnsrr($domain,'MX'))
-			{
-				return false;
-			}
+            if(!self::checkdnsrr($domain,'MX'))
+            {
+                return false;
+            }
 
-			return true;
-		}
+            return true;
+        }
 
-		return false;
+        return false;
 	}
 
 	/**
