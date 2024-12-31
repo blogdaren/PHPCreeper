@@ -36,10 +36,10 @@ The chinese document is relatively complete, and the english document will be ke
 
 ## 技术交流
 * 下方绿色二维码为微信交流群：phpcreeper 【进群之前需先加此专属微信并备明来意或附上备注：爬山虎】  
-* [《深入PHP内核源码》](https://item.taobao.com/item.htm?ft=t&id=719914277319)原创视频的配套文档是作者一个字一个字随堂认真敲写而来，文字总数高达近30000字，并且附有大量自绘原创插图，所以如果你是通过githib站或B站或V站联系到本人，计划在视频录制结束之后的合适时间以纸质书籍的形式免费赠与有缘小伙伴。
+* [《深入PHP内核源码》](https://item.taobao.com/item.htm?ft=t&id=719914277319)原创视频的配套文档是作者一个字一个字随堂认真敲写而来，文字总数高达近30000字，并且附有大量自绘原创插图，所以如果你是通过github站或B站或V站联系到本人，计划在视频录制结束之后的合适时间以纸质书籍的形式免费赠与有缘小伙伴，[点此观看视频配套文档和完整目录章节视频 ](https://www.bilibili.com/video/BV1RH6VYqEYA/)。
 * 微信群主要围绕 [爬山虎](http://www.phpcreeper.com) 和 [workerman](https://www.workerman.net/)
 和 [深入PHP内核源码](https://item.taobao.com/item.htm?ft=t&id=719914277319) 
-开展技术交流，观看PHP内核视频请移步至[B站](https://www.bilibili.com/video/BV1pP4y1G7ae)。
+开展技术交流，观看PHP内核源码视频请移步至[B站](https://www.bilibili.com/video/BV1pP4y1G7ae)。
 
 <p align="center">
   <img src="./Image/QRCodePHPCreeperForWechat.png" />
