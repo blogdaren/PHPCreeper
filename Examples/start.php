@@ -240,7 +240,12 @@ $config['task'] = array(
         ],
 
         //无头浏览器，如果是动态页面考虑启用，否则应当禁用 [默认使用chrome且为禁用状态]
-        'headless_browser' => ['headless' => false, /*更多其他无头参数详见手册[常见问题]章节*/],
+        'headless_browser' => [
+            'headless' => false, 
+            //'proxyServer' => "http://ip:port", 
+            //'proxyServerAuth' => ['username'=>'YourUserName', 'password'=>'YourPassword'],
+            /*更多其他无头参数详见手册[常见问题]章节*/
+        ],
 
         //要不要提取子URL，注意提取成功后并不会入队，可配合onParserFindUrl回调API自行入队[默认true]
         'extract_sub_url'  => true,

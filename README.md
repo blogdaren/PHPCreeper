@@ -36,7 +36,7 @@ The chinese document is relatively complete, and the english document will be ke
 
 ## 技术交流
 * 下方绿色二维码为微信交流群：phpcreeper 【进群之前需先加此专属微信并备明来意或附上备注：爬山虎】  
-* 若是奔着虎哥的原创视频[《深入PHP内核源码》](https://item.taobao.com/item.htm?ft=t&id=719914277319)而来，务必添加专属微信方可获得配套教程文档，弥足珍贵。
+* [《深入PHP内核源码》](https://item.taobao.com/item.htm?ft=t&id=719914277319)原创视频的配套文档是作者一个字一个字随堂认真敲写而来，文字总数高达近30000字，并且附有大量自绘原创插图，所以如果你是通过githib站或B站或V站联系到本人，计划在视频录制结束之后的合适时间以纸质书籍的形式免费赠与有缘小伙伴。
 * 微信群主要围绕 [爬山虎](http://www.phpcreeper.com) 和 [workerman](https://www.workerman.net/)
 和 [深入PHP内核源码](https://item.taobao.com/item.htm?ft=t&id=719914277319) 
 开展技术交流，观看PHP内核视频请移步至[B站](https://www.bilibili.com/video/BV1pP4y1G7ae)。
@@ -62,7 +62,7 @@ The chinese document is relatively complete, and the english document will be ke
 
 ## Prerequisites
 * PHP_VERSION ≥ 7.0.0 (Better to choose PHP 7.4+ for some compatibility reasons)    
-* A POSIX compatible OS (Linux、OSX、BSD)  
+* A POSIX compatible OS (Linux、Mac、BSD)  
 * POSIX &nbsp;extension for PHP (**Required**)
 * PCNTL extension for PHP (**Required**)
 * REDIS &nbsp;extension for PHP (Optional, note that `predis` will be the default redis client since v1.4.2)
@@ -348,34 +348,14 @@ $task = array(
 
 ```
 
-* Per URL config item match a unique rule config item, and the ***rule_name*** must be one-to-one correspondence
-* The type of rule value must be ***Array***
-* For a single task, the depth of the corresponding rule item, that is, the depth of the array, can only be 2
-* For multi task, the depth of the corresponding rule item, that is, the depth of the array, can only be 3
+> Per URL config item match a unique rule config item, and the ***rule_name*** must be one-to-one correspondence
 
-```php
-//NOTE: this is outdated usage for【version < v1.6.0】, not recommended to use.
-<?php
-$urls = array(
-    'rule_name1' => 'http://www.blogdaren.com';
-    '..........' => '........................';
-    'rule_nameN' => 'http://www.phpcreeper.com';
-);
+> Note the type of rule value must be ***Array***
 
-$rule = array( 
-    'rule_name1' => array(
-        'field1' => ['selector', 'action', 'range', 'callback'],
-        '......' => ['........', '....', '.....', '........'];
-        'fieldN' => ['selector', 'action', 'range', 'callback'],
-    );
-    .........................................................,
-    'rule_nameN' => array(
-        'field1' => ['selector', 'action', 'range', 'callback'],
-        '......' => ['........', '....', '.....', '........'];
-        'fieldN' => ['selector', 'action', 'range', 'callback'],
-    );
-);
-```
+> For a single task, the depth of the corresponding rule item, that is, the depth of the array, can only be 2
+
+> For multi task, the depth of the corresponding rule item, that is, the depth of the array, can only be 3
+
 
 + **rule_name**  
 you should give an unique rule name for each task, so that we can easily 
