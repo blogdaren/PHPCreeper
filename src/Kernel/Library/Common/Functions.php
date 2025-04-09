@@ -3,7 +3,7 @@
  * @script   Functions.php
  * @brief    公共函数库
  * @author   blogdaren<blogdaren@163.com>
- * @link     http://www.blogdaren.com
+ * @link     http://www.phpcreeper.com
  * @version  1.0.0
  * @modify   2018-10-13
  */

@@ -40,7 +40,7 @@ class PHPCreeper extends Worker
      *
      * @var string
      */
-    public const  CURRENT_VERSION = '2.0.2';
+    public const  CURRENT_VERSION = '2.0.3';
 
     /**
      * engine name
@@ -1418,7 +1418,7 @@ class PHPCreeper extends Worker
   / /_/ / /_/ / /_/ / /   / ___/ _ \/ _ \/ __ \/ _ \/ ___/
  / ____/ __  / ____/ /___/ /  /  __/  __/ /_/ /  __/ /          @link  http://www.phpcreeper.com
 /_/   /_/ /_/_/    \____/_/   \___/\___/ .___/\___/_/     
-                                      /_/                       @link  http://www.blogdaren.com
+                                      /_/                       @link  http://www.phpcreeper.com
 
 
 EOT;

@@ -8,7 +8,6 @@
  * 3. 如果希望使用爬山虎应用框架开发，请参考开发手册：
  *
  *    >> http://www.phpcreeper.com/docs/
- *    >> http://www.blogdaren.com/docs/
  *
  * @author   blogdaren<blogdaren@163.com>
  * @link     http://www.phpcreeper.com
